@@ -1,0 +1,11 @@
+---
+- name: Destroy 'defult' test resources
+  hosts: localhost
+  connection: local
+
+  vars:
+    ansible_python_interpreter: '{{ ansible_playbook_python }}'
+    minikube_destroy: True
+
+  roles:
+    - role: kameshsampath.minikube

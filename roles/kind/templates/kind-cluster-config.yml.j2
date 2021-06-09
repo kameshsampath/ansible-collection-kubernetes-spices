@@ -1,0 +1,47 @@
+#jinja2: lstrip_blocks: "True"
+---
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+{%if kind_ip_family == "ipv6" or kind_ip_family == "dual" %}
+networking:
+  ipFamily: {{ kind_ip_family }}
+  {% if ansible_os_family == "Darwin" or ansible_os_family == "Windows" %}
+  apiServerAddress: "127.0.0.1"
+  {% endif %}
+{% endif %}
+nodes:
+- role: control-plane
+  ## make ingress controller deployed on control plane only  
+  kubeadmConfigPatches:
+    - |
+      kind: InitConfiguration
+      nodeRegistration:
+        kubeletExtraArgs:
+          node-labels: "ingress-ready=true"
+  extraPortMappings:
+  {% for m in extra_port_mappings %}
+    - containerPort: {{ m.split(':')[2] }}
+      hostPort: {{ m.split(':')[1] }}
+      {% if kind_ip_family == "ipv6" and m.split(':')[0] == "0.0.0.0" %}
+      listenAddress: "::"
+      {% else %}
+      listenAddress: {{ m.split(':')[0] }}
+      {% endif %}
+  {% endfor %}
+- role: worker
+{% if kind_custom_registry %}
+containerdConfigPatches:
+  - |-
+      [plugins."io.containerd.grpc.v1.cri".registry.mirrors."localhost:{{container_registry_port}}"]
+      endpoint = ["http://{{container_registry_name}}:{{container_registry_port}}"]
+      [plugins."io.containerd.grpc.v1.cri".registry.mirrors."{{container_registry_name}}:{{container_registry_port}}"]
+      endpoint = ["http://{{container_registry_name}}:{{container_registry_port}}"]
+      {% if kind_custom_registry_aliases %}
+      {% for a in kind_custom_registry_aliases %}
+      [plugins."io.containerd.grpc.v1.cri".registry.mirrors."{{ a }}"]
+      endpoint = ["http://{{container_registry_name}}:{{container_registry_port}}"]
+      {% endfor %}
+      {% endif  %}
+{% else %}
+containerdConfigPatches: {}
+{% endif %}

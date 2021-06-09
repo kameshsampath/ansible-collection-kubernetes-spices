@@ -1,0 +1,86 @@
+- name: "Configure Debian Package Repositories"
+  include_tasks: setup-Debian.yml
+  when: ansible_os_family == 'Debian'
+
+- name: "Configure Red Hat Package Repositories"
+  include_tasks: setup-RedHat.yml
+  when: ansible_os_family == 'RedHat'
+
+- name: Install Utility Packages
+  package:
+    name: 
+      - kubectl
+      - jq
+      - yq
+      - socat
+      - fzf
+      - pkg-config
+      - bash-completion
+    state: present
+    update_cache: yes
+
+- name: "Download k9s"
+  get_url:
+    url: "https://github.com/derailed/k9s/releases/download/{{ k9s_version }}/k9s_{{ k9s_version }}_Linux_x86_64.tar.gz"
+    dest: "/tmp/k9s_{{ k9s_version }}_Linux_x86_64.tar.gz"
+    checksum: "sha256:https://github.com/derailed/k9s/releases/download/{{ k9s_version }}/checksums.txt"
+    force: no
+  register: k9s_download
+
+- name: "Extract k9s"
+  unarchive:
+    src: "/tmp/k9s_{{ k9s_version }}_Linux_x86_64.tar.gz"
+    dest: "/usr/local/bin"
+    mode: 0755
+    remote_src: true
+    exclude:
+      - "README.md"
+      - "LICENSE"
+
+- name: "Download kubectx"
+  get_url:
+     url: "https://raw.githubusercontent.com/ahmetb/kubectx/master/kubectx"
+     dest: "/usr/local/bin/kubectx"
+     mode: "0755"
+
+- name: "Add bash kubectx bash completions"
+  get_url:
+     url: "https://raw.githubusercontent.com/ahmetb/kubectx/master/completion/kubectx.bash"
+     dest: "/usr/share/bash-completion/completions/kubectx.bash"
+
+- name: "Download kubens"
+  get_url:
+     url: "https://raw.githubusercontent.com/ahmetb/kubectx/master/kubens"
+     dest: "/usr/local/bin/kubens"
+     mode: "0755"
+
+- name: "Add bash kubens bash completions"
+  get_url:
+     url: "https://raw.githubusercontent.com/ahmetb/kubectx/master/completion/kubens.bash"
+     dest: "/usr/share/bash-completion/completions/kubens.bash"
+
+- name: "Download .kubectl_aliases"
+  become: no
+  get_url:
+     url: "https://raw.githubusercontent.com/ahmetb/kubectl-aliases/master/.kubectl_aliases"
+     dest: "/home/{{ ansible_user }}/.kubectl_aliases"
+
+
+- name: "Check .kubectl_aliases exist in $HOME/.bashrc"
+  lineinfile:
+    state: absent
+    path: "/home/{{ ansible_user }}/.bashrc"
+    regexp: '^.* source ~/.kubectl_aliases$'
+  check_mode: true
+  changed_when: false # This just makes things look prettier in the logs
+  register: check_kubectl_aliases
+
+# - debug:
+#     var: check_kubectl_aliases
+    
+- name: "Add .kubectl_aliases to $HOME/.bashrc"
+  ansible.builtin.lineinfile:
+    state: present
+    path: "/home/{{ ansible_user }}/.bashrc"
+    line: "[ -f ~/.kubectl_aliases ] && source ~/.kubectl_aliases"
+  when: check_kubectl_aliases.found == 0

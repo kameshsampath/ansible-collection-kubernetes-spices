@@ -1,0 +1,24 @@
+---
+- name: minikube-with-tektoncd
+  hosts: localhost
+  connection: local
+
+  collections:
+    - community.kubernetes
+
+  vars:
+    # to ensure we are on python3
+    ansible_python_interpreter: '{{ ansible_playbook_python }}'
+    cluster_name: vanilla-tektoncd
+    # valid values are ipv4, ipv6, dual
+    kind_ip_family: ipv6
+    # Create Cluster
+    kind_create: true
+    # Destroy Cluster
+    kind_destroy: false
+    # Spices
+    deploy_tektoncd: True
+
+  roles:
+    - role: kameshsampath.kind
+    - role: kameshsampath.k8s_app_spices

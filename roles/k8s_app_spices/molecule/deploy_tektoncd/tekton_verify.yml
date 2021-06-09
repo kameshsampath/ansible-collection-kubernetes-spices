@@ -1,0 +1,43 @@
+---
+- name: Set Test Namespace fact
+  set_fact:
+    test_ns: molecule-tekton-test
+
+- name: Create a Task
+  k8s:
+    state: present
+    definition: |
+      apiVersion: tekton.dev/v1beta1
+      kind: Task
+      metadata:
+        name: greeter
+        namespace: "{{ test_ns }}"
+      spec:
+        params:
+          - name: greeting
+            description: 'The greeting to echo'
+            default: "Hello World"
+        resources:
+          inputs:
+            - name: source
+              type: git
+        steps:
+          - name: say-hello
+            image: busybox
+            command: ['echo', '$(params.greeting)']
+    wait: yes
+
+- name: List all Tasks
+  k8s_info:
+    api_version: tekton.dev/v1beta1
+    kind: Task
+    namespace: "{{ test_ns }}"
+  register: tasks_list
+
+- name: There should be only one task
+  assert:
+      that: tasks_list.resources | count == 1
+
+- name: Thre should only one task named is greeter
+  assert:
+     that: "tasks_list.resources[0].metadata.name == 'greeter' "

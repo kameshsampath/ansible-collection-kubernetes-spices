@@ -1,0 +1,88 @@
+---
+- name: "Install istioctl"
+  become: no
+  ansible.builtin.shell: |
+    curl -L https://istio.io/downloadIstio | sh -
+  args:
+    creates: "istio-{{ istio_version }}"
+  environment:
+    ISTIO_VERSION: "{{ istio_version }}"
+  register: istioctl_install
+
+- name: Set istioctl bin
+  become: no
+  set_fact:
+     istio_binary: "istio-{{ istio_version }}/bin/istioctl"
+     istio_revision: "{{  istio_version | regex_replace('\\.','-')}}"
+
+- name: "Create istio-system namespace"
+  become: no
+  community.kubernetes.k8s:
+    name: "{{ istio_namespace }}"
+    api_version: v1
+    kind: Namespace
+    state: present
+
+- name: Deploy istiod
+  become: no
+  community.kubernetes.k8s:
+    state: present
+    definition: "{{ lookup('template', 'istiod.yaml.j2') | from_yaml }}"
+    validate:
+      fail_on_error: yes
+      strict: yes
+
+- name: "Install istio"
+  become: no
+  ansible.builtin.shell: |
+    echo "$CONTROL_PLANE_MANIFEST" > /tmp/control-plane.yaml &>/dev/null
+    $ISTIO_BINARY install -y \
+      -n $ISTIO_NAMESPACE \
+      -f /tmp/control-plane.yaml \
+      --revision $ISTIO_REVISION
+  args:
+    executable: /bin/bash
+  environment:
+    ISTIO_VERSION: "{{ istio_version }}"
+    CONTROL_PLANE_MANIFEST: "{{  lookup('template', 'control-plane.yaml.j2') | from_yaml }}"
+    ISTIO_BINARY: "{{ istio_binary }}"
+    ISTIO_NAMESPACE: "{{ istio_namespace }}"
+    ISTIO_REVISION: "{{  istio_version | regex_replace('\\.','-')}}"
+  register: istio_install
+  changed_when: false
+  
+# - debug:
+#    var: istio_install
+
+- name: "Wait for Istio Control Plane to be ready"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: "istiod-{{ istio_revision }}"
+    deployment_namespace: "{{ istio_namespace }}"
+
+- name: "Wait for Istio Ingress Gateway to be ready"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: "istio-ingressgateway"
+    deployment_namespace: "{{ istio_namespace }}"
+
+- name: "Check if istioctl is in $PATH"
+  become: no
+  lineinfile:
+    state: absent
+    path: "/home/{{ ansible_user }}/.bashrc"
+    regexp: '^#Add istioctl to PATH'
+  check_mode: true
+  changed_when: false # This just makes things look prettier in the logs
+  register: check_istioctl_in_path
+
+# - debug:
+#     var: check_istioctl_in_path
+    
+- name: "Add istioctl to $PATH"
+  become: no
+  ansible.builtin.lineinfile:
+    state: present
+    path: "/home/{{ ansible_user }}/.bashrc"
+    line: "#Add istioctl to PATH\nexport PATH=/home/{{ ansible_user }}/istio-{{ istio_version }}/bin:$PATH"
+  when: check_istioctl_in_path.found == 0

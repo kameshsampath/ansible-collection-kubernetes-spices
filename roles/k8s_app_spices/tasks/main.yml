@@ -1,0 +1,58 @@
+---
+- name: Get minikube IP 
+  command:
+    argv:
+      - minikube
+      - -p
+      - "{{ minikube_profile_name }}"
+      - ip
+  when: k8s_cluster_ip is not defined and kubernetes_cluster_type == 'minikube'
+  register: minikube_ip_result
+
+- name: Set minikube IP as Kubernetes Cluster IP
+  set_fact:
+    k8s_cluster_ip: "{{ minikube_ip_result.stdout }}"
+  when: k8s_cluster_ip is not defined and kubernetes_cluster_type == 'minikube'
+
+- name: Set Kubernetes Cluster IP for KinD
+  set_fact:
+    k8s_cluster_ip: "127.0.0.1"
+  when: k8s_cluster_ip is not defined and kubernetes_cluster_type == 'kind'
+
+###################################
+# Argo CD 
+###################################
+
+- name: Deploy Argo CD
+  include_tasks: argocd.yml
+  when: deploy_argocd
+
+###################################
+# Istio
+###################################
+
+- name: Istio
+  include_tasks: istio.yml
+  when: deploy_istio
+
+###################################
+# Gloo Edge
+###################################
+- name: "Deploy Gloo Edge"
+  include_tasks: gloo_edge.yml
+  when: deploy_gloo_edge
+
+######################################
+## Knative Serving and Eventing
+######################################
+- name: Deploy Knative Serving and Eventing
+  include_tasks: knative.yml
+  when: deploy_knative
+
+###################################
+# Tektoncd 
+###################################
+
+- name: Deploy Tektoncd Pipelines and Triggers
+  include_tasks: tektoncd.yml
+  when: deploy_tektoncd

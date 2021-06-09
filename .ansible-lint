@@ -1,0 +1,9 @@
+
+exclude_paths:
+  - molecule/common/hello-display
+  - molecule/common/myapp
+
+skip_list:
+ - '204'
+
+verbosity: 1

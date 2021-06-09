@@ -1,0 +1,111 @@
+---
+- name: "Check if {{ cluster_name }} already exists"
+  community.docker.docker_container_info:
+    name: "{{ cluster_name + '-control-plane' }}"
+  register: cluster_check_result
+
+- name: Create KinD Config
+  template:
+    dest: "{{ kind_home_dir + '/' + cluster_name + '/' + kind_cluster_config }}"
+    src: 'kind-cluster-config.yml.j2'
+    mode: "755"
+  when: kind_create_config
+
+- name: "Set {{ cluster_name }} config file"
+  set_fact:
+    kind_cluster_config_file: "{{ kind_home_dir + '/' + cluster_name + '/' + kind_cluster_config }}"
+  when: kind_create_config
+
+- name: "Start KinD Cluster: '{{ cluster_name }}'"
+  ansible.builtin.command:
+    argv:
+      - "{{ kind_binary }}"
+      - create
+      - cluster
+      - --name={{ cluster_name }}
+      - --config={{ kind_cluster_config_file }}
+  register: kind_cluster_result
+  when: (cluster_config is not defined and not cluster_check_result.exists)
+
+- name: "Get KinD Cluster: '{{ cluster_name }}' Cluster Nodes"
+  command:
+    argv:
+      - "{{ kind_binary }}"
+      - get
+      - nodes
+      - --name={{ cluster_name }}
+  register: cluster_nodes_result
+  changed_when: False
+
+- name: Set fact about cluster nodes
+  set_fact:
+    cluster_nodes: "{{ cluster_nodes_result.stdout.split('\n') }}"
+
+- name: Create and start KinD Registry
+  community.docker.docker_container:
+    state: started
+    image: 'registry:2'
+    restart_policy: 'always'
+    name: '{{ container_registry_name }}'
+    network_mode: kind
+    published_ports:
+      - '0.0.0.0:{{ container_registry_port }}:5000'
+
+- name: "Label KinD Cluster: '{{ cluster_name }}' Cluster Nodes"
+  community.kubernetes.k8s:
+    state: present
+    resource_definition:
+      api_version: v1
+      kind: Node
+      metadata:
+        annotations:
+          tilt.dev/registry: 'localhost:{{ container_registry_port }}'
+          tilt.dev/registry-from-cluster: '{{ container_registry_name }}:{{ container_registry_port }}'
+        name: '{{ item }}'
+  loop: '{{ cluster_nodes }}'
+  when: kind_cluster_result is defined
+
+- name: Get all worker nodes
+  community.kubernetes.k8s_info:
+    kind: Node
+    label_selectors:
+      - '!node-role.kubernetes.io/master'
+  register: worker_nodes
+
+- name: "Label KinD Cluster '{{ cluster_name }}' Worker Nodes"
+  community.kubernetes.k8s:
+    state: present
+    resource_definition:
+      api_version: v1
+      kind: Node
+      metadata:
+        labels:
+          node-role.kubernetes.io/worker: ''
+        name: '{{ item }}'
+  loop: "{{ worker_nodes | json_query('resources[*].metadata.name') }}"
+
+- name: "Make .kube directory"
+  become: no
+  ansible.builtin.file:
+    path: "/home/{{ ansible_user }}/.kube"
+    state: directory
+
+- name: "Start KinD Cluster: '{{ cluster_name }}'"
+  become: no
+  ansible.builtin.command:
+    argv:
+      - "{{ kind_binary }}"
+      - get
+      - kubeconfig
+      - --name={{ cluster_name }}
+  register: kubeconfig_result
+
+# - debug:
+#    var: kubeconfig_result
+
+- name: "Create kubeconfig file"
+  become: no
+  ansible.builtin.copy:
+    dest: "/home/{{ ansible_user }}/.kube/config"
+    content: "{{ kubeconfig_result.stdout }}"
+    remote_src: true

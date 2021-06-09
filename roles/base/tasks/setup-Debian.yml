@@ -1,0 +1,23 @@
+- name: "Add kubetctl dependencies"
+  apt:
+    state: present
+    name:
+    - apt-transport-https 
+    - ca-certificates 
+    - curl
+    - software-properties-common
+    - gnupg-agent
+
+- name: Get Google Cloud public signing key
+  get_url:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    dest: /usr/share/keyrings/kubernetes-archive-keyring.gpg
+
+- name: "Add Kubectl Apt Repository"
+  apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main"
+    state: present
+
+- name: Add yq stable repository from PPA and install its signing key on Ubuntu target
+  ansible.builtin.apt_repository:
+    repo: ppa:rmescandon/yq

@@ -1,0 +1,130 @@
+- name: Set Argo CD manifest dir
+  set_fact:
+    argocd_manifests_dir: "/tmp/argocd"
+
+- name: Force Deployment of Ingress
+  set_fact:
+    deploy_ingress: True
+  when: not deploy_ingress
+
+- name: Make temp directory for ArgoCD Manifests
+  file:
+    path: "{{ argocd_manifests_dir }}"
+    state: directory
+
+- name: Get Argo CD Manifests
+  get_url:
+    dest: "{{ argocd_manifests_dir }}/{{ item.name }}"
+    url: "{{ item.manifest_url }}"
+  delegate_to: localhost
+  loop:
+    - name: install.yaml
+      manifest_url: "https://raw.githubusercontent.com/argoproj/argo-cd/{{ argocd_version }}/manifests/install.yaml"
+  loop_control:
+     label: "{{ item.name }}"
+
+- name: Create Argo CD Namespace 
+  community.kubernetes.k8s:
+     kind: Namespace
+     name: "{{ argocd_namespace }}"
+
+- name: Deploy  Argo CD 
+  community.kubernetes.k8s:
+    definition: "{{ item.manifest | from_yaml_all | list }}"
+    namespace: "{{ argocd_namespace }}"
+    state: present
+  loop:
+    - name: install.yaml
+      manifest: "{{ lookup('file',argocd_manifests_dir + '/install.yaml') }}"
+  loop_control:
+      label: "{{ item.name }}"
+  changed_when: False
+  register: argocd_deploy
+
+- name: "Wait for Argo CD Application::controller"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: argocd-application-controller
+    deployment_namespace: "{{ argocd_namespace }}"
+
+- name: "Wait for Argo CD Application::dex-server"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: argocd-dex-server
+    deployment_namespace: "{{ argocd_namespace }}"
+
+- name: "Wait for Argo CD::redis"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: argocd-redis
+    deployment_namespace: "{{ argocd_namespace }}"
+
+- name: "Wait for Argo CD::repo"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: argocd-repo-server
+    deployment_namespace: "{{ argocd_namespace }}"
+
+- name: "Wait for Argo CD::server"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: argocd-server
+    deployment_namespace: "{{ argocd_namespace }}"
+
+- name: "Create Ingress to Argo CD"
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      apiVersion: projectcontour.io/v1
+      kind: HTTPProxy
+      metadata:
+        name: argocd-server-ingress
+        namespace: "{{ argocd_namespace }}"
+      spec:
+        virtualhost:
+          fqdn: "{{ k8s_cluster_ip }}.nip.io"
+          tls:
+            passthrough: true
+        tcpproxy:
+          services:
+          - name: argocd-server
+            port: 443
+
+- name: "Log Default Argo CD Admin Password"
+  community.kubernetes.k8s_info:
+    kind: Pod
+    label_selectors:
+      - app.kubernetes.io/name = argocd-server
+  register: argcd_server_pods
+
+- debug: 
+    msg: 'Argo CD Server Address {{ "{{ k8s_cluster_ip }}.nip.io" }} '
+    
+- debug: 
+    msg: "Your Argo CD credentials Username 'admin' Password '{{ argcd_server_pods.resources[0].metadata.name }}'"
+
+- name: Download Argo CD CLI (macOS)
+  get_url:
+    url: "https://github.com/argoproj/argo-cd/releases/download/{{ argocd_version }}/argocd-darwin-amd64"
+    dest: /usr/local/bin/argocd
+    mode: 0755
+  when: argocd_cli_download and ansible_os_family == "Darwin"
+
+- name: Download Argo CD CLI (Linux)
+  get_url:
+    url: "https://github.com/argoproj/argo-cd/releases/download/{{ argocd_version }}/argocd-linux-amd64"
+    dest: /usr/local/bin/argocd
+    mode: 0755
+  when: argocd_cli_download and (ansible_os_family == "RedHat" or ansible_os_family == "CentOS" or ansible_os_family == "Debian")
+
+- name: Download Argo CD CLI (Windows)
+  get_url:
+    url: "https://github.com/argoproj/argo-cd/releases/download/{{ argocd_version }}/argocd-windows-amd64.exe"
+    dest: /usr/local/bin/argocd
+  when: argocd_cli_download and ansible_os_family == "Windows"
+
+- name: Make Argo CD CLI as executable
+  file:
+    path: /usr/local/bin/argocd
+    mode: 0755
+  when: argocd_cli_download

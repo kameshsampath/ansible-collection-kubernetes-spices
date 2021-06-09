@@ -1,0 +1,174 @@
+name: Release Artifacts
+
+on:
+  release:
+    types:
+      - released
+  workflow_dispatch:
+
+jobs:
+  attach-collection-artifacts:
+    runs-on: ubuntu-latest
+    env:
+      DIST_DIR: dist
+    strategy:
+      matrix:
+        python-version:
+          - 3.8
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: "${{ github.event.ref }}"
+
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1.1.4
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        run: poetry install
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+
+      - name: Build the Ansible Collections tarball
+        id: build-collection
+        run: |
+          poetry env use python
+          poetry run ansible-galaxy collection build --out $DIST_OUT_DIR
+        env:
+          DIST_OUT_DIR: "${{ github.workspace }}/${{ env.DIST_DIR }}"
+
+      - name: Attach Collection to release
+        uses: ncipollo/release-action@v1
+        with:
+          token: ${{ secrets.GH_WORKFLOW_PAT }}
+          artifacts: "${{ github.workspace }}/dist/*.tar.gz"
+          omitBody: true
+          tag: "${{ github.event.release.tag_name }}"
+
+  ansible-builder-ee:
+    runs-on: ubuntu-latest
+    env:
+      QUAYIO_REPO: quay.io/kameshsampath
+      IMAGE_NAME: openshift-demos-ansible-ee
+      IMAGE_TAGS: latest
+      CONTAINER_RUNTIME: docker
+    strategy:
+      matrix:
+        python-version:
+          - 3.8
+    steps:
+
+      #      - name: "Dump GitHub Context"
+      #        env:
+      #          GITHUB_CONTEXT: "${{ toJson(github) }}"
+      #        run: |
+      #          echo "$GITHUB_CONTEXT"
+
+      - uses: actions/checkout@v2
+        with:
+          ref: "${{ github.event.ref }}"
+
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1.1.4
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        run: poetry install
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+
+      - name: Login to Quay.io
+        uses: docker/login-action@v1
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAYIO_USERNAME }}
+          password: ${{ secrets.QUAYIO_TOKEN }}
+          logout: true
+
+      - name: Build the Ansible EE Image
+        id: build-image
+        run: |
+          poetry env use python
+          poetry run ansible-builder build \
+            --container-runtime $CONTAINER_RUNTIME \
+            --tag $IMAGE_TAG
+          $CONTAINER_RUNTIME push $IMAGE_TAG
+          $CONTAINER_RUNTIME tag $IMAGE_TAG $IMAGE_LATEST
+          $CONTAINER_RUNTIME push $IMAGE_LATEST
+        env:
+          IMAGE_TAG: "${{ env.QUAYIO_REPO }}/${{ env.IMAGE_NAME }}:${{ github.event.release.tag_name }}"
+          IMAGE_LATEST: "${{ env.QUAYIO_REPO }}/${{ env.IMAGE_NAME }}:latest"
+          CONTAINER_RUNTIME: "${{ env.CONTAINER_RUNTIME }}"
+        working-directory: "${{ github.workspace }}/builder-ee"
+  site:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          - 3.8
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: "${{ github.event.ref }}"
+
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1.1.4
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        run: poetry install
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+
+      - name: Generate Docs
+        run: |
+          make all
+        working-directory: "${{ github.workspace }}/documentation"
+
+      - name: Deploy Site
+        id: deploy_site
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: "${{ github.workspace }}/documentation/build/html"
+          publish_branch: "gh-pages"
+          full_commit_message: "[Release]${{ github.event.head_commit.message }}"

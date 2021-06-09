@@ -1,0 +1,18 @@
+---
+- name: Verify
+  hosts: localhost
+  connection: local
+
+  collections:
+    - community.kubernetes
+
+  vars:
+   ansible_python_interpreter: '{{ ansible_playbook_python }}'
+   minikube_profile_name: molecule-ingress
+   deploy_ingress: True
+
+  tasks:
+   - import_tasks: ../common/tasks/ingress_verify.yml
+
+- name: Destroy test resources
+  import_playbook: destroy.yml
