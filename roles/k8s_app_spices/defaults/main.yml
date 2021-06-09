@@ -8,6 +8,10 @@ argocd_namespace: argocd
 argocd_version: v1.6.2
 argocd_cli_download: True
 
+# Gloo Edge
+gloo_edge_edition: ce
+gloo_edge_version: 1.7.10
+
 # Istio
 deploy_istio: False
 istio_version: 1.8.3

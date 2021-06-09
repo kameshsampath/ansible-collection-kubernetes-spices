@@ -88,6 +88,7 @@
   become: no
   ansible.builtin.file:
     path: "/home/{{ ansible_user }}/.kube"
+    mode: '0700'
     state: directory
 
 - name: "Start KinD Cluster: '{{ cluster_name }}'"
@@ -108,4 +109,5 @@
   ansible.builtin.copy:
     dest: "/home/{{ ansible_user }}/.kube/config"
     content: "{{ kubeconfig_result.stdout }}"
+    mode: '0700'
     remote_src: true

@@ -1,53 +1,56 @@
----
-- name: Get Contour Manifest
-  get_url:
-    dest: /tmp/contour.yml
-    url: "{{ ingress_manifest }}"
-  delegate_to: localhost
+- name: Set Install Messages
+  set_fact:
+   successfully_installed: "Creating namespace gloo-system... Done.\nStarting Gloo Edge installation...\n\nGloo Edge was successfully installed!"
+   already_installed_msg: "Error: installing gloo edge in gateway mode: Gloo has already been installed to namespace gloo-system"
 
-- name: Update Contour namespace
-  replace:
-      path: /tmp/contour.yml
-      regexp: '^(\s*)(name[space]*)?(:\s*)(projectcontour)\s*$'
-      replace: '\1\2\3{{ ingress_namespace }}'
-      backup: yes
-  delegate_to: localhost
-  register: updated_manifest
-  when: ingress_namespace != 'projectcontour'
-  changed_when: False
+- name: "Install istioctl"
+  become: no
+  ansible.builtin.shell: |
+    curl -sL https://run.solo.io/gloo/install | sh
+  args:
+    creates: "/home/{{ ansible_user }}/.gloo"
+  environment:
+    GLOO_EDGE_VERSION: "{{ gloo_edge_version }}"
+  register: glooctl_download
 
-- name: Deploy Contour
-  community.kubernetes.k8s:
-    definition: "{{ item.manifest | from_yaml_all | list }}"
+- name: Set glooctl bin
+  become: no
+  set_fact:
+     glooctl_binary: "/home/{{ ansible_user }}/.gloo/bin/glooctl"
+
+- name: Install Gloo Edge in Gateway Mode
+  become: no
+  ansible.builtin.shell: |
+     $GLOOCTL_BINARY install gateway \
+       --version=$GLOO_EDGE_VERSION
+  environment:
+    GLOOCTL_BINARY: "/home/{{ ansible_user }}/.gloo/bin/glooctl"
+    GLOO_EDGE_VERSION: "{{ gloo_edge_version }}"
+  ignore_errors: true
+  changed_when: glooctl_install.stdout is defined and glooctl_install.stdout == successfully_installed 
+  register: glooctl_install
+
+- fail:
+   msg: glooctl_install.stderr
+  when: glooctl_install.stderr is defined and glooctl_install.stderr != already_installed_msg
+
+- name: "Check if glooctl is in $PATH"
+  become: no
+  lineinfile:
+    state: absent
+    path: "/home/{{ ansible_user }}/.bashrc"
+    regexp: '^#Add glooctl to PATH'
+  check_mode: true
+  changed_when: false # This just makes things look prettier in the logs
+  register: check_glooctl_in_path
+
+# - debug:
+#     var: check_glooctl_in_path
+    
+- name: "Add glooctl to $PATH"
+  become: no
+  ansible.builtin.lineinfile:
     state: present
-  register: contour_deploy
-  loop:
-    - name: contour.yml
-      manifest: "{{ lookup('file','/tmp/contour.yml') }}"
-  loop_control:
-      label: "{{ item.name }}"
-  changed_when: False
-
-- name: 'Wait for Daemonset envoy to be ready'
-  k8s_info:
-    kind: DaemonSet
-    name: envoy
-    namespace: '{{ ingress_namespace }}'
-  register: ds_result
-  until: ds_result.resources[0].status.numberReady == 1 and (ds_result.resources[0].status.numberAvailable == ds_result.resources[0].status.numberReady)
-  retries: 18
-  delay: 10
-
-- name: "Wait for Contour"
-  include_tasks: utils/k8s_deployment_status.yml
-  vars:
-    deployment_name: contour
-    deployment_namespace: "{{ ingress_namespace }}"
-
-- name: Revert Contour namespace update
-  copy:
-    dest: /tmp/contour.yml
-    src: "{{ updated_manifest.backup_file }}"
-  delegate_to: localhost
-  when: updated_manifest is defined and updated_manifest.backup_file is defined
-  changed_when: False
+    path: "/home/{{ ansible_user }}/.bashrc"
+    line: "#Add glooctl to PATH\nexport PATH=/home/{{ ansible_user }}/.gloo/bin:$PATH"
+  when: check_glooctl_in_path.found == 0
