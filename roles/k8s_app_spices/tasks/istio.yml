@@ -12,12 +12,12 @@
 - name: Set istioctl bin
   become: no
   set_fact:
-     istio_binary: "istio-{{ istio_version }}/bin/istioctl"
-     istio_revision: "{{  istio_version | regex_replace('\\.','-')}}"
+    istio_binary: "istio-{{ istio_version }}/bin/istioctl"
+    istio_revision: "{{  istio_version | regex_replace('\\.','-')}}"
 
 - name: "Create istio-system namespace"
   become: no
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     name: "{{ istio_namespace }}"
     api_version: v1
     kind: Namespace
@@ -25,7 +25,7 @@
 
 - name: Deploy istiod
   become: no
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'istiod.yaml.j2') | from_yaml }}"
     validate:
@@ -50,7 +50,7 @@
     ISTIO_REVISION: "{{  istio_version | regex_replace('\\.','-')}}"
   register: istio_install
   changed_when: false
-  
+
 # - debug:
 #    var: istio_install
 
@@ -65,24 +65,24 @@
   vars:
     deployment_name: "istio-ingressgateway"
     deployment_namespace: "{{ istio_namespace }}"
+  when: deploy_istio_gateway
+# - name: "Check if istioctl is in $PATH"
+#   become: no
+#   lineinfile:
+#     state: absent
+#     path: "/home/{{ ansible_user }}/.bashrc"
+#     regexp: '^#Add istioctl to PATH'
+#   check_mode: true
+#   changed_when: false # This just makes things look prettier in the logs
+#   register: check_istioctl_in_path
 
-- name: "Check if istioctl is in $PATH"
-  become: no
-  lineinfile:
-    state: absent
-    path: "/home/{{ ansible_user }}/.bashrc"
-    regexp: '^#Add istioctl to PATH'
-  check_mode: true
-  changed_when: false # This just makes things look prettier in the logs
-  register: check_istioctl_in_path
+# # - debug:
+# #     var: check_istioctl_in_path
 
-# - debug:
-#     var: check_istioctl_in_path
-    
-- name: "Add istioctl to $PATH"
-  become: no
-  ansible.builtin.lineinfile:
-    state: present
-    path: "/home/{{ ansible_user }}/.bashrc"
-    line: "#Add istioctl to PATH\nexport PATH=/home/{{ ansible_user }}/istio-{{ istio_version }}/bin:$PATH"
-  when: check_istioctl_in_path.found == 0
+# - name: "Add istioctl to $PATH"
+#   become: no
+#   ansible.builtin.lineinfile:
+#     state: present
+#     path: "/home/{{ ansible_user }}/.bashrc"
+#     line: "#Add istioctl to PATH\nexport PATH=/home/{{ ansible_user }}/istio-{{ istio_version }}/bin:$PATH"
+#   when: check_istioctl_in_path.found == 0

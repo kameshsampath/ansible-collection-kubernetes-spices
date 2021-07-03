@@ -23,10 +23,10 @@
     - name: triggers.yaml
       manifest_url: "https://github.com/tektoncd/triggers/releases/download/{{ tektoncd_triggers_version }}/release.yaml"
   loop_control:
-     label: "{{ item.name }}"
+    label: "{{ item.name }}"
 
 - name: Deploy Tektoncd Pipelines and Triggers
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     definition: "{{ item.manifest | from_yaml_all | list }}"
     state: present
   loop:
@@ -35,7 +35,7 @@
     - name: triggers.yaml
       manifest: "{{ lookup('file',tektoncd_manifests_dir + '/triggers.yaml') }}"
   loop_control:
-      label: "{{ item.name }}"
+    label: "{{ item.name }}"
   changed_when: False
   register: tektoncd_deploy
 

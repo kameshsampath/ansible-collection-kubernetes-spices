@@ -15,8 +15,8 @@
 
 - name: Get Knative Manifests
   get_url:
-      dest: "{{ knative_manifests_dir }}"
-      url: "{{ item }}"
+    dest: "{{ knative_manifests_dir }}"
+    url: "{{ item }}"
   delegate_to: localhost
   with_items:
     - "https://github.com/knative/serving/releases/download/{{ knative_serving_version }}/serving-crds.yaml"
@@ -26,16 +26,16 @@
     - "https://github.com/knative/net-kourier/releases/download/{{ knative_version }}/kourier.yaml"
 
 - name: Deploy Knative Serving
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     definition: "{{ item.manifest | from_yaml_all | list }}"
     state: present
   loop:
-      - name: serving-crds.yaml
-        manifest: "{{ lookup('file',knative_manifests_dir + '/serving-crds.yaml') }}"
-      - name: serving-core.yaml
-        manifest: "{{ lookup('file',knative_manifests_dir + '/serving-core.yaml') }}"
+    - name: serving-crds.yaml
+      manifest: "{{ lookup('file',knative_manifests_dir + '/serving-crds.yaml') }}"
+    - name: serving-core.yaml
+      manifest: "{{ lookup('file',knative_manifests_dir + '/serving-core.yaml') }}"
   loop_control:
-      label: "{{ item.name }}"
+    label: "{{ item.name }}"
   # TODO: #3 Check why controllers are configured always and fix it
   changed_when: False
   register: knative_serving_deploy
@@ -52,7 +52,6 @@
     deployment_name: autoscaler
     deployment_namespace: knative-serving
 
-
 - name: "Wait for Knative Serving::controller"
   include_tasks: utils/k8s_deployment_status.yml
   vars:
@@ -66,16 +65,16 @@
     deployment_namespace: knative-serving
 
 - name: Deploy Knative Eventing
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     definition: "{{ item.manifest | from_yaml_all | list }}"
     state: present
   loop:
-      - name: eventing-crds.yaml
-        manifest: "{{ lookup('file',knative_manifests_dir + '/eventing-crds.yaml') }}"
-      - name: eventing.yaml
-        manifest: "{{ lookup('file',knative_manifests_dir + '/eventing.yaml') }}"
+    - name: eventing-crds.yaml
+      manifest: "{{ lookup('file',knative_manifests_dir + '/eventing-crds.yaml') }}"
+    - name: eventing.yaml
+      manifest: "{{ lookup('file',knative_manifests_dir + '/eventing.yaml') }}"
   loop_control:
-      label: "{{ item.name }}"
+    label: "{{ item.name }}"
   # TODO: #3 Check why controllers are configured always and fix it
   changed_when: False
   register: knative_eventing_deploy
@@ -122,70 +121,6 @@
     deployment_name: mt-broker-ingress
     deployment_namespace: knative-eventing
 
-- name: Deploy Knative Serving Ingress
-  community.kubernetes.k8s:
-    definition: "{{ item.manifest | from_yaml_all | list }}"
-    state: present
-  loop:
-      - name: kourier.yaml
-        manifest: "{{ lookup('file',knative_manifests_dir + '/kourier.yaml') }}"
-  loop_control:
-      label: "{{ item.name }}"
-  register: knative_serving_ing_deploy
-
-- name: "Wait for Knative Kourier::3scale-kourier-control"
-  include_tasks: utils/k8s_deployment_status.yml
-  vars:
-    deployment_name: 3scale-kourier-control
-    deployment_namespace: knative-serving
-
-- name: "Wait for Knative Kourier::3scale-kourier-gateway"
-  include_tasks: utils/k8s_deployment_status.yml
-  vars:
-    deployment_name: 3scale-kourier-gateway
-    deployment_namespace: kourier-system
-
-- name: Configure Knative Serving Ingress
-  community.kubernetes.k8s:
-    state: present
-    definition: |-
-      apiVersion: networking.k8s.io/v1beta1
-      kind: Ingress
-      metadata:
-        name: kourier-ingress
-        namespace: kourier-system
-      spec:
-        backend:
-          serviceName: kourier
-          servicePort: 80
-
-# Make Knative Serving to use Kourier as Ingress
-- name: Configure Kourier as Knative Ingress
-  community.kubernetes.k8s:
-    state: present
-    namespace: knative-serving
-    name: config-network
-    merge_type:
-     - merge
-    definition:
-      apiVersion: v1
-      kind: ConfigMap
-      metadata:
-        name: config-network
-        namespace: knative-serving
-      data:
-        ingress.class: "kourier.ingress.networking.knative.dev"
-
-- name: Configure Knative Serving domain
-  community.kubernetes.k8s:
-    state: present
-    merge_type:
-     - merge
-    definition: "{{ lookup('template','knative-config-domain.yaml.j2') | from_yaml }}"
-      
-- name: Configure Knative Serving Skip TagResolving
-  community.kubernetes.k8s:
-    state: present
-    merge_type:
-     - merge
-    definition: "{{ lookup('template','knative-config-deployment.yaml.j2') | from_yaml }}"
+- name: "Set Knative Networking to Kourier"
+  include: kourier.yaml
+  when: not gloo_edge

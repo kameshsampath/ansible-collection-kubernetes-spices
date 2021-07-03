@@ -4,17 +4,19 @@ kind_create: false
 kind_destroy: false
 # valid values are ipv4, ipv6, dual
 kind_ip_family: ipv4
-kind_home_dir: '{{ansible_env.HOME}}/.kind'
+kind_home_dir: "{{ansible_env.HOME}}/.kind"
 kind_cluster_config: "kind-cluster-config.yml"
 kind_create_config: true
 kind_custom_registry: true
 kind_custom_registry_aliases:
-- example.com
-- example.org
-- test.com
-- test.org
-container_registry_name: 'kind-registry.local'
+  - example.com
+  - example.org
+  - test.com
+  - test.org
+container_registry_name: "kind-registry.local"
 container_registry_port: 5000
 extra_port_mappings:
-  - '0.0.0.0:80:80'
-  - '0.0.0.0:443:443'
+  - "0.0.0.0:80:80"
+  - "0.0.0.0:443:443"
+  - "0.0.0.0:30080:30080"
+  - "0.0.0.0:30443:30443"

@@ -1,0 +1,67 @@
+- name: Deploy Knative Serving Ingress
+  kubernetes.core.k8s:
+    definition: "{{ item.manifest | from_yaml_all | list }}"
+    state: present
+  loop:
+    - name: kourier.yaml
+      manifest: "{{ lookup('file',knative_manifests_dir + '/kourier.yaml') }}"
+  loop_control:
+    label: "{{ item.name }}"
+  register: knative_serving_ing_deploy
+
+- name: "Wait for Knative Kourier::3scale-kourier-control"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: 3scale-kourier-control
+    deployment_namespace: knative-serving
+
+- name: "Wait for Knative Kourier::3scale-kourier-gateway"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: 3scale-kourier-gateway
+    deployment_namespace: kourier-system
+
+- name: Configure Knative Serving Ingress
+  kubernetes.core.k8s:
+    state: present
+    definition: |-
+      apiVersion: networking.k8s.io/v1beta1
+      kind: Ingress
+      metadata:
+        name: kourier-ingress
+        namespace: kourier-system
+      spec:
+        backend:
+          serviceName: kourier
+          servicePort: 80
+
+# Make Knative Serving to use Kourier as Ingress
+- name: Configure Kourier as Knative Ingress
+  kubernetes.core.k8s:
+    state: present
+    namespace: knative-serving
+    name: config-network
+    merge_type:
+      - merge
+    definition:
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: config-network
+        namespace: knative-serving
+      data:
+        ingress.class: "kourier.ingress.networking.knative.dev"
+
+- name: Configure Knative Serving domain
+  kubernetes.core.k8s:
+    state: present
+    merge_type:
+      - merge
+    definition: "{{ lookup('template','knative-config-domain.yaml.j2') | from_yaml }}"
+
+- name: Configure Knative Serving Skip TagResolving
+  kubernetes.core.k8s:
+    state: present
+    merge_type:
+      - merge
+    definition: "{{ lookup('template','knative-config-deployment.yaml.j2') | from_yaml }}"

@@ -1,20 +1,19 @@
 ---
-- name: vanilla
+- name: "Download tools"
   hosts: localhost
   connection: local
 
   collections:
     - kubernetes.core
+    - kameshsampath.kubernetes_spices
 
   vars:
     ansible_python_interpreter: "{{ ansible_playbook_python }}"
-    cluster_name: vanilla
-    # valid values are ipv4, ipv6, dual
-    kind_ip_family: ipv6
     # Create Cluster
-    kind_create: true
+    kind_create: false
     # Destroy Cluster
     kind_destroy: false
 
   roles:
-    - role: kameshsampath.kind
+    - kameshsampath.kubernetes_spices.kind
+    - kameshsampath.kubernetes_spices.k8s_app_spices

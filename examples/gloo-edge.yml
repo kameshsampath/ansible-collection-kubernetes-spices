@@ -1,20 +1,23 @@
 ---
-- name: vanilla
+- name: "Kind with Gloo Edge"
   hosts: localhost
   connection: local
 
   collections:
     - kubernetes.core
+    - kameshsampath.kubernetes_spices
 
   vars:
     ansible_python_interpreter: "{{ ansible_playbook_python }}"
-    cluster_name: vanilla
+    cluster_name: gloo-edge
+    deploy_gloo_edge: true
     # valid values are ipv4, ipv6, dual
-    kind_ip_family: ipv6
+    kind_ip_family: ipv4
     # Create Cluster
     kind_create: true
     # Destroy Cluster
     kind_destroy: false
 
   roles:
-    - role: kameshsampath.kind
+    - kameshsampath.kubernetes_spices.kind
+    - kameshsampath.kubernetes_spices.k8s_app_spices

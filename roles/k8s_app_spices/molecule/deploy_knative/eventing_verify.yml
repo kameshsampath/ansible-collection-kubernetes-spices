@@ -1,6 +1,6 @@
 ---
 - name: Label namespace for Knative Eventing Injection
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     apply: yes
     force: yes
     definition:
@@ -12,14 +12,14 @@
     state: present
 
 - name: Deploy default Broker
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition:
-       apiVersion: eventing.knative.dev/v1
-       kind: Broker
-       metadata:
-         name: default
-         namespace: molecule-knative-test
+      apiVersion: eventing.knative.dev/v1
+      kind: Broker
+      metadata:
+        name: default
+        namespace: molecule-knative-test
     wait: yes
     wait_condition:
       type: Addressable
@@ -27,7 +27,7 @@
   register: default_broker
 
 - name: Deploy a Knative Eventing hello-display app
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition:
       apiVersion: apps/v1
@@ -50,7 +50,7 @@
     wait: yes
 
 - name: Deploy a Knative Eventing hello-display service
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition:
       kind: Service
@@ -68,7 +68,7 @@
     wait: yes
 
 - name: Get Deployment hello-display
-  community.kubernetes.k8s_info:
+  kubernetes.core.k8s_info:
     kind: Deployment
     name: hello-display
     namespace: molecule-knative-test
@@ -78,34 +78,34 @@
   assert:
     that: "(item.status.replicas == 1 ) and (item.status.availableReplicas == item.status.replicas) and ((item.status.readyReplicas == 1))"
   with_items:
-  - "{{ deployment_hellodisplay.resources }}"
+    - "{{ deployment_hellodisplay.resources }}"
 
 - name: Create Greeting Trigger
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition:
-       apiVersion: eventing.knative.dev/v1
-       kind: Trigger
-       metadata:
-         name: default
-         namespace: molecule-knative-test
-       spec:
-          broker: default
-          filter:
-            attributes:
-              type: greeting
-          subscriber:
-            ref:
-              apiVersion: v1
-              kind: Service
-              name: hello-display
+      apiVersion: eventing.knative.dev/v1
+      kind: Trigger
+      metadata:
+        name: default
+        namespace: molecule-knative-test
+      spec:
+        broker: default
+        filter:
+          attributes:
+            type: greeting
+        subscriber:
+          ref:
+            apiVersion: v1
+            kind: Service
+            name: hello-display
     wait: yes
     wait_condition:
       type: SubscriptionReady
       status: yes
 
 - name: Create Event Producer
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition:
       apiVersion: v1
@@ -117,18 +117,18 @@
         namespace: molecule-knative-test
       spec:
         containers:
-        - image: radial/busyboxplus:curl
-          imagePullPolicy: IfNotPresent
-          name: curl
-          resources: {}
-          stdin: true
-          terminationMessagePath: /dev/termination-log
-          terminationMessagePolicy: File
-          tty: true
+          - image: radial/busyboxplus:curl
+            imagePullPolicy: IfNotPresent
+            name: curl
+            resources: {}
+            stdin: true
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            tty: true
     wait: yes
 
 - name: Send Greeting event
-  community.kubernetes.k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: molecule-knative-test
     pod: curl
     command: "{{ lookup('template','send-event.j2') }}"
@@ -136,4 +136,4 @@
 
 - name: Verify message sent successfully
   assert:
-      that: "{{ result.stderr_lines is defined and  '< HTTP/1.1 202 Accepted' in result.stderr_lines }}"
+    that: "{{ result.stderr_lines is defined and  '< HTTP/1.1 202 Accepted' in result.stderr_lines }}"

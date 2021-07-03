@@ -16,8 +16,7 @@ readme: README.md
 # A list of the collection's content authors. Can be just the name or in the format 'Full Name <email> (url)
 # @nicks:irc/im.site#channel'
 authors:
-- Kamesh Sampath <kamesh.sampath@hotmail.com>
-
+  - Kamesh Sampath <kamesh.sampath@hotmail.com>
 
 ### OPTIONAL but strongly recommended
 # A short summary description of the collection
@@ -26,11 +25,11 @@ description: Set up your local KinD cluster and spice it with additional compone
 # Either a single license or a list of licenses for content inside of a collection. Ansible Galaxy currently only
 # accepts L(SPDX,https://spdx.org/licenses/) licenses. This key is mutually exclusive with 'license_file'
 license:
-- GPL-3.0-or-later
+  - GPL-3.0-or-later
 
 # The path to the license file for the collection. This path is relative to the root of the collection. This key is
 # mutually exclusive with 'license'
-license_file: 'LICENSE'
+license_file: "LICENSE"
 
 # A list of tags you want to associate with the collection for indexing/searching. A tag name has the same character
 # requirements as 'namespace' and 'name'
@@ -38,15 +37,15 @@ tags:
   - gloo
   - istio
   - kind
-  - knative  
+  - knative
   - tektoncd
-  
+
 # Collections that this collection requires to be installed for it to be usable. The key of the dict is the
 # collection label 'namespace.name'. The value is a version range
 # L(specifiers,https://python-semanticversion.readthedocs.io/en/latest/#requirement-specification). Multiple version
 # range specifiers can be set and are separated by ','
 dependencies:
-  community.kubernetes: ">=1.2.1"
+  kubernetes.core: ">=2.1.1"
   community.aws: ">=1.4.0"
   community.general: ">=2.5.1"
   community.docker: ">=1.7.0"
@@ -71,11 +70,10 @@ build_ignore:
   - ".kube"
   - ".settings"
   - ".github"
-  - '**/*.pem'
-  - '**/temp.json'
-  - '*.tar.gz'
+  - "**/*.pem"
+  - "**/temp.json"
+  - "*.tar.gz"
   - "work"
   - "hacking"
   - "collections"
-  - 'modules/my_test.py'
-
+  - "modules/my_test.py"

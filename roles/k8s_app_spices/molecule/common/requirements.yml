@@ -6,5 +6,5 @@ roles:
     src: https://github.com/kameshsampath/ansible-role-minikube
 
 collections:
-  - name: community.kubernetes
+  - name: kubernetes.core
     version: 0.11.1

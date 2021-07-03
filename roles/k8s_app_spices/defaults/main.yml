@@ -2,39 +2,35 @@
 # Cluster details
 kubernetes_cluster_type: kind
 
-#ArgoCD
-deploy_argocd: False
-argocd_namespace: argocd
-argocd_version: v1.6.2
-argocd_cli_download: True
+# Helm
+helm_version: 3.6.2
 
 # Gloo Edge
+deploy_gloo_edge: false
 gloo_edge_edition: ce
-gloo_edge_version: 1.7.10
+glooctl_version: 1.8.0
 
 # Istio
-deploy_istio: False
-istio_version: 1.8.3
+deploy_istio: false
+istio_version: 1.8.6
 istio_namespace: istio-system
+deploy_istio_gateway: false
 
-#Ingress
-deploy_gloo_edge: False
-
-#Knative 
-deploy_knative: False
-knative_version: v0.19.0
-knative_eventing_version: v0.19.0
-knative_serving_version: v0.19.0
+#Knative
+deploy_knative: false
+knative_version: v0.23.0
+knative_eventing_version: v0.23.0
+knative_serving_version: v0.23.0
 registries_skip_tag_resolving:
- - example.com
- - example.org
- - test.com
- - test.org
- - ko.local
- - dev.local
- - "localhost:5000"
+  - example.com
+  - example.org
+  - test.com
+  - test.org
+  - ko.local
+  - dev.local
+  - "localhost:5000"
 
 #Tektoncd
-deploy_tektoncd: False
-tektoncd_pipelines_version: v0.11.3
-tektoncd_triggers_version: v0.4.0
+deploy_tektoncd: false
+tektoncd_pipelines_version: v0.25.0
+tektoncd_triggers_version: v0.14.2

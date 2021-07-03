@@ -1,5 +1,5 @@
 ---
-- name: Get minikube IP 
+- name: Get minikube IP
   command:
     argv:
       - minikube
@@ -19,13 +19,8 @@
     k8s_cluster_ip: "127.0.0.1"
   when: k8s_cluster_ip is not defined and kubernetes_cluster_type == 'kind'
 
-###################################
-# Argo CD 
-###################################
-
-- name: Deploy Argo CD
-  include_tasks: argocd.yml
-  when: deploy_argocd
+- name: "Install Tools"
+  include: tools.yml
 
 ###################################
 # Istio
@@ -50,7 +45,7 @@
   when: deploy_knative
 
 ###################################
-# Tektoncd 
+# Tektoncd
 ###################################
 
 - name: Deploy Tektoncd Pipelines and Triggers

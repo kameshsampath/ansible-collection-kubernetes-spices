@@ -4,12 +4,11 @@
   connection: local
 
   collections:
-    - community.kubernetes
+    - kubernetes.core
 
   vars:
-   ansible_python_interpreter: '{{ ansible_playbook_python }}'
-   minikube_profile_name: molecule
-
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    minikube_profile_name: molecule
 
 - name: Destroy test resources
   import_playbook: destroy.yml

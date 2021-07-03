@@ -4,12 +4,12 @@
   connection: local
 
   collections:
-  - community.kubernetes
+    - kubernetes.core
 
   vars:
-   ansible_python_interpreter: '{{ ansible_playbook_python }}'
-   minikube_profile_name: molecule-knative
-   deploy_knative: True
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    minikube_profile_name: molecule-knative
+    deploy_knative: True
 
   roles:
     - role: kameshsampath.minikube

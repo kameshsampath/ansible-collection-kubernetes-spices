@@ -1,0 +1,59 @@
+- name: Check if helm is installed
+  command:
+    argv:
+      - helm
+      - version
+  register: helm_result
+  ignore_errors: true
+  changed_when: false
+
+- name: Set helm macOS download binary
+  set_fact:
+    helm_archive_name: "helm-v{{helm_version}}-darwin-amd64.tar.gz"
+  when: helm_result.rc != 0 and ansible_os_family == "Darwin"
+
+- name: Set helm Linux download binary
+  set_fact:
+    helm_archive_name: "helm-v{{helm_version}}-linux-amd64.tar.gz"
+  when: helm_result.rc != 0 and (ansible_os_family == "RedHat" or ansible_os_family == "CentOS" or ansible_os_family == "Debian")
+
+- name: Set helm Windows download binary
+  set_fact:
+    helm_archive_name: "helm-v{{helm_version}}-windows-amd64.zip"
+  when: helm_result.rc != 0 and ansible_os_family == "Windows"
+
+- name: Create user local bin directory
+  file:
+    path: "{{ansible_env.HOME}}/.local/bin"
+    state: directory
+  when: helm_result.rc != 0
+
+- name: Create temporary download directory
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: downloads
+  register: playbook_downloads
+
+# TODO add GPG verify
+- name: Download helm binary
+  get_url:
+    url: "https://get.helm.sh/{{ helm_archive_name }}"
+    dest: "{{ playbook_downloads.path }}"
+    mode: "0755"
+  when: helm_result.rc != 0
+  register: downloaded_helm
+
+- name: Extract the archive
+  ansible.builtin.unarchive:
+    src: "{{ playbook_downloads.path }}/{{ helm_archive_name }}"
+    dest: "{{ansible_env.HOME}}/.local/bin"
+    extra_opts:
+      - --strip-components=1
+    exclude:
+      - README.md
+      - LICENSE
+  when: helm_archive_name is defined and downloaded_helm
+
+- name: set helm binary fact
+  set_fact:
+    helm_binary: "{{ansible_env.HOME}}/.local/bin/helm"

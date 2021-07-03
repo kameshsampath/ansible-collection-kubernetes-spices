@@ -1,56 +1,72 @@
-- name: Set Install Messages
+---
+- name: Check if glooctl is installed
+  command:
+    argv:
+      - glooctl
+      - version
+  register: glooctl_result
+  ignore_errors: True
+  changed_when: False
+
+- name: Set glooctl macOS download binary
   set_fact:
-   successfully_installed: "Creating namespace gloo-system... Done.\nStarting Gloo Edge installation...\n\nGloo Edge was successfully installed!"
-   already_installed_msg: "Error: installing gloo edge in gateway mode: Gloo has already been installed to namespace gloo-system"
+    glooctl_download_binary: "https://github.com/solo-io/gloo/releases/download/v{{glooctl_version}}/glooctl-darwin-amd64"
+  when: glooctl_result.rc != 0 and ansible_os_family == "Darwin"
 
-- name: "Install istioctl"
-  become: no
-  ansible.builtin.shell: |
-    curl -sL https://run.solo.io/gloo/install | sh
-  args:
-    creates: "/home/{{ ansible_user }}/.gloo"
-  environment:
-    GLOO_EDGE_VERSION: "{{ gloo_edge_version }}"
-  register: glooctl_download
-
-- name: Set glooctl bin
-  become: no
+- name: Set glooctl Linux download binary
   set_fact:
-     glooctl_binary: "/home/{{ ansible_user }}/.gloo/bin/glooctl"
+    glooctl_download_binary: "https://github.com/solo-io/gloo/releases/download/v{{glooctl_version}}/glooctl-linux-amd64"
+  when: glooctl_result.rc != 0 and (ansible_os_family == "RedHat" or ansible_os_family == "CentOS" or ansible_os_family == "Debian")
 
-- name: Install Gloo Edge in Gateway Mode
-  become: no
-  ansible.builtin.shell: |
-     $GLOOCTL_BINARY install gateway \
-       --version=$GLOO_EDGE_VERSION
-  environment:
-    GLOOCTL_BINARY: "/home/{{ ansible_user }}/.gloo/bin/glooctl"
-    GLOO_EDGE_VERSION: "{{ gloo_edge_version }}"
-  ignore_errors: true
-  changed_when: glooctl_install.stdout is defined and glooctl_install.stdout == successfully_installed 
-  register: glooctl_install
+- name: Set glooctl Windows download binary
+  set_fact:
+    glooctl_download_binary: "https://github.com/solo-io/gloo/releases/download/v{{glooctl_version}}/{{ glooctl_version }}/glooctl-windows-amd64.exe"
+  when: glooctl_result.rc != 0 and ansible_os_family == "Windows"
 
-- fail:
-   msg: glooctl_install.stderr
-  when: glooctl_install.stderr is defined and glooctl_install.stderr != already_installed_msg
+- name: Create user local bin directory
+  file:
+    path: "{{ansible_env.HOME}}/.local/bin"
+    state: directory
+  when: glooctl_result.rc != 0
 
-- name: "Check if glooctl is in $PATH"
-  become: no
-  lineinfile:
-    state: absent
-    path: "/home/{{ ansible_user }}/.bashrc"
-    regexp: '^#Add glooctl to PATH'
-  check_mode: true
-  changed_when: false # This just makes things look prettier in the logs
-  register: check_glooctl_in_path
+- name: Download glooctl binary
+  get_url:
+    url: "{{ glooctl_download_binary }}"
+    dest: "{{ansible_env.HOME}}/.local/bin/glooctl"
+    checksum: "sha256:{{glooctl_download_binary}}.sha256"
+    mode: "0755"
+  when: glooctl_result.rc != 0
+  register: downloaded_glooctl
 
-# - debug:
-#     var: check_glooctl_in_path
-    
-- name: "Add glooctl to $PATH"
-  become: no
-  ansible.builtin.lineinfile:
-    state: present
-    path: "/home/{{ ansible_user }}/.bashrc"
-    line: "#Add glooctl to PATH\nexport PATH=/home/{{ ansible_user }}/.gloo/bin:$PATH"
-  when: check_glooctl_in_path.found == 0
+- name: set glooctl binary fact
+  set_fact:
+    glooctl_binary: "{{ansible_env.HOME}}/.local/bin/glooctl"
+
+- name: Add stable chart repo
+  kubernetes.core.helm_repository:
+    name: gloo
+    repo_url: "https://storage.googleapis.com/solo-public-helm"
+
+- name: "Deploy Gloo Gateway"
+  kubernetes.core.helm:
+    release_name: gloo
+    chart_ref: "gloo/gloo"
+    values: "{{ lookup('template', 'gloo-nodeport.yaml.j2') | from_yaml }}"
+    release_namespace: gloo-system
+    create_namespace: true
+    update_repo_cache: true
+    wait: true
+
+################################################################################
+## Deploy Knative Ingress
+################################################################################
+
+- name: "Configure Knative Networking with Gloo"
+  ansible.builtin.command:
+    args:
+      - "{{ glooctl_binary }}"
+      - install
+      - knative
+      - --install-knative=false
+  when: deploy_knative
+  changed_when: false

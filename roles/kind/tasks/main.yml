@@ -4,7 +4,7 @@
     url: https://api.github.com/repos/kubernetes-sigs/kind/releases/latest
     return_content: yes
   register: kind_release
-  when: kind_version is not defined 
+  when: kind_version is not defined
 
 - name: Set KinD version
   set_fact:
@@ -14,19 +14,19 @@
 ###################################
 # Pre-req
 ###################################
-- name: 'Check KinD Pre-req'
+- name: "Check KinD Pre-req"
   include_tasks: kind_pre_reqs.yml
 
 ###################################
 # Create
 ###################################
-- name: 'Create KinD {{ cluster_name }} Cluster'
+- name: "Create KinD {{ cluster_name }} Cluster"
   include_tasks: kind_create.yml
   when: kind_create
 
 ###################################
 # Destroy
 ###################################
-- name: 'Destroy KinD {{ cluster_name }} Cluster'
+- name: "Destroy KinD {{ cluster_name }} Cluster"
   include_tasks: kind_destroy.yml
   when: kind_destroy
