@@ -42,12 +42,17 @@
   set_fact:
     glooctl_binary: "{{ansible_env.HOME}}/.local/bin/glooctl"
 
-- name: Add stable chart repo
+################################################################################
+## Gloo Edge community
+################################################################################
+
+- name: "Add Gloo Community chart repo"
   kubernetes.core.helm_repository:
     name: gloo
     repo_url: "https://storage.googleapis.com/solo-public-helm"
+  when: gloo_edge_edition == 'ce'
 
-- name: "Deploy Gloo Gateway"
+- name: "Deploy Gloo Edge community"
   kubernetes.core.helm:
     release_name: gloo
     chart_ref: "gloo/gloo"
@@ -56,6 +61,33 @@
     create_namespace: true
     update_repo_cache: true
     wait: true
+  when: gloo_edge_edition == 'ce'
+
+################################################################################
+## Gloo Edge Enterprise
+################################################################################
+
+- name: "Fail when enterprise license key is not provided"
+  fail:
+    msg: "No Enterprise License key provided"
+  when: gloo_edge_edition == 'ee' and gloo_edge_license_key is not defined
+
+- name: "Add Gloo Edge community chart repo"
+  kubernetes.core.helm_repository:
+    name: glooe
+    repo_url: "https://storage.googleapis.com/gloo-ee-helm"
+  when: gloo_edge_edition == 'ee'
+
+- name: "Deploy Gloo Community Gateway"
+  kubernetes.core.helm:
+    release_name: gloo
+    chart_ref: "glooe/gloo-ee"
+    values: "{{ lookup('template', 'gloo-nodeport.yaml.j2') | from_yaml }}"
+    release_namespace: gloo-system
+    create_namespace: true
+    update_repo_cache: true
+    wait: true
+  when: gloo_edge_edition == 'ee'
 
 ################################################################################
 ## Deploy Knative Ingress

@@ -1,3 +1,22 @@
+- name: "Is asdf-vm already exist"
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.asdf"
+  register: asdf_vm_stat
+
+# - debug:
+#     var: asdf_vm_stat
+
+- name: "Install asdf-vm"
+  ansible.builtin.git:
+    repo: "https://github.com/asdf-vm/asdf.git"
+    dest: "{{ ansible_env.HOME }}/.asdf"
+    version: "{{ asdf_version }}"
+  when: not asdf_vm_stat.stat.exists
+
+- name: "asdf-vm source path"
+  set_fact:
+    asdf_sh: "{{ ansible_env.HOME }}/.asdf/asdf.sh"
+
 - name: Check if helm is installed
   command:
     argv:

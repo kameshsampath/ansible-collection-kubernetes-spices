@@ -2,17 +2,20 @@
 # Cluster details
 kubernetes_cluster_type: kind
 
+# ASDF
+asdf_version: v0.8.1
+
 # Helm
-helm_version: 3.6.2
+helm_version: "3.6.2"
 
 # Gloo Edge
 deploy_gloo_edge: false
 gloo_edge_edition: ce
-glooctl_version: 1.8.0
+glooctl_version: "1.8.0"
 
 # Istio
 deploy_istio: false
-istio_version: 1.8.6
+istio_version: "1.8.6"
 istio_namespace: istio-system
 deploy_istio_gateway: false
 
