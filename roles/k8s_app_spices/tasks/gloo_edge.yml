@@ -42,6 +42,7 @@
   set_fact:
     glooctl_binary: "{{ansible_env.HOME}}/.local/bin/glooctl"
 
+    
 ################################################################################
 ## Gloo Edge community
 ################################################################################
@@ -56,8 +57,8 @@
   kubernetes.core.helm:
     release_name: gloo
     chart_ref: "gloo/gloo"
-    values: "{{ lookup('template', 'gloo-nodeport.yaml.j2') | from_yaml }}"
-    release_namespace: gloo-system
+    values: "{{ lookup('template', 'gloo/' + gloo_edge_edition + '/install-overrides.yaml.j2') | from_yaml }}"
+    release_namespace: "{{ gloo_write_namespace }}"
     create_namespace: true
     update_repo_cache: true
     wait: true
@@ -70,25 +71,32 @@
 - name: "Fail when enterprise license key is not provided"
   fail:
     msg: "No Enterprise License key provided"
-  when: gloo_edge_edition == 'ee' and gloo_edge_license_key is not defined
+  when: gloo_edge_edition == 'ee' and gloo_license_key is not defined
 
-- name: "Add Gloo Edge community chart repo"
+- name: "Add Gloo Edge enterprise chart repo"
   kubernetes.core.helm_repository:
     name: glooe
     repo_url: "https://storage.googleapis.com/gloo-ee-helm"
   when: gloo_edge_edition == 'ee'
 
-- name: "Deploy Gloo Community Gateway"
+#- name: "Debug Install values" 
+#  debug: msg="{{ lookup('template', 'gloo/' + gloo_edge_edition + '/install-overrides.yaml.j2') | from_yaml }}"
+  
+- name: "Deploy Gloo Enterprise Gateway"
   kubernetes.core.helm:
     release_name: gloo
     chart_ref: "glooe/gloo-ee"
-    values: "{{ lookup('template', 'gloo-nodeport.yaml.j2') | from_yaml }}"
-    release_namespace: gloo-system
+    values: "{{ lookup('template', 'gloo/' + gloo_edge_edition + '/install-overrides.yaml.j2') | from_yaml }}"
+    release_namespace: "{{ gloo_write_namespace }}"
     create_namespace: true
     update_repo_cache: true
     wait: true
+  register: glooee_install
   when: gloo_edge_edition == 'ee'
 
+#- debug:
+#    var: glooee_install
+    
 ################################################################################
 ## Deploy Knative Ingress
 ################################################################################

@@ -1,0 +1,21 @@
+#jinja2: lstrip_blocks: "True"
+license_key: {{ gloo_license_key }}
+gloo:
+  discovery:
+    enabled: {{ gloo_discovery_enabled | lower }}
+    # disable auto function discovery
+    fdsMode: DISABLED
+  settings:
+    writeNamespace: {{ gloo_write_namespace }}
+    watchNamespaces:
+    {% for ns in gloo_watch_namespaces %}
+      - {{ ns }}
+    {% endfor %}
+  {% if gloo_proxy_nodeport %}
+  gatewayProxies:
+    gatewayProxy:
+      service:
+        type: NodePort
+        httpNodePort: 30080
+        httpsNodePort: 30443
+  {% endif %}

@@ -1,5 +1,5 @@
 ---
-- name: "Kind with Gloo Edge Enterprise"
+- name: "Gloo Edge Enterprise Demo"
   hosts: localhost
   connection: local
 
@@ -20,6 +20,13 @@
     # Destroy Cluster
     kind_destroy: false
     ####
+    ## Istio Configurations
+    ####
+    deploy_istio: true
+    istio_versions:
+      - "1.8.6"
+      - "1.10.2"
+    ####
     ## Gloo Edge Configuration
     ####
     # Gloo Edge Setup
@@ -27,7 +34,18 @@
     # deploy Gloo Edge Enterprise
     gloo_edge_edition: "ee"
     # Set Gloo Edge Enterprise License Key
-    gloo_edge_license_key: "{{ ansible_env.GLOO_LICENSE_KEY }}"
+    gloo_license_key: "{{ ansible_env.GLOO_LICENSE_KEY }}"
+    # Enable/disable discovery true/false
+    gloo_discovery_enabled: false
+    # Namespace to install Gloo into
+    gloo_write_namespace: my-gloo
+    # Gloo Watch Namespaces
+    gloo_watch_namespaces:
+      - demo-1-8-6
+      - demo-1-10-2
+      - my-gloo
+    # Use NodePorts for Gloo Proxy http/https true/false
+    gloo_proxy_nodeport: true
 
   roles:
     - kameshsampath.kubernetes_spices.kind

@@ -27,8 +27,11 @@
 ###################################
 
 - name: Istio
-  include_tasks: istio.yml
+  ansible.builtin.include_tasks: istio.yml
+  vars:
+    istio_version: "{{ item }}"
   when: deploy_istio
+  loop: "{{ istio_versions | list }}"
 
 ###################################
 # Gloo Edge

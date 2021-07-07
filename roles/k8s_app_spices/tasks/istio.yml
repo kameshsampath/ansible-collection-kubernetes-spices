@@ -23,6 +23,7 @@
   become: no
   ansible.builtin.shell: |
     source "{{ asdf_sh }}"
+    asdf local istio "{{ istio_version }}"
     asdf current istio | awk '{print $2}'
   args:
     executable: /bin/bash
@@ -44,7 +45,7 @@
     kind: Namespace
     state: present
 
-- name: "Install istio Control Plane and Service"
+- name: "Install istio Control Plane and Service {{ istio_version }}"
   become: no
   ansible.builtin.script: istio/installControlPlane.sh
   environment:
@@ -58,9 +59,10 @@
   register: istio_install
   changed_when: false
 
-# - debug:
+#- name: "Debug Istio Install"
+#  debug:
 #    var: istio_install
-
+    
 - name: "Install istio Ingress Gateway"
   become: no
   ansible.builtin.script: istio/installGateway.sh
