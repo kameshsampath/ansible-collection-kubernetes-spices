@@ -75,7 +75,7 @@
     ISTIO_GATEWAY_MANIFEST: "{{ lookup('template','istio-ingress-gateway.yaml.j2') }}"
   register: istio_gw_install
   changed_when: false
-  when: deploy_istio_gateway
+  when: deploy_istio_gateway or not deploy_gloo_edgeipv
 # - debug:
 #    var: istio_gw_install
 

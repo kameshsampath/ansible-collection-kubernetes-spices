@@ -4,9 +4,13 @@ kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 {%if kind_ip_family == "ipv6" or kind_ip_family == "dual" %}
 networking:
+  disableDefaultCNI: {{ disable_cni }}
   ipFamily: {{ kind_ip_family }}
   {% if ansible_os_family == "Darwin" or ansible_os_family == "Windows" %}
   apiServerAddress: "127.0.0.1"
+  {% endif %}
+  {% if pod_subnet_cidr is defined and pod_subnet_cidr is not none %}
+  podSubnet: {{ pod_subnet_cidr }}
   {% endif %}
 {% endif %}
 nodes:
