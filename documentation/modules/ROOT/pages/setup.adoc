@@ -1,0 +1,47 @@
+= Setup
+include::_attributes.adoc[]
+
+[#prerequisite]
+== Prerequisite CLI tools
+
+The following CLI tools are required for running the exercises in this tutorial. 
+Please have them installed and configured before you get started with any of the tutorial chapters.
+
+[cols="4*^,4*.",options="header,+attributes"]
+|===
+|**Tool**|**macOS**|**Fedora**|**windows**
+
+| `Git`
+| https://git-scm.com/download/mac[Download]
+| https://git-scm.com/download/linux[Download]
+| https://git-scm.com/download/win[Download]
+
+| `Docker`
+| https://docs.docker.com/docker-for-mac/install[Docker for Mac]
+| `dnf install docker`
+| https://docs.docker.com/docker-for-windows/install[Docker for Windows]
+
+| `kubectl {kubernetes-version}`
+| https://storage.googleapis.com/kubernetes-release/release/{kubernetes-version}/bin/darwin/amd64/kubectl[Download]
+| https://storage.googleapis.com/kubernetes-release/release/{kubernetes-version}/bin/linux/amd64/kubectl[Download]
+| https://storage.googleapis.com/kubernetes-release/release/{kubernetes-version}/bin/windows/amd64/kubectl.exe[Download]
+
+|===
+
+== Build Locally
+
+* https://python-poetry.org/[Python Poetry]
+
+* https://www.docker.com/products/docker-desktop[Docker Desktop] or Docker for Linux
+
+* https://ansible.com[Ansible >= v2.9.10]
+
+[source,bash]
+----
+poetry install
+poetry shell
+ansible-galaxy role install -r requirements.yml
+ansible-galaxy collection install -r requirements.yml
+----
+
+NOTE: For Windows its recommended to use Windows Subsystem for Linux (WSL)

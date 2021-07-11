@@ -1,0 +1,40 @@
+= Kubernetes Spices
+
+`Role Name`: `kameshsampath.kubernetes_spices.k8s_app_spices`
+
+[#k8s-app-spices-overview]
+== Overview 
+
+This role can also be used to install and configure the Kubernetes cluster with one or more of following components:
+
+* https://istio.io[Istio]
+
+* https://www.solo.io/products/gloo-edge/[Gloo Edge]
+** Community Edition
+** Enterprise Edition
+
+* https://knative.dev[Knative]
+** Serving
+** Eventing
+
+* https://tekton.dev[Tekton]
+
+[#deploy-isito]
+== Deploying Istio
+
+include::partial$_deploy_istio.adoc[leveloffset=1]
+
+[#deploy-knative]
+== Deploying Knative
+
+include::partial$_deploy_knative.adoc[leveloffset=1]
+
+[#deploy-gloo-edge]
+== Deploying Gloo Edge
+
+include::partial$_deploy_gloo_edge.adoc[leveloffset=1]
+
+[#deploy-tektoncd]
+== Deploying Tektoncd
+
+include::partial$_deploy_tektoncd.adoc[leveloffset=1]

@@ -1,0 +1,42 @@
+Istio tasks allows you to configure the Istio installation.
+
+[#istio-ansible-vars]
+== Ansible Variables
+
+.Istio Ansible Variables
+|===
+| Name | Description | Default Value
+
+| deploy_istio
+| To deploy Istio or not, accepts `true` or `false`
+| false
+
+| istio_versions
+| The Istio version(s) to install, accepts a list of values. 
+a|
+[source,yaml]
+----
+- "1.8.6"
+----
+| istio_namespace
+| The namespace to deploy Istio
+| istio-system
+
+| deploy_istio_gateway
+| To deploy Istio gateway or not, accepts `true` or `false`
+| false
+
+|===
+
+[#isito-example-playbook]
+== Example Playbook
+
+The following example playbook deploys Istio to the Kubernetes cluster:
+
+[source,yaml,subs="+macros,attributes+"]
+----
+include::example$istio.yml[]
+----
+<.> Deploy Tekton with defaults
+
+You can check the **KiND** example to see how to deploy Istio on to a local KinD cluster 

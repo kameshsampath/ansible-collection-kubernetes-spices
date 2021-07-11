@@ -1,0 +1,56 @@
+
+Knative tasks allows you to configure the Knative installation.
+
+[#knative-ansible-vars]
+== Ansible Variables
+
+.Knative Ansible Variables
+|===
+| Name | Description | Default Value
+
+| deploy_knative
+| To deploy Knative or not, accepts `true` or `false`
+| false
+
+| knative_version
+| The base Knative version to install
+| v0.23.0
+
+| knative_serving_version
+| The Knative Serving version to install
+| v0.23.0
+
+| knative_eventing_version
+| The Knative Eventing version to install
+| v0.23.0
+
+
+| registries_skip_tag_resolving
+| The container registries to skip resolving tags
+a| 
+[source,yaml]
+----
+  - example.com
+  - example.org
+  - test.com
+  - test.org
+  - ko.local
+  - dev.local
+  - "localhost:5000"
+  - kind-registry.local:5000
+----
+
+|===
+
+[#knative-example-playbook]
+== Example Playbook
+
+The following example playbook deploys Knative to the Kubernetes cluster:
+
+[source,yaml,subs="+macros,attributes+"]
+----
+include::example$knative.yml[]
+----
+<.> Deploy Knative with defaults
+
+You can check the **KiND** example to see how to deploy Knative on to a local KinD cluster 

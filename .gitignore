@@ -85,3 +85,4 @@ contour copy.yaml
 playbook.yml
 .vagrant
 *_kubeconfig
+yarn.lock

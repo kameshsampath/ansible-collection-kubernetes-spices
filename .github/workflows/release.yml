@@ -62,7 +62,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       QUAYIO_REPO: quay.io/kameshsampath
-      IMAGE_NAME: openshift-demos-ansible-ee
+      IMAGE_NAME: kubernetes-spices-ansible-runner
       IMAGE_TAGS: latest
       CONTAINER_RUNTIME: docker
     strategy:
@@ -127,48 +127,20 @@ jobs:
           CONTAINER_RUNTIME: "${{ env.CONTAINER_RUNTIME }}"
         working-directory: "${{ github.workspace }}/builder-ee"
   site:
+    name: "Build site with Antora"
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version:
-          - 3.8
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: "Generate site using antora site action"
+        uses: kameshsampath/antora-site-action@v0.2.4
         with:
-          ref: "${{ github.event.ref }}"
-
-      - name: Setup python
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install Poetry
-        uses: snok/install-poetry@v1.1.4
-        with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v2
-        with:
-          path: .venv
-          key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
-
-      - name: Install dependencies
-        run: poetry install
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-
-      - name: Generate Docs
-        run: |
-          make all
-        working-directory: "${{ github.workspace }}/documentation"
-
+          antora_playbook: site.yml
       - name: Deploy Site
         id: deploy_site
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: "${{ github.workspace }}/documentation/build/html"
+          publish_dir: "${{ env.SITE_DIR }}"
           publish_branch: "gh-pages"
           full_commit_message: "[Release]${{ github.event.head_commit.message }}"

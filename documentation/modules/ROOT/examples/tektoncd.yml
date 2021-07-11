@@ -1,0 +1,14 @@
+---
+- name: "Tektoncd Defaults"
+  hosts: localhost
+  connection: local
+
+  collections:
+    - kubernetes.core
+
+  vars:
+    deploy_tektoncd: true #<.>
+
+  roles:
+    - role: kameshsampath.kind
+    - role: kameshsampath.k8s_app_spices

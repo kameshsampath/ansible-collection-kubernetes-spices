@@ -51,13 +51,13 @@ dependencies:
   community.docker: ">=1.7.0"
 
 # The URL of the originating SCM repository
-repository: https://github.com/kameshsampath/kameshsampath.kubernetes_spices
+repository: https://github.com/kameshsampath/kubernetes_spices
 # The URL to any online docs
-documentation: https://github.com/kameshsampath/kameshsampath.kubernetes_spices
+documentation: https://kameshsampath.github.io/kubernetes_spices
 # The URL to the homepage of the collection/project
-homepage: https://github.com/kameshsampath/kameshsampath.kubernetes_spices
+homepage: https://github.com/kameshsampath/kubernetes_spices
 # The URL to the collection issue tracker
-issues: https://github.com/kameshsampath/kameshsampath.kubernetes_spices
+issues: https://github.com/kameshsampath/kubernetes_spices
 build_ignore:
   - ".cache"
   - ".idea"

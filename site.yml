@@ -1,0 +1,26 @@
+site:
+  title: Ansible Collection Kubernetes Spices
+  start_page: component-b::index.adoc
+  
+content:
+  sources:
+    - url: https://github.com/kamesampath/kubernetes_spices.git
+      branches: master
+      start_page: ansible-kubernetes-spices::index.adoc
+  asciidoc:
+    attributes:
+      title: "Ansible Collection Kubernetes Spices"
+      kubernetes-version: v1.21.0
+      page-pagination: true
+    extensions:
+      - ./lib/remote-include-processor.js
+      - ./lib/tab-block.js
+ui:
+  bundle:
+    url: https://github.com/kameshsampath/my-antora-ui/releases/download/v0.1.0/ui-bundle.zip
+    snapshot: true
+  supplemental_files:
+    - path: ./supplemental-ui
+    - path: .nojekyll
+    - path: ui.yml
+      contents: "static_files: [ .nojekyll ]"

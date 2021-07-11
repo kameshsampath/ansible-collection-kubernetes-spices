@@ -5,6 +5,9 @@ roles:
   - name: geerlingguy.pip
     version: '2.1.0'
 collections:
+  - name: https://github.com/kameshsampath/kubernetes_spices.git
+    type: git
+    version: master
   - name: ansible.posix
     version: '1.2.0'
   - name: community.aws
@@ -15,3 +18,4 @@ collections:
     version: '3.2.0'
   - name: community.docker
     version: '1.7.0'
+

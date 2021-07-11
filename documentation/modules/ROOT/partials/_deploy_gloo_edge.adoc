@@ -1,0 +1,137 @@
+Gloo tasks allows you to configure the Gloo Edge installation.
+
+[#gloo-edge-ansible-vars]
+== Gloo Edge Ansible Variables
+
+.Gloo Ansible Variables
+|===
+| Name | Description | Default Value
+
+| deploy_gloo_edge
+| To deploy Gloo Edge or not, accepts `true` or `false`
+| false
+
+| gloo_edge_edition
+a| 
+The gloo variant to deploy, possible values are:
+
+* **ee** for enterprise edition
+* **ce** for community edition
+| ce
+
+| glooctl_version
+| The `glooctl` version to download
+| 1.8.0
+
+| gloo_write_namespace
+| The namespace where to write all the gloo resources.  This value will not be used if `gloo_install_override_file` is set.
+| gloo-system
+
+| gloo_install_override_file
+| The Gloo edge install override values
+| 
+
+| gloo_proxy_nodeport
+| Expose the Gloo Proxy `http` and `https` Kubernetes services to be configured as type `NodePort`
+| false
+
+| gloo_discovery_enabled
+| Enable gloo discovery services
+| true
+
+| gloo_watch_namespaces
+| The namespaces to watch the gloo resources, takes a list of values
+a| 
+[source,yaml]
+----
+ - default
+ - gloo-system
+----
+|===
+
+[#gloo-example-playbook]
+== Example Playbook
+
+[#gloo-example-playbook-ee]
+=== Enterprise Edition
+[source,yaml,subs="+macros,attributes+"]
+----
+include::example$gloo-edge-ee.yml[]
+----
+<.> Deploy Gloo
+<.> Gloo Edge Enterprise Edition will be deployed
+<.> The Gloo License Key that will be used with the deployment, the license key will be picked up `pass:[$GLOO_LICENSE_KEY]` environment variable while running the playbook
+<.> Disable Gloo service discovery
+<.> Change the Gloo `write-namespace` to `my-gloo`
+<.> Configure a set of `watch-namespaces`
+<.> Expose Gloo proxy ports as NodePorts
+
+The gloo variables used above will be configured on to minimal install-overrides https://jinja.palletsprojects.com/en/3.0.x/[Jinja] template link:https://github.com/kameshsampath/kubernetes_spices/blob/main/roles/k8s_app_spices/templates/gloo/ee/install-overrides.yaml.j2[install-overrides.yaml.j2].
+
+The above configuration will be translated to the following `install-overrides.yaml` file during playbook execution:
+
+[source,yaml,indent=2]
+.install-overrides.yaml
+----
+license_key: xxyybabauewelkaslklk
+gloo:
+  discovery:
+    enabled: false
+    # disable auto function discovery
+    fdsMode: DISABLED
+  settings:
+    writeNamespace: my-gloo
+    watchNamespaces:
+      - demo-1-8-6
+      - demo-1-10-2
+      - my-gloo
+  gatewayProxies:
+    gatewayProxy:
+      service:
+        type: NodePort
+        httpNodePort: 30080
+        httpsNodePort: 30443
+----
+
+[#gloo-example-playbook-ce]
+=== Community Edition
+The following example playbook deploys Gloo Community Edition to the Kubernetes cluster:
+
+[source,yaml,subs="+macros,attributes+"]
+----
+include::example$gloo-edge-ce.yml[]
+----
+<.> Deploy Gloo
+<.> Disable Gloo service discovery
+<.> Change the Gloo `write-namespace` to `my-gloo`
+<.> Configure a set of `watch-namespaces`
+<.> Expose Gloo proxy ports as NodePorts
+
+The gloo variables used above will be configured on to minimal install-overrides https://jinja.palletsprojects.com/en/3.0.x/[Jinja] template link:https://github.com/kameshsampath/kubernetes_spices/blob/main/roles/k8s_app_spices/templates/gloo/ce/install-overrides.yaml.j2[install-overrides.yaml.j2].
+
+The above configuration will be translated to the following `install-overrides.yaml` file during playbook execution:
+
+[source,yaml,indent=2]
+.install-overrides.yaml
+----
+discovery:
+  enabled: false
+  # disable auto function discovery
+  fdsMode: DISABLED
+settings:
+  writeNamespace: my-gloo
+  watchNamespaces:
+  - demo-1-8-6
+  - demo-1-10-2
+  - my-gloo
+gatewayProxies:
+  gatewayProxy:
+    service:
+      type: NodePort
+      httpNodePort: 30080
+      httpsNodePort: 30443
+----
+
+
+
+You can check the **KiND** example to see how to deploy Knative on to a local KinD cluster 

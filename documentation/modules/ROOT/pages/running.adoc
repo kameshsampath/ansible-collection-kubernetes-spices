@@ -1,0 +1,18 @@
+= Running Playbooks
+
+The playbooks could be run using the https://ansible-builder.readthedocs.io/en/latest/index.html[Ansible Execution] environment. 
+
+The collection builds ansible execution environment and publishes them at `quay.io/kameshsampath/kubernetes-spices-ansible-runner`.
+
+== Running a playbook
+
+To run a playbook you need to create directory structure as explained in https://ansible-runner.readthedocs.io/en/stable/intro.html#inputdir[Runner Input Directory Hierarchy]. Once you have that, you can run the playbook like,
+
+[source]
+.run.sh
+----
+docker run -it --rm --name=ansible-runner \
+  -v `pwd`:/project \
+  quay.io/kameshsampath/kubernetes-spices-ansible-runner 
+----
+

@@ -1,0 +1,25 @@
+= Ansible Collection Kubernetes Spices
+:page-layout: home
+:!sectids:
+
+[.text-center.strong]
+== Overview
+
+The [Ansible collection](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html) that can help in setting up Kubernetes cluster such as [KinD](https://kind.sigs.k8s.io) or deploy components to existing Kubernetes cluster.
+
+The collection has following roles:
+- KinD 
+- Kubernetes Spices
+
+[.tiles.browse]
+== Browse modules
+
+[.tile]
+.xref:01-setup.adoc[Get Started]
+* xref:setup.adoc#k8s[Setup Kubernetes]
+* xref:setup.adoc#gloo-and-istio[Deploy Gloo and Istio]
+
+[.tile]
+.xref:02-deploy.adoc[Deploying]
+* xref:roles.adoc#backend[Deploy Backend]
+* xref:roles.adoc#frontend[Deploy Frontend]

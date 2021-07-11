@@ -1,0 +1,140 @@
+=  KinD Role
+
+The https://github.com/kameshsampath/kubernetes_spices/tree/main/roles/kind[kind] role helps to create/destroy a https://kind.sigs.k8s.io[KinD] cluster.
+
+`Role Name`: `kameshsampath.kubernetes_spices.kind`
+
+[#kind-ansible-vars]
+== KinD Ansible Variables
+
+.KinD Ansible Variables
+|===
+| Name | Description | Default Value
+
+| cluster_name
+| The name of the KinD cluster to be created
+| kind
+
+| kind_create
+| To create the KinD cluster or not, accepts `true` or `false`
+| false
+
+| kind_ip_family
+| The ip family to be used with KinD Kubernetes cluster
+| ipv4
+
+| kind_home_dir
+| The KinD home directory where the created KinD configuration will be stored. Each cluster created wil have config file named `cluster-name/kind-cluster-config.yaml`
+| $HOME/.kind
+
+| kind_cluster_config
+| The cluster config file name
+| kind_cluster_config
+
+| kind_create_config
+| Create the KinD configuration file
+| true
+
+| kind_custom_registry
+| Create the custom KinD registry named `kind-registry.local`, which could used for the Kubernetes applications to push and pull container images
+| true
+
+| kind_custom_registry_aliases
+| The registry aliases that can be used to identify the registry, accepts a list of values
+a|
+[source,yaml]
+----
+  - example.com
+  - example.org
+  - test.com
+  - test.org
+----
+
+| container_registry_name
+| The custom container registry name
+| kind-registry.local
+
+| container_registry_port
+| The custom container registry port
+| 5000
+
+| extra_port_mappings
+| The extra port mappings that could be used to reach various services from the host, accepts a list of values of the format `<ip>:host-port:container-port`
+a|
+[source,yaml]
+----
+  - "0.0.0.0:80:80"
+  - "0.0.0.0:443:443"
+  - "0.0.0.0:30080:30080"
+  - "0.0.0.0:30443:30443"
+----
+
+| disable_cni
+| Ability to disable the default `kindnetd` network plugin and deploy a custom network plugin
+| false
+
+|===
+
+[#kind-example-playbooks]
+== Example playbooks
+
+=== Create KinD cluster with all defaults
+
+[source,yaml]
+----
+include::example$kind-vanilla.yaml[]
+----
+
+=== Destroy KinD cluster with all defaults
+
+[source,yaml]
+----
+include::example$kind-destroy.yaml[]
+----
+
+=== Create KinD cluster with ipv6
+
+[source,yaml]
+----
+include::example$kind-vanilla-ipv6.yaml[]
+----
+
+[#kind-with-istio]
+=== KinD cluster with Istio
+
+[source,yaml]
+----
+include::example$kind-istio.yml[]
+----
+
+[#kind-with-gloo-edge-ce]
+=== KinD cluster with Gloo Edge CE
+
+[source,yaml]
+----
+include::example$kind-gloo-edge-ce.yml[]
+----
+
+[#kind-with-gloo-edge-ee]
+=== KinD cluster with Gloo Edge EE
+
+[source,yaml]
+----
+include::example$kind-gloo-edge-ee.yml[]
+----
+
+[#kind-with-knative]
+=== KinD cluster with Knative
+
+[source,yaml]
+----
+include::example$kind-knative.yml[]
+----
+
+[#kind-with-tektoncd]
+=== KinD cluster with Tektoncd
+
+[source,yaml,indent=0]
+----
+include::example$kind-tektoncd.yml[]
+----

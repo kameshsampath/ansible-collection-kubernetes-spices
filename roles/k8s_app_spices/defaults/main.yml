@@ -17,7 +17,9 @@ gloo_proxy_nodeport: false
 gloo_discovery_enabled: true
 gloo_watch_namespaces:
   - default
-
+  - gloo-system
+gloo_install_override_file:
+  
 # Istio
 deploy_istio: false
 istio_versions: 
@@ -38,6 +40,7 @@ registries_skip_tag_resolving:
   - ko.local
   - dev.local
   - "localhost:5000"
+  - kind-registry.local:5000
 
 #Tektoncd
 deploy_tektoncd: false
