@@ -24,7 +24,7 @@ Tektoncd tasks allows you to configure the Tektoncd installation.
 [#tekton-example-playbook]
 == Example Playbook
 
-The following example playbook deploys Istio to the Kubernetes cluster:
+The following example playbook deploys Tektoncd to the Kubernetes cluster:
 
 [source,yaml,subs="+macros,attributes+"]
 ----
@@ -32,4 +32,4 @@ include::example$tektoncd.yml[]
 ----
 <.> Deploy Tektoncd with defaults
 
-You can check the **KiND** example to see how to deploy Istio on to a local KinD cluster 
+You can check the xref:role-kubernetes-kind.adoc#kind-with-tektoncd[KinD] example to see how to deploy Istio on to a local KinD cluster.

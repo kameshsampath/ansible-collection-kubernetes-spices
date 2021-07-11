@@ -53,4 +53,4 @@ include::example$knative.yml[]
 ----
 <.> Deploy Knative with defaults
 
-You can check the **KiND** example to see how to deploy Knative on to a local KinD cluster 
+You can check the xref:role-kubernetes-kind.adoc#kind-with-knative[KinD] example to see how to deploy Knative on to a local KinD cluster.

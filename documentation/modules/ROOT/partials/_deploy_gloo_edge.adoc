@@ -132,6 +132,4 @@ gatewayProxies:
       httpsNodePort: 30443
 ----
 
-
-
-You can check the **KiND** example to see how to deploy Knative on to a local KinD cluster 
+You can check the xref:role-kubernetes-kind.adoc#kind-with-gloo-edge-ee[KinD with Gloo EE] or xref:role-kubernetes-kind.adoc#kind-with-gloo-edge-ce[KinD with Gloo CE] examples to see how to deploy Gloo Edge on to a local KinD cluster.

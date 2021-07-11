@@ -78,6 +78,7 @@ a|
 [#kind-example-playbooks]
 == Example playbooks
 
+[#kind-example-playbooks-create]
 === Create KinD cluster with all defaults
 
 [source,yaml]

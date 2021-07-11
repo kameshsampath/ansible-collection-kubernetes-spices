@@ -39,4 +39,4 @@ include::example$istio.yml[]
 ----
 <.> Deploy Tekton with defaults
 
-You can check the **KiND** example to see how to deploy Istio on to a local KinD cluster 
+You can check the xref:role-kubernetes-kind.adoc#kind-with-istio[KinD] example to see how to deploy Istio on to a local KinD cluster.

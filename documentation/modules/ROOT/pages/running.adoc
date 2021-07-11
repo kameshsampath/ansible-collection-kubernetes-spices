@@ -4,6 +4,8 @@ The playbooks could be run using the https://ansible-builder.readthedocs.io/en/l
 
 The collection builds ansible execution environment and publishes them at `quay.io/kameshsampath/kubernetes-spices-ansible-runner`.
 
+WARNING: This page is not complete, a working example will be added soon
+
 == Running a playbook
 
 To run a playbook you need to create directory structure as explained in https://ansible-runner.readthedocs.io/en/stable/intro.html#inputdir[Runner Input Directory Hierarchy]. Once you have that, you can run the playbook like,
