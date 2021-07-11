@@ -9,19 +9,18 @@ build_arg_defaults:
 dependencies:
   galaxy: requirements.yml
   python: requirements.txt
+  system: bindep.txt
 
 additional_build_steps:
-  prepend: |
-    RUN dnf -y --nodocs install wget curl tar unzip openssl jq \
-    && cd /tmp \
+  append: |
+    RUN cd /tmp \
     && curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 \
     && chmod 700 get_helm.sh \
     && ./get_helm.sh \
     && wget -O/usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.6.3/yq_linux_amd64 \
     && wget -O/usr/local/bin/kubectl https://dl.k8s.io/release/v1.21.0/bin/linux/amd64/kubectl \
     && chmod +x /usr/local/bin/kubectl /usr/local/bin/yq \
-    && dnf -y clean all
-  append:
-    - RUN kubectl version --client=true
-    - RUN yq --version
-    - RUN helm version
+    && dnf -y clean all \
+    && kubectl version --client=true \
+    && yq --version \
+    && helm version

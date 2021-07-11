@@ -1,0 +1,6 @@
+wget
+curl
+tar
+unzip
+openssl
+jq
