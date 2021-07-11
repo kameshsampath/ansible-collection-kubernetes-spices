@@ -7,7 +7,7 @@ roles:
 collections:
   - name: https://github.com/kameshsampath/kubernetes_spices.git
     type: git
-    version: master
+    version: main
   - name: ansible.posix
     version: '1.2.0'
   - name: community.aws
