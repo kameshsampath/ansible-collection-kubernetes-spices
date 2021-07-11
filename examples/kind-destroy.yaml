@@ -1,5 +1,5 @@
 ---
-- name: "Tektoncd Defaults"
+- name: Converge
   hosts: localhost
   connection: local
 
@@ -7,8 +7,8 @@
     - kubernetes.core
 
   vars:
-    deploy_tektoncd: true #<.>
-
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    kind_create: False
+    kind_destroy: True
   roles:
     - role: kameshsampath.kind
-    - role: kameshsampath.k8s_app_spices

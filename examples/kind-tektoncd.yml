@@ -7,6 +7,8 @@
     - kubernetes.core
 
   vars:
+    cluster_name: kind-tektoncd
+    kind_create: true
     deploy_tektoncd: true #<.>
 
   roles:

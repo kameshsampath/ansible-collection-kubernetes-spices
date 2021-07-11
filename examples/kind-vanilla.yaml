@@ -1,5 +1,5 @@
 ---
-- name: "Tektoncd Defaults"
+- name: vanilla
   hosts: localhost
   connection: local
 
@@ -7,8 +7,9 @@
     - kubernetes.core
 
   vars:
-    deploy_tektoncd: true #<.>
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    cluster_name: vanilla
+    kind_create: true
 
   roles:
     - role: kameshsampath.kind
-    - role: kameshsampath.k8s_app_spices

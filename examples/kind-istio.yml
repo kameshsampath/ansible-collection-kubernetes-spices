@@ -9,6 +9,8 @@
 
   vars:
     ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    cluster_name: kind-istio
+    kind_create: true
     ####
     ## Istio Configurations
     ####

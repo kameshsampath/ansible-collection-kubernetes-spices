@@ -7,6 +7,8 @@
     - kubernetes.core
 
   vars:
+    cluster_name: kind-knative
+    kind_create: true
     # to ensure we are on python3
     ansible_python_interpreter: "{{ ansible_playbook_python }}"
     # Default versions are v0.23.0, you can override it using knative_serving_version, knative_eventing_version
