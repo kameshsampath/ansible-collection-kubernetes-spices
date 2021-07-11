@@ -6,6 +6,9 @@ on:
       - released
   workflow_dispatch:
 
+env:
+  SITE_DIR: "gh-pages"
+
 jobs:
   attach-collection-artifacts:
     runs-on: ubuntu-latest
@@ -50,13 +53,13 @@ jobs:
         env:
           DIST_OUT_DIR: "${{ github.workspace }}/${{ env.DIST_DIR }}"
 
-#      - name: Attach Collection to release
-#        uses: ncipollo/release-action@v1
-#        with:
-#          token: ${{ secrets.GH_WORKFLOW_PAT }}
-#          artifacts: "${{ github.workspace }}/dist/*.tar.gz"
-#          omitBody: true
-#          tag: "${{ github.event.release.tag_name }}"
+  #      - name: Attach Collection to release
+  #        uses: ncipollo/release-action@v1
+  #        with:
+  #          token: ${{ secrets.GH_WORKFLOW_PAT }}
+  #          artifacts: "${{ github.workspace }}/dist/*.tar.gz"
+  #          omitBody: true
+  #          tag: "${{ github.event.release.tag_name }}"
 
   ansible-builder-ee:
     runs-on: ubuntu-latest
