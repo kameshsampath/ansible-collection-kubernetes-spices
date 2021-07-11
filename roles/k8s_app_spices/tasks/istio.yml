@@ -54,8 +54,8 @@
     ISTIO_REVISION: "{{ istio_revision }}"
     ISTIO_BINARY: "{{ istio_binary }}"
     ISTIO_NAMESPACE: "{{ istio_namespace }}"
-    CONTROL_PLANE_MANIFEST: "{{ lookup('template','istio-control-plane.yaml.j2') }}"
-    ISTIOD_SERVICE_MANIFEST: "{{ lookup('template','istiod-service.yaml.j2') }}"
+    CONTROL_PLANE_MANIFEST: "{{ lookup('template','istio/istio-control-plane.yaml.j2') }}"
+    ISTIOD_SERVICE_MANIFEST: "{{ lookup('template','istio/istiod-service.yaml.j2') }}"
   register: istio_install
   changed_when: false
 
@@ -72,7 +72,7 @@
     ISTIO_REVISION: "{{ istio_revision }}"
     ISTIO_BINARY: "{{ istio_binary }}"
     ISTIO_NAMESPACE: "{{ istio_namespace }}"
-    ISTIO_GATEWAY_MANIFEST: "{{ lookup('template','istio-ingress-gateway.yaml.j2') }}"
+    ISTIO_GATEWAY_MANIFEST: "{{ lookup('template','istio/istio-ingress-gateway.yaml.j2') }}"
   register: istio_gw_install
   changed_when: false
   when: deploy_istio_gateway or not deploy_gloo_edgeipv

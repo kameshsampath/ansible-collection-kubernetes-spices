@@ -18,39 +18,21 @@
   set_fact:
     k8s_cluster_ip: "127.0.0.1"
   when: k8s_cluster_ip is not defined and kubernetes_cluster_type == 'kind'
-
+ 
 - name: "Install Tools"
   include: tools.yml
 
-###################################
-# Istio
-###################################
-
-- name: Istio
-  ansible.builtin.include_tasks: istio.yml
+## Handling multiple kubernetes contexts
+- name: "Add Kubernetes Spices"
+  include: run_on_k8s_context.yml
   vars:
-    istio_version: "{{ item }}"
-  when: deploy_istio
-  loop: "{{ istio_versions | list }}"
+    k8s_use_context: "{{ k8s_context_item }}"
+  loop: "{{ k8s_contexts }}"
+  loop_control:
+    loop_var: k8s_context_item
+  when: k8s_contexts is defined
 
-###################################
-# Gloo Edge
-###################################
-- name: "Deploy Gloo Edge"
-  include_tasks: gloo_edge.yml
-  when: deploy_gloo_edge
-
-######################################
-## Knative Serving and Eventing
-######################################
-- name: Deploy Knative Serving and Eventing
-  include_tasks: knative.yml
-  when: deploy_knative
-
-###################################
-# Tektoncd
-###################################
-
-- name: Deploy Tektoncd Pipelines and Triggers
-  include_tasks: tektoncd.yml
-  when: deploy_tektoncd
+## Handle default kubernetes context
+- name: "Add Kubernetes Spices to Default Kubernetes Context"
+  include: run_on_k8s_context.yml
+  when: k8s_contexts is not defined
