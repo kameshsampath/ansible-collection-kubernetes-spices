@@ -14,7 +14,7 @@ chardet==4.0.0; python_version >= "2.7" and python_full_version < "3.0.0" or pyt
 colorama==0.4.4; python_version >= "3.6" and python_full_version < "3.0.0" and sys_platform == "win32" and python_version < "4.0" or sys_platform == "win32" and python_version >= "3.6" and python_full_version >= "3.5.0" and python_version < "4.0"
 commonmark==0.9.1; python_version >= "3.6" and python_version < "4.0"
 cryptography==3.4.7; python_version >= "3.6" and python_full_version < "3.0.0" or python_full_version >= "3.5.0" and python_version >= "3.6"
-dataclasses==0.8;
+dataclasses==0.8; python_version >= "3.6" and python_version < "3.7"
 distro==1.5.0
 docker-py==1.10.6
 docker-pycreds==0.4.0

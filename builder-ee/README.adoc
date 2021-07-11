@@ -1,4 +1,4 @@
-= OpenShift Demos Ansible Execution Environment
+= Kubernetes Demos Ansible Execution Environment
 
 Set of Ansible scripts and execution environment that can be used to set up OpenShift and underlying cloud provider resources.
 

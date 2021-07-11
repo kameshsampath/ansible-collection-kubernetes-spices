@@ -3,7 +3,7 @@ CURRENT_DIR = $(shell pwd)
 BUILDER_EE_CONTEXT=builder-ee
 BUILDER_EE_FILE=$(CURRENT_DIR)/builder-ee/execution-environment.yml
 CONTAINER_RUNTIME=docker
-ANSIBLE_RUNNER_IMAGE=quay.io/kameshsampath/kubernetes-spices-ansible-ee
+ANSIBLE_RUNNER_IMAGE=quay.io/kameshsampath/kubernetes-spices-ansible-runner
 
 ANSIBLE_BUILDER := poetry run ansible-builder
 
@@ -32,13 +32,19 @@ test-molecule:
 test-unit:
 	ansible-test units --docker -v --color --python $(PYTHON_VERSION) $(?TEST_ARGS)
 
+requirements.txt:
+	poetry export --dev --without-hashes -o $@
+
+builder-ee/requirements.txt:	requirements.txt
+	cp $(CURRENT_DIR)/requirements.txt $@
+	
 .PHONY:
-buildee:
-	$(ANSIBLE_BUILDER) build -f $(BUILDER_EE_FILE) \
-	   --context $(CURRENT_DIR)/$(BUILDER_EE_CONTEXT) \
-  	   --tag $(ANSIBLE_RUNNER_IMAGE) \
-       --container-runtime $(CONTAINER_RUNTIME)
+image:	builder-ee/requirements.txt
+	$(ANSIBLE_BUILDER) build --file $(BUILDER_EE_FILE) \
+	--context $(CURRENT_DIR)/$(BUILDER_EE_CONTEXT) \
+	--tag $(ANSIBLE_RUNNER_IMAGE) \
+	--container-runtime $(CONTAINER_RUNTIME)
 
 .PHONY:	push
-push:	buildee
+push:	image
 	@$(CONTAINER_RUNTIME) push $(ANSIBLE_RUNNER_IMAGE)
