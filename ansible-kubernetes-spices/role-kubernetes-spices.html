@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Ansible Collection Kubernetes Spices :: Ansible Collection Kubernetes Spices</title>
+    <link rel="canonical" href="https://kameshsampath.github.com/kubernetes_spices/ansible-kubernetes-spices/role-kubernetes-spices.html">
+    <link rel="prev" href="role-kubernetes-kind.html">
+    <link rel="next" href="running.html">
+    <meta name="generator" content="Antora 2.3.4">
+    <link rel="stylesheet" href="../_/css/site.css">
+    <script>var uiRootPath = '../_'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://kameshsampath.github.com/kubernetes_spices">Ansible Collection Kubernetes Spices</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="ansible-kubernetes-spices" data-version="master">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html">Ansible Collection Kubernetes Spices</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="setup.html">Setup</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="setup.html#prerequisite">Prerequisites</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="roles.html">Roles</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="role-kubernetes-kind.html">KinD</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="role-kubernetes-spices.html">Kubernetes Spices</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#deploy-isito">Deploy Istio</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#deploy-knative">Deploy Knative</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#deploy-gloo-edge">Deploy Gloo Edge</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#deploy-tektoncd">Deploy Tekton</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="running.html">Running Playbooks</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Ansible Collection Kubernetes Spices</span>
+    <span class="version">master</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <a class="title" href="index.html">Ansible Collection Kubernetes Spices</a>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="index.html">master</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Ansible Collection Kubernetes Spices</a></li>
+    <li><a href="roles.html">Roles</a></li>
+    <li><a href="role-kubernetes-spices.html">Kubernetes Spices</a></li>
+  </ul>
+</nav>
+  <div class="edit-this-page"><a href="https://github.com/kameshsampath/kubernetes_spices/edit/main/documentation/modules/ROOT/pages/role-kubernetes-spices.adoc">Edit this Page</a></div>
+  </div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Ansible Collection Kubernetes Spices</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>Role Name</code>: <code>kameshsampath.kubernetes_spices.k8s_app_spices</code></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="k8s-app-spices-overview"><a class="anchor" href="#k8s-app-spices-overview"></a>Overview</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This role can also be used to install and configure the Kubernetes cluster with one or more of following components:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://istio.io">Istio</a></p>
+</li>
+<li>
+<p><a href="https://www.solo.io/products/gloo-edge/">Gloo Edge</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Community Edition</p>
+</li>
+<li>
+<p>Enterprise Edition</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><a href="https://knative.dev">Knative</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Serving</p>
+</li>
+<li>
+<p>Eventing</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><a href="https://tekton.dev">Tekton</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="deploy-isito"><a class="anchor" href="#deploy-isito"></a>Deploying Istio</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Istio tasks allows you to configure the Istio installation.</p>
+</div>
+<div class="sect2">
+<h3 id="istio-ansible-vars"><a class="anchor" href="#istio-ansible-vars"></a>Ansible Variables</h3>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Istio Ansible Variables</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">deploy_istio</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">To deploy Istio or not, accepts <code>true</code> or <code>false</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">istio_versions</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Istio version(s) to install, accepts a list of values.</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">- "1.8.6"</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">istio_namespace</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The namespace to deploy Istio</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">istio-system</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">deploy_istio_gateway</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">To deploy Istio gateway or not, accepts <code>true</code> or <code>false</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="isito-example-playbook"><a class="anchor" href="#isito-example-playbook"></a>Example Playbook</h3>
+<div class="paragraph">
+<p>The following example playbook deploys Istio to the Kubernetes cluster:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+- name: "Demo with Istio"
+  hosts: localhost
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    ####
+    ## Istio Configurations
+    ####
+    deploy_istio: true <i class="conum" data-value="1"></i><b>(1)</b>
+    ## Istio Ingress Gateway
+    deploy_istio_gateway: true <i class="conum" data-value="2"></i><b>(2)</b>
+    istio_versions: <i class="conum" data-value="3"></i><b>(3)</b>
+      - "1.10.2"
+
+  roles:
+    - kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Deploy Tekton with defaults</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can check the <a href="role-kubernetes-kind.html#kind-with-istio" class="page">KinD</a> example to see how to deploy Istio on to a local KinD cluster.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="deploy-knative"><a class="anchor" href="#deploy-knative"></a>Deploying Knative</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Knative tasks allows you to configure the Knative installation.</p>
+</div>
+<div class="sect2">
+<h3 id="knative-ansible-vars"><a class="anchor" href="#knative-ansible-vars"></a>Ansible Variables</h3>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 2. Knative Ansible Variables</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">deploy_knative</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">To deploy Knative or not, accepts <code>true</code> or <code>false</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">knative_version</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The base Knative version to install</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">v0.23.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">knative_serving_version</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Knative Serving version to install</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">v0.23.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">knative_eventing_version</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Knative Eventing version to install</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">v0.23.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">registries_skip_tag_resolving</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The container registries to skip resolving tags</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">  - example.com
+  - example.org
+  - test.com
+  - test.org
+  - ko.local
+  - dev.local
+  - "localhost:5000"
+  - kind-registry.local:5000</code></pre>
+</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="knative-example-playbook"><a class="anchor" href="#knative-example-playbook"></a>Example Playbook</h3>
+<div class="paragraph">
+<p>The following example playbook deploys Knative to the Kubernetes cluster:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+- name: "Knative Defaults"
+  hosts: localhost
+  connection: local
+
+  collections:
+    - kubernetes.core
+
+  vars:
+    # to ensure we are on python3
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    # Default versions are v0.23.0, you can override it using knative_serving_version, knative_eventing_version
+    deploy_knative: True <i class="conum" data-value="1"></i><b>(1)</b>
+
+  roles:
+    - role: kameshsampath.kind
+    - role: kameshsampath.k8s_app_spices</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Deploy Knative with defaults</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can check the <a href="role-kubernetes-kind.html#kind-with-knative" class="page">KinD</a> example to see how to deploy Knative on to a local KinD cluster.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="deploy-gloo-edge"><a class="anchor" href="#deploy-gloo-edge"></a>Deploying Gloo Edge</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Gloo tasks allows you to configure the Gloo Edge installation.</p>
+</div>
+<div class="sect2">
+<h3 id="gloo-edge-ansible-vars"><a class="anchor" href="#gloo-edge-ansible-vars"></a>Gloo Edge Ansible Variables</h3>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 3. Gloo Ansible Variables</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">deploy_gloo_edge</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">To deploy Gloo Edge or not, accepts <code>true</code> or <code>false</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">gloo_edge_edition</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The gloo variant to deploy, possible values are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>ee</strong> for enterprise edition</p>
+</li>
+<li>
+<p><strong>ce</strong> for community edition</p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ce</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">glooctl_version</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The <code>glooctl</code> version to download</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.8.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">gloo_write_namespace</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The namespace where to write all the gloo resources.  This value will not be used if <code>gloo_install_override_file</code> is set.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">gloo-system</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">gloo_install_override_file</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Gloo edge install override values</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">gloo_proxy_nodeport</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Expose the Gloo Proxy <code>http</code> and <code>https</code> Kubernetes services to be configured as type <code>NodePort</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">gloo_discovery_enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enable gloo discovery services</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">gloo_watch_namespaces</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The namespaces to watch the gloo resources, takes a list of values</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml"> - default
+ - gloo-system</code></pre>
+</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="gloo-example-playbook"><a class="anchor" href="#gloo-example-playbook"></a>Example Playbook</h3>
+<div class="sect3">
+<h4 id="gloo-example-playbook-ee"><a class="anchor" href="#gloo-example-playbook-ee"></a>Enterprise Edition</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+- name: "Gloo Edge Enterprise Demo"
+  hosts: localhost
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    ####
+    ## Gloo Edge Configuration
+    ####
+    # Gloo Edge Setup
+    deploy_gloo_edge: true <i class="conum" data-value="1"></i><b>(1)</b>
+    # deploy Gloo Edge Enterprise
+    gloo_edge_edition: "ee" <i class="conum" data-value="2"></i><b>(2)</b>
+    # Set Gloo Edge Enterprise License Key
+    gloo_license_key: "{{ ansible_env.GLOO_LICENSE_KEY }}" <i class="conum" data-value="3"></i><b>(3)</b>
+    # Enable/disable discovery true/false
+    gloo_discovery_enabled: false <i class="conum" data-value="4"></i><b>(4)</b>
+    # Namespace to install Gloo into
+    gloo_write_namespace: my-gloo <i class="conum" data-value="5"></i><b>(5)</b>
+    # Gloo Watch Namespaces
+    gloo_watch_namespaces: <i class="conum" data-value="6"></i><b>(6)</b>
+      - demo-1-8-6
+      - demo-1-10-2
+      - my-gloo
+    # Use NodePorts for Gloo Proxy http/https true/false
+    gloo_proxy_nodeport: true <i class="conum" data-value="7"></i><b>(7)</b>
+
+  roles:
+    - kameshsampath.kubernetes_spices.kind
+    - kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Deploy Gloo</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Gloo Edge Enterprise Edition will be deployed</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The Gloo License Key that will be used with the deployment, the license key will be picked up <code>$GLOO_LICENSE_KEY</code> environment variable while running the playbook</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Disable Gloo service discovery</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Change the Gloo <code>write-namespace</code> to <code>my-gloo</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Configure a set of <code>watch-namespaces</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>Expose Gloo proxy ports as NodePorts</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The gloo variables used above will be configured on to minimal install-overrides <a href="https://jinja.palletsprojects.com/en/3.0.x/">Jinja</a> template <a href="https://github.com/kameshsampath/kubernetes_spices/blob/main/roles/k8s_app_spices/templates/gloo/ee/install-overrides.yaml.j2">install-overrides.yaml.j2</a>.</p>
+</div>
+<div class="paragraph">
+<p>The above configuration will be translated to the following <code>install-overrides.yaml</code> file during playbook execution:</p>
+</div>
+<div class="listingblock">
+<div class="title">install-overrides.yaml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">  license_key: xxyybabauewelkaslklk
+  gloo:
+    discovery:
+      enabled: false
+      # disable auto function discovery
+      fdsMode: DISABLED
+    settings:
+      writeNamespace: my-gloo
+      watchNamespaces:
+        - demo-1-8-6
+        - demo-1-10-2
+        - my-gloo
+    gatewayProxies:
+      gatewayProxy:
+        service:
+          type: NodePort
+          httpNodePort: 30080
+          httpsNodePort: 30443</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="gloo-example-playbook-ce"><a class="anchor" href="#gloo-example-playbook-ce"></a>Community Edition</h4>
+<div class="paragraph">
+<p>The following example playbook deploys Gloo Community Edition to the Kubernetes cluster:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+- name: "Gloo Edge Enterprise Demo"
+  hosts: localhost
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+
+    ## Gloo Edge Configuration
+    ####
+    # Gloo Edge Setup
+    deploy_gloo_edge: true <i class="conum" data-value="1"></i><b>(1)</b>
+    # Enable/disable discovery true/false
+    gloo_discovery_enabled: false <i class="conum" data-value="2"></i><b>(2)</b>
+    # Namespace to install Gloo into
+    gloo_write_namespace: my-gloo <i class="conum" data-value="3"></i><b>(3)</b>
+    # Gloo Watch Namespaces
+    gloo_watch_namespaces: <i class="conum" data-value="4"></i><b>(4)</b>
+      - demo-1-8-6
+      - demo-1-10-2
+      - my-gloo
+    # Use NodePorts for Gloo Proxy http/https true/false
+    gloo_proxy_nodeport: true <i class="conum" data-value="5"></i><b>(5)</b>
+
+  roles:
+    - kameshsampath.kubernetes_spices.kind
+    - kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Deploy Gloo</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Disable Gloo service discovery</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Change the Gloo <code>write-namespace</code> to <code>my-gloo</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Configure a set of <code>watch-namespaces</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Expose Gloo proxy ports as NodePorts</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The gloo variables used above will be configured on to minimal install-overrides <a href="https://jinja.palletsprojects.com/en/3.0.x/">Jinja</a> template <a href="https://github.com/kameshsampath/kubernetes_spices/blob/main/roles/k8s_app_spices/templates/gloo/ce/install-overrides.yaml.j2">install-overrides.yaml.j2</a>.</p>
+</div>
+<div class="paragraph">
+<p>The above configuration will be translated to the following <code>install-overrides.yaml</code> file during playbook execution:</p>
+</div>
+<div class="listingblock">
+<div class="title">install-overrides.yaml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">  discovery:
+    enabled: false
+    # disable auto function discovery
+    fdsMode: DISABLED
+  settings:
+    writeNamespace: my-gloo
+    watchNamespaces:
+    - demo-1-8-6
+    - demo-1-10-2
+    - my-gloo
+  gatewayProxies:
+    gatewayProxy:
+      service:
+        type: NodePort
+        httpNodePort: 30080
+        httpsNodePort: 30443</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can check the <a href="role-kubernetes-kind.html#kind-with-gloo-edge-ee" class="page">KinD with Gloo EE</a> or <a href="role-kubernetes-kind.html#kind-with-gloo-edge-ce" class="page">KinD with Gloo CE</a> examples to see how to deploy Gloo Edge on to a local KinD cluster.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="deploy-tektoncd"><a class="anchor" href="#deploy-tektoncd"></a>Deploying Tektoncd</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Tektoncd tasks allows you to configure the Tektoncd installation.</p>
+</div>
+<div class="sect2">
+<h3 id="tektoncd-ansible-vars"><a class="anchor" href="#tektoncd-ansible-vars"></a>Ansible Variables</h3>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 4. Tekton Ansible Variables</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">deploy_tektoncd</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">To deploy Tekton or not, accepts <code>true</code> or <code>false</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">tektoncd_pipelines_version</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Tektoncd Pipeline version to install</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">v0.25.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">tektoncd_triggers_version</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Tektoncd Triggers version to install</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">v0.14.2</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="tekton-example-playbook"><a class="anchor" href="#tekton-example-playbook"></a>Example Playbook</h3>
+<div class="paragraph">
+<p>The following example playbook deploys Tektoncd to the Kubernetes cluster:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+- name: "Tektoncd Defaults"
+  hosts: localhost
+  connection: local
+
+  collections:
+    - kubernetes.core
+
+  vars:
+    deploy_tektoncd: true <i class="conum" data-value="1"></i><b>(1)</b>
+
+  roles:
+    - role: kameshsampath.kind
+    - role: kameshsampath.k8s_app_spices</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Deploy Tektoncd with defaults</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can check the <a href="role-kubernetes-kind.html#kind-with-tektoncd" class="page">KinD</a> example to see how to deploy Istio on to a local KinD cluster.</p>
+</div>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="role-kubernetes-kind.html">KinD</a></span>
+  <span class="next"><a href="running.html">Running Playbooks</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <p>This page was built using the Antora default UI.</p>
+  <p>The source code for this UI is licensed under the terms of the MPL-2.0 license.</p>
+</footer>
+<script src="../_/js/site.js"></script>
+<script async src="../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
