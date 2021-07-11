@@ -33,7 +33,7 @@ test-unit:
 	ansible-test units --docker -v --color --python $(PYTHON_VERSION) $(?TEST_ARGS)
 
 requirements.txt:
-	poetry export --dev --without-hashes -o $@
+	poetry export -o $@
 
 builder-ee/requirements.txt:	requirements.txt
 	cp $(CURRENT_DIR)/requirements.txt $@
