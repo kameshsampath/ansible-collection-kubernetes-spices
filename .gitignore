@@ -86,3 +86,5 @@ playbook.yml
 .vagrant
 *_kubeconfig
 yarn.lock
+node_modules
+gh-pages
