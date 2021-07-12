@@ -13,18 +13,18 @@
     ## Gloo Edge Configuration
     ####
     # Gloo Edge Setup
-    deploy_gloo_edge: true <.>
+    deploy_gloo_edge: true #<.>
     # Enable/disable discovery true/false
-    gloo_discovery_enabled: false <.>
+    gloo_discovery_enabled: false #<.>
     # Namespace to install Gloo into
-    gloo_write_namespace: my-gloo <.>
+    gloo_write_namespace: my-gloo #<.>
     # Gloo Watch Namespaces
-    gloo_watch_namespaces: <.>
+    gloo_watch_namespaces: #<.>
       - demo-1-8-6
       - demo-1-10-2
       - my-gloo
     # Use NodePorts for Gloo Proxy http/https true/false
-    gloo_proxy_nodeport: true <.>
+    gloo_proxy_nodeport: true #<.>
 
   roles:
     - kameshsampath.kubernetes_spices.kind

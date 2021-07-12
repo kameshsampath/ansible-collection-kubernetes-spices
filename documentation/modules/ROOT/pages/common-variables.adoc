@@ -1,0 +1,30 @@
+= Common Variables
+include::_attributes.adoc[]
+
+The following ansible variables are common to all the roles depending on th contexts where they are applied.
+
+[#role-common-vars]
+== Common Variables
+
+.Common  Ansible Variables
+|===
+| Name | Description | Default Value
+
+| k8s_contexts
+a|
+The list of Kubernetes contexts from the `pass:[$KUBECONFIG]` file. These contexts will be looped over when applying other tasks such as Istio, Knative etc.,  To add the values to the list use the command:
+[source,bash]
+-----
+kubectl config get-contexts \| awk 'NR>1{print $2}'
+-----
+
+This parameter accepts a list e.g.
+[source,yaml]
+-----
+- kind-vanilla
+- bar
+- foo
+-----
+|
+
+|===

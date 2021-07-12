@@ -16,7 +16,7 @@ The https://github.com/kameshsampath/kubernetes_spices/tree/main/roles/kind[kind
 | kind
 
 | kind_create
-| To create the KinD cluster or not, accepts `true` or `false`
+| To create the KinD cluster or not, accepts `true` or `false`. Setting this to `false` will destroy an existing cluster
 | false
 
 | kind_ip_family

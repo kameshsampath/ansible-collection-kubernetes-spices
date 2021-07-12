@@ -1,14 +1,14 @@
 * xref:setup.adoc[Setup]
 ** xref:setup.adoc#prerequisite[Prerequisites]
 
-* xref:roles.adoc[Roles]
+* xref:common-variables.adoc[Roles]
 ** xref:role-kubernetes-kind.adoc[KinD]
 ** xref:role-kubernetes-spices.adoc[Kubernetes Spices]
 *** xref:role-kubernetes-spices.adoc#deploy-isito[Deploy Istio]
 *** xref:role-kubernetes-spices.adoc#deploy-knative[Deploy Knative]
 *** xref:role-kubernetes-spices.adoc#deploy-gloo-edge[Deploy Gloo Edge]
 *** xref:role-kubernetes-spices.adoc#deploy-tektoncd[Deploy Tekton]
-
+* xref:common-variables.adoc[Common Variables]
 * xref:running.adoc[Running Playbooks]
 
 

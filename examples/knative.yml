@@ -13,5 +13,5 @@
     deploy_knative: True #<.>
     
   roles:
-    - role: kameshsampath.kind
-    - role: kameshsampath.k8s_app_spices
+    - role: kameshsampath.kubernetes_spices.kind
+    - role: kameshsampath.kubernetes_spices.k8s_app_spices

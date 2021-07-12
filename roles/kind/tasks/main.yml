@@ -17,16 +17,17 @@
 - name: "Check KinD Pre-req"
   include_tasks: kind_pre_reqs.yml
 
+    
 ###################################
 # Create
 ###################################
 - name: "Create KinD {{ cluster_name }} Cluster"
   include_tasks: kind_create.yml
-  when: kind_create
+  when: kind_create | bool
 
 ###################################
 # Destroy
 ###################################
 - name: "Destroy KinD {{ cluster_name }} Cluster"
   include_tasks: kind_destroy.yml
-  when: kind_destroy
+  when:  not ( kind_create | bool ) 

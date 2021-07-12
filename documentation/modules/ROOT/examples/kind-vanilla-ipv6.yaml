@@ -17,4 +17,4 @@
     kind_destroy: false
 
   roles:
-    - role: kameshsampath.kind
+    - role: kameshsampath.kubernetes_spices.kind
