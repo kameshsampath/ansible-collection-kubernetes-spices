@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.0.4](https://www.github.com/kameshsampath/kubernetes_spices/compare/v0.0.3...v0.0.4) (2021-07-12)
+
+
+### Bug Fixes
+
+* do local install before using asdf plugin ([cadc05a](https://www.github.com/kameshsampath/kubernetes_spices/commit/cadc05a1cd4ef6e744ba930cdd659815902d8926))
+
 ### [0.0.3](https://www.github.com/kameshsampath/kubernetes_spices/compare/v0.0.2...v0.0.3) (2021-07-12)
 
 
