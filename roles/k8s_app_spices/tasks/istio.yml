@@ -4,16 +4,17 @@
   ansible.builtin.shell: |
     source "{{ asdf_sh }}"
     asdf plugin-add istio https://github.com/kameshsampath/asdf-istio
+    asdf install istio "{{ istio_version }}"
+    asdf local istio "{{ istio_version }}"
     asdf reshim istio
   args:
     executable: /bin/bash
   changed_when: false
 
-- name: "Get istio version"
+- name: "Ensure istio version is {{ istio_version }}"
   become: no
   ansible.builtin.shell: |
     source "{{ asdf_sh }}"
-    asdf local istio "{{ istio_version }}"
     asdf current istio | awk '{print $2}'
   args:
     executable: /bin/bash
