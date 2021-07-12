@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.0.5](https://www.github.com/kameshsampath/kubernetes_spices/compare/v0.0.4...v0.0.5) (2021-07-12)
+
+
+### Bug Fixes
+
+* yaml updates and KinD role create/destroy ([2d527ab](https://www.github.com/kameshsampath/kubernetes_spices/commit/2d527abd9688bc093acf070d0fc215905e735d2f))
+
 ### [0.0.4](https://www.github.com/kameshsampath/kubernetes_spices/compare/v0.0.3...v0.0.4) (2021-07-12)
 
 
