@@ -9,16 +9,6 @@
     executable: /bin/bash
   changed_when: false
 
-- name: "Get istio installation path"
-  become: no
-  ansible.builtin.shell: |
-    source "{{ asdf_sh }}"
-    asdf where istio
-  args:
-    executable: /bin/bash
-  register: istio_stat
-  changed_when: false
-
 - name: "Get istio version"
   become: no
   ansible.builtin.shell: |
@@ -30,6 +20,16 @@
   register: istio_version_result
   changed_when: false
 
+- name: "Get istio installation path"
+  become: no
+  ansible.builtin.shell: |
+    source "{{ asdf_sh }}"
+    asdf where istio
+  args:
+    executable: /bin/bash
+  register: istio_stat
+  changed_when: false
+  
 - name: "Set Istio Revision and Binary"
   become: no
   set_fact:
