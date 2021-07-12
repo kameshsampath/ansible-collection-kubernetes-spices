@@ -6,7 +6,7 @@
     <title>Ansible Collection Kubernetes Spices :: Ansible Collection Kubernetes Spices</title>
     <link rel="canonical" href="https://kameshsampath.github.com/kubernetes_spices/ansible-kubernetes-spices/role-kubernetes-spices.html">
     <link rel="prev" href="role-kubernetes-kind.html">
-    <link rel="next" href="running.html">
+    <link rel="next" href="common-variables.html">
     <meta name="generator" content="Antora 2.3.4">
     <link rel="stylesheet" href="../_/css/site.css">
     <script>var uiRootPath = '../_'</script>
@@ -46,7 +46,7 @@
   </li>
   <li class="nav-item" data-depth="1">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="roles.html">Roles</a>
+    <a class="nav-link" href="common-variables.html">Roles</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="role-kubernetes-kind.html">KinD</a>
@@ -70,6 +70,9 @@
 </ul>
   </li>
 </ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="common-variables.html">Common Variables</a>
   </li>
   <li class="nav-item" data-depth="1">
     <a class="nav-link" href="running.html">Running Playbooks</a>
@@ -105,7 +108,7 @@
 <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="index.html">Ansible Collection Kubernetes Spices</a></li>
-    <li><a href="roles.html">Roles</a></li>
+    <li><a href="common-variables.html">Roles</a></li>
     <li><a href="role-kubernetes-spices.html">Kubernetes Spices</a></li>
   </ul>
 </nav>
@@ -347,8 +350,8 @@
     deploy_knative: True <i class="conum" data-value="1"></i><b>(1)</b>
 
   roles:
-    - role: kameshsampath.kind
-    - role: kameshsampath.k8s_app_spices</code></pre>
+    - role: kameshsampath.kubernetes_spices.kind
+    - role: kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -711,8 +714,8 @@
     deploy_tektoncd: true <i class="conum" data-value="1"></i><b>(1)</b>
 
   roles:
-    - role: kameshsampath.kind
-    - role: kameshsampath.k8s_app_spices</code></pre>
+    - role: kameshsampath.kubernetes_spices.kind
+    - role: kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -731,7 +734,7 @@
 </div>
 <nav class="pagination">
   <span class="prev"><a href="role-kubernetes-kind.html">KinD</a></span>
-  <span class="next"><a href="running.html">Running Playbooks</a></span>
+  <span class="next"><a href="common-variables.html">Common Variables</a></span>
 </nav>
 </article>
   </div>

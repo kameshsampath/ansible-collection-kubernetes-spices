@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Ansible Collection Kubernetes Spices :: Ansible Collection Kubernetes Spices</title>
-    <link rel="canonical" href="https://kameshsampath.github.com/kubernetes_spices/ansible-kubernetes-spices/roles.html">
+    <link rel="canonical" href="https://kameshsampath.github.com/kubernetes_spices/ansible-kubernetes-spices/common-variables.html">
     <link rel="prev" href="setup.html">
     <link rel="next" href="role-kubernetes-kind.html">
     <meta name="generator" content="Antora 2.3.4">
@@ -46,7 +46,7 @@
   </li>
   <li class="nav-item is-current-page" data-depth="1">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="roles.html">Roles</a>
+    <a class="nav-link" href="common-variables.html">Roles</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="role-kubernetes-kind.html">KinD</a>
@@ -70,6 +70,9 @@
 </ul>
   </li>
 </ul>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="common-variables.html">Common Variables</a>
   </li>
   <li class="nav-item" data-depth="1">
     <a class="nav-link" href="running.html">Running Playbooks</a>
@@ -105,10 +108,10 @@
 <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="index.html">Ansible Collection Kubernetes Spices</a></li>
-    <li><a href="roles.html">Roles</a></li>
+    <li><a href="common-variables.html">Roles</a></li>
   </ul>
 </nav>
-  <div class="edit-this-page"><a href="https://github.com/kameshsampath/kubernetes_spices/edit/main/documentation/modules/ROOT/pages/roles.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="https://github.com/kameshsampath/kubernetes_spices/edit/main/documentation/modules/ROOT/pages/common-variables.adoc">Edit this Page</a></div>
   </div>
   <div class="content">
 <aside class="toc sidebar" data-title="Contents" data-levels="2">
@@ -116,81 +119,55 @@
 </aside>
 <article class="doc">
 <h1 class="page">Ansible Collection Kubernetes Spices</h1>
-<div class="sect1">
-<h2 id="service"><a class="anchor" href="#service"></a>The Service</h2>
+<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>The code:</p>
-</div>
-<div class="listingblock lines_7 console-input">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public class Main {
-
-    public static void main(String[] args) {
-
-    }
-
-}
-
-./mvnw compile</code></pre>
-</div>
+<p>The following ansible variables are common to all the roles depending on th contexts where they are applied.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="package"><a class="anchor" href="#package"></a>Packaging the Service</h2>
+<h2 id="role-common-vars"><a class="anchor" href="#role-common-vars"></a>Common Variables</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>You can package the next bash script:</p>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Common  Ansible Variables</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">k8s_contexts</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The list of Kubernetes contexts from the <code>$KUBECONFIG</code> file. These contexts will be looped over when applying other tasks such as Istio, Knative etc.,  To add the values to the list use the command:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">#!/bin/sh
-echo "Hello World"</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="deploy"><a class="anchor" href="#deploy"></a>Deploy the Service</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>And then you can deploy the service and execute commands inside:</p>
-</div>
-<div class="paragraph">
-<p>Check that the pod is up and running:</p>
-</div>
-<div class="listingblock lines_space console-input">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get pods</code></pre>
-</div>
-</div>
-<div class="listingblock console-output">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">NAME                        READY   STATUS    RESTARTS   AGE
-apps   1/1     Running   0          5s</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl config get-contexts | awk 'NR&gt;1{print $2}'</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Then let&#8217;s go into the running pod to execute some commands:</p>
+<p>This parameter accepts a list e.g.</p>
 </div>
-<div class="listingblock console-input">
+<div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl exec -ti apps /bin/bash</code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">- kind-vanilla
+- bar
+- foo</code></pre>
 </div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-Change the pod name with your pod name.
-</td>
+</div></div></td>
+<td class="tableblock halign-left valign-top"></td>
 </tr>
+</tbody>
 </table>
-</div>
 </div>
 </div>
 <nav class="pagination">
