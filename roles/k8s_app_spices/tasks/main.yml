@@ -18,7 +18,7 @@
   set_fact:
     k8s_cluster_ip: "127.0.0.1"
   when: k8s_cluster_ip is not defined and kubernetes_cluster_type == 'kind'
- 
+
 - name: "Install Tools"
   include: tools.yml
 
@@ -35,4 +35,4 @@
 ## Handle default kubernetes context
 - name: "Add Kubernetes Spices to Default Kubernetes Context"
   include: run_on_k8s_context.yml
-  when: k8s_contexts is not defined
+  when: k8s_contexts is not defined or kind_create
