@@ -33,6 +33,12 @@ nodes:
       {% endif %}
   {% endfor %}
 - role: worker
+  kubeadmConfigPatches:
+    - |
+      kind: JoinConfiguration
+      nodeRegistration:
+        kubeletExtraArgs:
+          node-labels: 'node-role.kubernetes.io/worker: ""'
 {% if kind_custom_registry %}
 containerdConfigPatches:
   - |-

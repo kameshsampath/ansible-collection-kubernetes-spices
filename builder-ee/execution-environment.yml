@@ -2,7 +2,7 @@
 version: 1
 
 build_arg_defaults:
-  EE_BASE_IMAGE: "quay.io/ansible/ansible-runner:stable-2.10-devel"
+  EE_BASE_IMAGE: quay.io/ansible/ansible-runner:stable-2.10-devel
 
 # ansible_config: 'ansible.cfg'
 
@@ -13,7 +13,10 @@ dependencies:
 
 additional_build_steps:
   append: |
-    RUN cd /tmp \
+    RUN wget -O /etc/yum.repos.d/docker-ce.repo https://download.docker.com/linux/centos/docker-ce.repo \
+    && dnf -y update \
+    && dnf -y install docker-ce-cli \
+    && cd /tmp \
     && curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 \
     && chmod 700 get_helm.sh \
     && ./get_helm.sh \

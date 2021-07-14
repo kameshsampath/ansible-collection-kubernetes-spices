@@ -20,3 +20,4 @@ extra_port_mappings:
   - "0.0.0.0:30080:30080"
   - "0.0.0.0:30443:30443"
 disable_cni: false
+kind_network_name: kind
