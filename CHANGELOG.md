@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.0.7](https://www.github.com/kameshsampath/kubernetes_spices/compare/v0.0.6...v0.0.7) (2021-07-14)
+
+
+### Bug Fixes
+
+* label worker ([b6f9ec3](https://www.github.com/kameshsampath/kubernetes_spices/commit/b6f9ec363ba87d36a2a84d3937e9bc7e6423a032))
+
 ### [0.0.6](https://www.github.com/kameshsampath/kubernetes_spices/compare/v0.0.5...v0.0.6) (2021-07-13)
 
 
