@@ -63,12 +63,13 @@ jobs:
           poetry run ansible-builder create --output-filename Dockerfile
         working-directory: "${{ github.workspace }}/builder-ee"
 
-      - name: Build nsible EE Image
+      - name: Build Ansible EE Image
         id: build-image
         uses: redhat-actions/buildah-build@v2
         with:
-          image: ${{ env.GHCR_USERNAME }}/{{ env.IMAGE_NAME }}
+          image: ${{ env.GHCR_USERNAME }}/${{ env.IMAGE_NAME }}
           tags: latest ${{ github.sha }}
+          context: ${{ github.workspace }}/builder-ee
           dockerfiles: |
             ${{ github.workspace }}/builder-ee/Dockerfile
 
