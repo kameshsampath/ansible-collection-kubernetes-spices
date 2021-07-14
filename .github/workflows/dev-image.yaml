@@ -49,7 +49,7 @@ jobs:
         run: poetry install
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
 
-      - name: Log in to ${{ env.CONTAINER_REGISTRY}} Registry
+      - name: Log in to Registry
         uses: redhat-actions/podman-login@v1
         with:
           registry: ghcr.io
@@ -60,7 +60,7 @@ jobs:
         id: create-image
         run: |
           poetry env use python
-          poetry run (ANSIBLE_BUILDER) create --output-filename Dockerfile
+          poetry run ansible-builder create --output-filename Dockerfile
         working-directory: "${{ github.workspace }}/builder-ee"
 
       - name: Build nsible EE Image
