@@ -57,7 +57,7 @@ jobs:
           password: ${{ secrets.GHCR_PAT }}
 
       - name: Create the Ansible EE Image File
-        id: build-image
+        id: create-image
         run: |
           poetry env use python
           poetry run (ANSIBLE_BUILDER) create --output-filename Dockerfile
@@ -70,7 +70,7 @@ jobs:
           image: ${{ env.GHCR_USERNAME }}/{{ env.IMAGE_NAME }}
           tags: latest ${{ github.sha }}
           dockerfiles: |
-            ./Dockerfile
+            ${{ github.workspace }}/builder-ee/Dockerfile
 
       - name: Push To ghcr.io
         id: push-to-registry
