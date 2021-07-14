@@ -27,63 +27,17 @@
   register: kind_cluster_result
   when: (cluster_config is not defined and not cluster_check_result.exists)
 
-- name: "Get KinD Cluster: '{{ cluster_name }}' Cluster Nodes"
-  command:
-    argv:
-      - "{{ kind_binary }}"
-      - get
-      - nodes
-      - --name={{ cluster_name }}
-  register: cluster_nodes_result
-  changed_when: False
-
-- name: Set fact about cluster nodes
-  set_fact:
-    cluster_nodes: "{{ cluster_nodes_result.stdout.split('\n') }}"
-
 - name: Create and start KinD Registry
   community.docker.docker_container:
     state: started
     image: "registry:2"
     restart_policy: "always"
     name: "{{ container_registry_name }}"
-    network_mode: kind
+    network_mode: "{{kind_network_name}}"
     published_ports:
       - "0.0.0.0:{{ container_registry_port }}:5000"
 
-- name: "Label KinD Cluster: '{{ cluster_name }}' Cluster Nodes"
-  kubernetes.core.k8s:
-    state: present
-    resource_definition:
-      api_version: v1
-      kind: Node
-      metadata:
-        annotations:
-          tilt.dev/registry: "localhost:{{ container_registry_port }}"
-          tilt.dev/registry-from-cluster: "{{ container_registry_name }}:{{ container_registry_port }}"
-        name: "{{ item }}"
-  loop: "{{ cluster_nodes }}"
-  when: kind_cluster_result is defined
-
-- name: Get all worker nodes
-  kubernetes.core.k8s_info:
-    kind: Node
-    label_selectors:
-      - "!node-role.kubernetes.io/master"
-  register: worker_nodes
-
-- name: "Label KinD Cluster '{{ cluster_name }}' Worker Nodes"
-  kubernetes.core.k8s:
-    state: present
-    resource_definition:
-      api_version: v1
-      kind: Node
-      metadata:
-        labels:
-          node-role.kubernetes.io/worker: ""
-        name: "{{ item }}"
-  loop: "{{ worker_nodes | json_query('resources[*].metadata.name') }}"
-
+## Document KinD registry
 - name: "Start KinD Cluster: '{{ cluster_name }}'"
   become: no
   ansible.builtin.command:
@@ -96,6 +50,22 @@
 
 # - debug:
 #    var: kubeconfig_result
+
+# https://kind.sigs.k8s.io/docs/user/local-registry/
+- name: "Document the local registry"
+  kubernetes.core.k8s:
+    state: present
+    resource_definition:
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: local-registry-hosting
+        namespace: kube-public
+      data:
+        localRegistryHosting.v1: |
+          host: "localhost:${container_registry_port}"
+          help: "https://kind.sigs.k8s.io/docs/user/local-registry/"
+  when: kind_cluster_result is defined
 
 - name: "Create kubeconfig file"
   become: no

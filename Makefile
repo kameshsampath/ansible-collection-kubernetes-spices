@@ -33,13 +33,13 @@ test-unit:
 	ansible-test units --docker -v --color --python $(PYTHON_VERSION) $(?TEST_ARGS)
 
 requirements.txt:
-	poetry export -o $@
+	poetry export --without-hases -o $@
 
 builder-ee/requirements.txt:	requirements.txt
 	cp $(CURRENT_DIR)/requirements.txt $@
 	
 .PHONY:
-image:	builder-ee/requirements.txt
+image:  
 	$(ANSIBLE_BUILDER) build --file $(BUILDER_EE_FILE) \
 	--context $(CURRENT_DIR)/$(BUILDER_EE_CONTEXT) \
 	--tag $(ANSIBLE_RUNNER_IMAGE) \
