@@ -50,11 +50,12 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
 
       - name: Log in to Registry
-        uses: redhat-actions/podman-login@v1
+        uses: docker/login-action@v1
         with:
           registry: ghcr.io
           username: ${{ env.GHCR_USERNAME }}
           password: ${{ secrets.GHCR_PAT }}
+          logout: true
 
       - name: Build the Ansible EE Image
         id: build-and-push-image
