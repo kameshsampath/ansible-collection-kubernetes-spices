@@ -19,6 +19,10 @@ The https://github.com/kameshsampath/kubernetes_spices/tree/main/roles/kind[kind
 | To create the KinD cluster or not, accepts `true` or `false`. Setting this to `false` will destroy an existing cluster
 | false
 
+| kind_network_name
+| The docker network name to use to KinD
+| kind
+
 | kind_ip_family
 | The ip family to be used with KinD Kubernetes cluster
 | ipv4
