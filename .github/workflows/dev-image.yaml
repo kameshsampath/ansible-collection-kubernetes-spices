@@ -1,4 +1,4 @@
-name: Build Dev EE Image
+name: Dev Ansible EE Image
 
 on: [push]
 
