@@ -40,6 +40,13 @@ builder-ee/requirements.txt:	requirements.txt
 	
 .PHONY:
 image:  
+	$(ANSIBLE_BUILDER) create \
+  --file  $(CURRENT_DIR)/$(BUILDER_EE_CONTEXT)/execution-environment.yml \
+	--context $(CURRENT_DIR)/$(BUILDER_EE_CONTEXT) \
+	--output-filename Dockerfile
+
+.PHONY:
+image-build:
 	$(ANSIBLE_BUILDER) build --file $(BUILDER_EE_FILE) \
 	--context $(CURRENT_DIR)/$(BUILDER_EE_CONTEXT) \
 	--tag $(ANSIBLE_RUNNER_IMAGE) \
