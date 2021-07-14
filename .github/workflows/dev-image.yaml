@@ -7,7 +7,7 @@ env:
   IMAGE_NAME: kubernetes-spices-ansible-runner
   GHCR_USERNAME: kameshsampath
   IMAGE_TAGS: latest
-  CONTAINER_RUNTIME: docker
+  CONTAINER_RUNTIME: podman
 
 jobs:
   build-dev-image:
@@ -50,26 +50,33 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
 
       - name: Log in to Registry
-        uses: docker/login-action@v1
+        uses: redhat-actions/podman-login@v1
         with:
           registry: ghcr.io
           username: ${{ env.GHCR_USERNAME }}
           password: ${{ secrets.GHCR_PAT }}
-          logout: true
 
       - name: Build the Ansible EE Image
-        id: build-and-push-image
+        id: build-image
         run: |
           poetry env use python
           poetry run ansible-builder build \
             --container-runtime $CONTAINER_RUNTIME \
             --tag $IMAGE_TAG
           $CONTAINER_RUNTIME tag $IMAGE_TAG $IMAGE_LATEST
-          $CONTAINER_RUNTIME push $IMAGE_TAG 
-          CONTAINER_RUNTIME push $IMAGE_LATEST
           echo "::set-output name=tags:: latest ${{ github.sha }}"
         env:
           IMAGE_TAG: "${{ env.CONTAINER_REGISTRY }}/${{ env.GHCR_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
           IMAGE_LATEST: "${{ env.CONTAINER_REGISTRY }}/${{ env.GHCR_USERNAME }}/${{ env.IMAGE_NAME }}:latest"
           CONTAINER_RUNTIME: "${{ env.CONTAINER_RUNTIME }}"
         working-directory: "${{ github.workspace }}/builder-ee"
+
+      - name: Push To ghcr.io
+        id: push-to-registry
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: "${{ env.CONTAINER_REGISTRY }}/${{ env.GHCR_USERNAME }}/${{ env.IMAGE_NAME }}"
+          tags: ${{ steps.build-image.outputs.tags }}
+          registry: ${{ env.CONTAINER_REGISTRY }}
+          username: ${{ secrets.GHCR_USERNAME }}
+          password: ${{ secrets.GHCR_PAT }}
