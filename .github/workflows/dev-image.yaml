@@ -75,7 +75,7 @@ jobs:
         id: push-to-registry
         uses: redhat-actions/push-to-registry@v2
         with:
-          image: "${{ env.CONTAINER_REGISTRY }}/${{ env.GHCR_USERNAME }}/${{ env.IMAGE_NAME }}"
+          image: "${{ env.GHCR_USERNAME }}/${{ env.IMAGE_NAME }}"
           tags: ${{ steps.build-image.outputs.tags }}
           registry: ${{ env.CONTAINER_REGISTRY }}
           username: ${{ secrets.GHCR_USERNAME }}
