@@ -3,7 +3,7 @@ name: Build Dev EE Image
 on: [push]
 
 env:
-  CONTAINER_REGISTRY: ghcr.io/kameshsampath
+  CONTAINER_REGISTRY: ghcr.io
   IMAGE_NAME: kubernetes-spices-ansible-runner
   GHCR_USERNAME: kameshsampath
   IMAGE_TAGS: latest
@@ -56,28 +56,26 @@ jobs:
           username: ${{ env.GHCR_USERNAME }}
           password: ${{ secrets.GHCR_PAT }}
 
-      - name: Create the Ansible EE Image File
-        id: create-image
+      - name: Build the Ansible EE Image
+        id: build-image
         run: |
           poetry env use python
-          poetry run ansible-builder create --output-filename Dockerfile
+          poetry run ansible-builder build \
+            --container-runtime $CONTAINER_RUNTIME \
+            --tag $IMAGE_TAG
+          $CONTAINER_RUNTIME tag $IMAGE_TAG $IMAGE_LATEST
+          echo "::set-output name=tags:: latest ${{ github.sha }}"
+        env:
+          IMAGE_TAG: "${{ env.CONTAINER_REGISTRY }}/${{ env.GHCR_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          IMAGE_LATEST: "${{ env.CONTAINER_REGISTRY }}/${{ env.GHCR_USERNAME }}/${{ env.IMAGE_NAME }}:latest"
+          CONTAINER_RUNTIME: "${{ env.CONTAINER_RUNTIME }}"
         working-directory: "${{ github.workspace }}/builder-ee"
-
-      - name: Build Ansible EE Image
-        id: build-image
-        uses: redhat-actions/buildah-build@v2
-        with:
-          image: ${{ env.GHCR_USERNAME }}/${{ env.IMAGE_NAME }}
-          tags: latest ${{ github.sha }}
-          context: ${{ github.workspace }}/builder-ee
-          dockerfiles: |
-            ${{ github.workspace }}/builder-ee/Dockerfile
 
       - name: Push To ghcr.io
         id: push-to-registry
         uses: redhat-actions/push-to-registry@v2
         with:
-          image: "${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}"
+          image: "${{ env.CONTAINER_REGISTRY }}/${{ env.GHCR_USERNAME }}/${{ env.IMAGE_NAME }}"
           tags: ${{ steps.build-image.outputs.tags }}
           registry: ${{ env.CONTAINER_REGISTRY }}
           username: ${{ secrets.GHCR_USERNAME }}
