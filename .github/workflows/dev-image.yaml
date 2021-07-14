@@ -1,0 +1,70 @@
+name: Build Dev EE Image
+
+on: [push]
+
+env:
+  REGISTRY_URL: ghcr.io/kameshsampath
+  IMAGE_NAME: kubernetes-spices-ansible-runner
+  IMAGE_TAGS: latest
+  CONTAINER_RUNTIME: docker
+
+jobs:
+  build-dev-image:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          - 3.8
+    steps:
+      #      - name: "Dump GitHub Context"
+      #        env:
+      #          GITHUB_CONTEXT: "${{ toJson(github) }}"
+      #        run: |
+      #          echo "$GITHUB_CONTEXT"
+
+      - uses: actions/checkout@v2
+        with:
+          ref: "${{ github.event.ref }}"
+
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1.1.4
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        run: poetry install
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+
+      - name: Login to ghcr.io
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: kameshsampath
+          password: ${{ secrets.GHCR_PAT }}
+          logout: true
+
+      - name: Build the Ansible EE Image
+        id: build-image
+        run: |
+          poetry env use python
+          poetry run ansible-builder build \
+            --container-runtime $CONTAINER_RUNTIME \
+            --tag $IMAGE_TAG
+          $CONTAINER_RUNTIME push $IMAGE_TAG
+        env:
+          IMAGE_TAG: "${{ env.REGISTRY_URL }}/${{ env.IMAGE_NAME }}:latest"
+          CONTAINER_RUNTIME: "${{ env.CONTAINER_RUNTIME }}"
+        working-directory: "${{ github.workspace }}/builder-ee"
