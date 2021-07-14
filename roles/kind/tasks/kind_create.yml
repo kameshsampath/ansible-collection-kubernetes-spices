@@ -70,7 +70,7 @@
 - name: "Create kubeconfig file"
   become: no
   ansible.builtin.copy:
-    dest: "{{ kind_home_dir + '/' + cluster_name +'_kubeconfig' }}"
+    dest: "{{ kind_home_dir + '/' + cluster_name +'/config' }}"
     content: "{{ kubeconfig_result.stdout }}"
     mode: "0700"
     remote_src: true
