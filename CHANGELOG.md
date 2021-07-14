@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.0.8](https://www.github.com/kameshsampath/kubernetes_spices/compare/v0.0.7...v0.0.8) (2021-07-14)
+
+
+### Bug Fixes
+
+* KinD kubeconfig under cluster home dir ([6f8f10f](https://www.github.com/kameshsampath/kubernetes_spices/commit/6f8f10f3d1bb7a0e1f03cf26ec3e70714a178a90))
+
 ### [0.0.7](https://www.github.com/kameshsampath/kubernetes_spices/compare/v0.0.6...v0.0.7) (2021-07-14)
 
 
