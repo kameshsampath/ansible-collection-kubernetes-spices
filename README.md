@@ -1,7 +1,7 @@
 # Ansible Collection for Spicing Kubernetes Cluster with Apps
 
 [![Release Artifacts](https://github.com/kameshsampath/kubernetes_spices/actions/workflows/release.yml/badge.svg)](https://github.com/kameshsampath/kubernetes_spices/actions/workflows/release.yml)
-[![Build Dev EE Image](https://github.com/kameshsampath/kubernetes_spices/actions/workflows/dev-image.yaml/badge.svg)](https://github.com/kameshsampath/kubernetes_spices/actions/workflows/dev-image.yaml)
+[![Dev Ansible EE Image](https://github.com/kameshsampath/kubernetes_spices/actions/workflows/dev-image.yaml/badge.svg)](https://github.com/kameshsampath/kubernetes_spices/actions/workflows/dev-image.yaml)
 
 The [Ansible collection](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html) that can help in setting up Kubernetes cluster such as [KinD](https://kind.sigs.k8s.io) or deploy components to existing Kubernetes cluster.
 

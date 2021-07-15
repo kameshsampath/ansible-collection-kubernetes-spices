@@ -73,6 +73,10 @@ a|
   - "0.0.0.0:30443:30443"
 ----
 
+| extra_port_mappings_offset
+| The host port offset for the extra port mappings, e.g., if this value is 1 then all the ports mapped on the host will be offset by 100 i.e., `extra_port_mappings_offset * 1000`. This is very useful for multi cluster setup.
+| 0
+
 | disable_cni
 | Ability to disable the default `kindnetd` network plugin and deploy a custom network plugin
 | false
@@ -83,21 +87,21 @@ a|
 == Example playbooks
 
 [#kind-example-playbooks-create]
-=== Create KinD cluster with all defaults
+=== KinD cluster with all defaults
 
 [source,yaml]
 ----
 include::example$kind-vanilla.yaml[]
 ----
 
-=== Destroy KinD cluster with all defaults
+=== Destroy KinD cluster
 
 [source,yaml]
 ----
 include::example$kind-destroy.yaml[]
 ----
 
-=== Create KinD cluster with ipv6
+=== KinD cluster with ipv6
 
 [source,yaml]
 ----
@@ -143,3 +147,23 @@ include::example$kind-knative.yml[]
 ----
 include::example$kind-tektoncd.yml[]
 ----
+
+[#kind-example-playbooks-port-offset]
+=== KinD cluster with port offset
+
+KinD default configuration adds the following `extraPortMappings`, 
+[source,yaml]
+----
+  - "0.0.0.0:80:80"
+  - "0.0.0.0:443:443"
+  - "0.0.0.0:30080:30080"
+  - "0.0.0.0:30443:30443"
+----
+
+When you run multiple clusters then there will be a port clash on the host if another KinD cluster already running. To avoid that set the `extra_port_mappings_offset` to a positive integer to offset the ports shown:
+
+[source,yaml]
+----
+include::example$kind-vanilla-port-offset.yaml[]
+----
+<.> This configuration offsets all ports by `1*1000`

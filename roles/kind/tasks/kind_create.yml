@@ -9,11 +9,7 @@
     dest: "{{ kind_home_dir + '/' + cluster_name + '/' + kind_cluster_config }}"
     src: "kind-cluster-config.yml.j2"
     mode: "755"
-  when: kind_create_config
-
-- name: "Set {{ cluster_name }} config file"
-  set_fact:
-    kind_cluster_config_file: "{{ kind_home_dir + '/' + cluster_name + '/' + kind_cluster_config }}"
+  register: kind_cluster_config_file
   when: kind_create_config
 
 - name: "Start KinD Cluster: '{{ cluster_name }}'"
@@ -23,7 +19,7 @@
       - create
       - cluster
       - --name={{ cluster_name }}
-      - --config={{ kind_cluster_config_file }}
+      - --config={{ kind_cluster_config_file.dest }}
   register: kind_cluster_result
   when: (cluster_config is not defined and not cluster_check_result.exists)
 
