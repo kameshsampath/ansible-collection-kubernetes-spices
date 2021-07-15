@@ -6,5 +6,5 @@
     namespace: '{{ deployment_namespace }}'
   register: webhook_result
   until: ( webhook_result.resources[0].status.availableReplicas is defined) and (webhook_result.resources[0].status.availableReplicas == webhook_result.resources[0].status.replicas)
-  retries: 18
+  retries: 30
   delay: 10

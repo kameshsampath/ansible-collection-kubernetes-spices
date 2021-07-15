@@ -15,10 +15,8 @@ glooctl_version: "1.8.0"
 gloo_write_namespace: gloo-system
 gloo_proxy_nodeport: false
 gloo_discovery_enabled: true
-gloo_watch_namespaces:
-  - default
-  - gloo-system
-gloo_install_override_file:
+gloo_watch_namespaces: []
+gloo_install_override_files: []
   
 # Istio
 deploy_istio: false

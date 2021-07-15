@@ -42,7 +42,35 @@
   set_fact:
     glooctl_binary: "{{ansible_env.HOME}}/.local/bin/glooctl"
 
-    
+- name: "Ensure gloo write namespace is in gloo watch namespaces"
+  set_fact:
+    gloo_watch_namespaces: "{{ gloo_watch_namespaces + [ gloo_write_namespace ] }}"
+
+#- debug:
+#    var: gloo_watch_namespaces
+
+- name: "Create temporary gloo install directory"
+  ansible.builtin.tempfile:
+    state: directory
+    prefix: "{{ 'gloo_' + gloo_edge_edition + '_' }}"
+  register: gloo_install_tmpdir
+
+#- debug:
+#    var: gloo_install_tmpdir
+
+- name: "Create Gloo {{ gloo_edge_edition }} Helm Values"
+  template:
+    src: "gloo/{{ gloo_edge_edition }}/install-overrides.yaml.j2"
+    dest: "{{ gloo_install_tmpdir.path }}/install-overrides.yaml"
+  register: gloo_install_override_file
+
+- name: Add File to gloo install overrides
+  set_fact:
+    gloo_install_override_files: "{{ gloo_install_override_files + [gloo_install_override_file.dest] }}"
+
+#- debug:
+#    var: gloo_install_override_files
+
 ################################################################################
 ## Gloo Edge community
 ################################################################################
@@ -55,13 +83,14 @@
 
 - name: "Deploy Gloo Edge community"
   kubernetes.core.helm:
-    release_name: gloo
     chart_ref: "gloo/gloo"
-    values: "{{ lookup('template', 'gloo/' + gloo_edge_edition + '/install-overrides.yaml.j2') | from_yaml }}"
+    release_name: gloo
     release_namespace: "{{ gloo_write_namespace }}"
+    values_files: "{{ gloo_install_override_files }}"
     create_namespace: true
     update_repo_cache: true
-    wait: true
+    wait: "{{ true and gloo_proxy_nodeport }}"
+    wait_timeout: 5m
   when: gloo_edge_edition == 'ce'
 
 ################################################################################
@@ -79,24 +108,115 @@
     repo_url: "https://storage.googleapis.com/gloo-ee-helm"
   when: gloo_edge_edition == 'ee'
 
-#- name: "Debug Install values" 
-#  debug: msg="{{ lookup('template', 'gloo/' + gloo_edge_edition + '/install-overrides.yaml.j2') | from_yaml }}"
-  
+  #- name: "Debug Install values" 
+  #  debug: msg="{{ lookup('template', 'gloo/' + gloo_edge_edition + '/install-overrides.yaml.j2') | from_yaml }}"
+
 - name: "Deploy Gloo Enterprise Gateway"
   kubernetes.core.helm:
     release_name: gloo
     chart_ref: "glooe/gloo-ee"
-    values: "{{ lookup('template', 'gloo/' + gloo_edge_edition + '/install-overrides.yaml.j2') | from_yaml }}"
     release_namespace: "{{ gloo_write_namespace }}"
+    values_files: "{{ gloo_install_override_files }}"
     create_namespace: true
     update_repo_cache: true
-    wait: true
+    wait: "{{ true and gloo_proxy_nodeport }}"
   register: glooee_install
   when: gloo_edge_edition == 'ee'
 
-#- debug:
-#    var: glooee_install
-    
+  #- debug:
+  #    var: glooee_install
+
+- name: "Wait for Gloo Serving::discovery to be ready"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: discovery
+    deployment_namespace: "{{ gloo_write_namespace }}"
+  when: not gloo_proxy_nodeport and gloo_discovery_enabled
+
+- name: "Wait for Gloo Gateway::extauth to be ready"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: extauth
+    deployment_namespace: "{{ gloo_write_namespace }}"
+  when: not gloo_proxy_nodeport and gloo_edge_edition == 'ee'
+
+- name: "Wait for Gloo Gateway::gateway to be ready"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: gateway
+    deployment_namespace: "{{ gloo_write_namespace }}"
+  when: not gloo_proxy_nodeport
+
+- name: "Wait for Gloo Serving::gateway-proxy to be ready"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: gateway-proxy
+    deployment_namespace: "{{ gloo_write_namespace }}"
+  when: not gloo_proxy_nodeport
+
+- name: "Wait for Gloo Serving::gloo to be ready "
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: gloo
+    deployment_namespace: "{{ gloo_write_namespace }}"
+  when: not gloo_proxy_nodeport
+
+- name: "Wait for Gloo Serving::gloo-fed to be ready"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: gloo-fed
+    deployment_namespace: "{{ gloo_write_namespace }}"
+  when: not gloo_proxy_nodeport and gloo_edge_edition == 'ee'
+
+- name: "Wait for Gloo Serving::gloo-fed-console to be ready "
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: gloo-fed-console
+    deployment_namespace: "{{ gloo_write_namespace }}"
+  when: not gloo_proxy_nodeport and gloo_edge_edition == 'ee'
+
+- name: "Wait for Gloo Serving::glooe-grafana to be ready "
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: glooe-grafana
+    deployment_namespace: "{{ gloo_write_namespace }}"
+  when: not gloo_proxy_nodeport and gloo_edge_edition == 'ee'
+
+- name: "Wait for Gloo Serving::glooe-prometheus-kube-state-metrics to be ready "
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: glooe-prometheus-kube-state-metrics
+    deployment_namespace: "{{ gloo_write_namespace }}"
+  when: not gloo_proxy_nodeport and gloo_edge_edition == 'ee'
+
+- name: "Wait for Gloo Serving::glooe-prometheus-server to be ready "
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: glooe-prometheus-server
+    deployment_namespace: "{{ gloo_write_namespace }}"
+  when: not gloo_proxy_nodeport and gloo_edge_edition == 'ee'
+
+- name: "Wait for Gloo Serving::observability to be ready "
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: observability
+    deployment_namespace: "{{ gloo_write_namespace }}"
+  when: not gloo_proxy_nodeport and gloo_edge_edition == 'ee'
+
+- name: "Wait for Gloo Serving::rate-limit to be ready "
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: rate-limit
+    deployment_namespace: "{{ gloo_write_namespace }}"
+  when: not gloo_proxy_nodeport and gloo_edge_edition == 'ee'
+
+- name: "Wait for Gloo Serving::redis to be ready "
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: redis
+    deployment_namespace: "{{ gloo_write_namespace }}"
+  when: not gloo_proxy_nodeport and gloo_edge_edition == 'ee'
+
 ################################################################################
 ## Deploy Knative Ingress
 ################################################################################

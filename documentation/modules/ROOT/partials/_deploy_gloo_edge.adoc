@@ -41,12 +41,12 @@ The gloo variant to deploy, possible values are:
 
 | gloo_watch_namespaces
 | The namespaces to watch the gloo resources, takes a list of values
-a| 
-[source,yaml]
-----
- - default
- - gloo-system
-----
+| []
+
+| gloo_install_override_files
+| The gloo install Helm value override files. Check the https://docs.solo.io/gloo-edge/latest/reference/helm_chart_values/[Gloo Edge Community] or https://docs.solo.io/gloo-edge/latest/installation/enterprise/[Gloo Edge Enterprise] for various value overrides
+| []
+
 |===
 
 [#gloo-example-playbook]

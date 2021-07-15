@@ -82,7 +82,6 @@ builder-ee/Dockerfile
 .venv
 contour.yaml
 contour copy.yaml
-playbook.yml
 .vagrant
 *_kubeconfig
 yarn.lock
