@@ -35,4 +35,4 @@
 ## Handle default kubernetes context
 - name: "Add Kubernetes Spices to Default Kubernetes Context"
   include: run_on_k8s_context.yml
-  when: k8s_contexts is not defined or kind_create
+  when: k8s_contexts is defined or kind_create
