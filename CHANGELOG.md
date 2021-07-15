@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.0.11](https://www.github.com/kameshsampath/kubernetes_spices/compare/v0.0.10...v0.0.11) (2021-07-15)
+
+
+### Bug Fixes
+
+* run spices include logic update ([2f09c99](https://www.github.com/kameshsampath/kubernetes_spices/commit/2f09c99d15073ff018d317b73e40bb21e220a8be))
+
 ### [0.0.10](https://www.github.com/kameshsampath/kubernetes_spices/compare/v0.0.9...v0.0.10) (2021-07-15)
 
 
