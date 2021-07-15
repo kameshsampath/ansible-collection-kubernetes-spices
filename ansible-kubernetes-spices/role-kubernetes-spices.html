@@ -414,8 +414,13 @@
 <td class="tableblock halign-left valign-top"><p class="tableblock">ce</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">glooctl_version</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The <code>glooctl</code> version to download</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">gloo_deploy</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Deploy Gloo Edge , <code>true</code> deploy and <code>false</code> undeploy it</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">gloo_edge_version</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Gloo Edge version to download</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1.8.0</p></td>
 </tr>
 <tr>
@@ -441,12 +446,12 @@
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">gloo_watch_namespaces</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The namespaces to watch the gloo resources, takes a list of values</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml"> - default
- - gloo-system</code></pre>
-</div>
-</div></div></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[]</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">gloo_install_override_files</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The gloo install Helm value override files. Check the <a href="https://docs.solo.io/gloo-edge/latest/reference/helm_chart_values/">Gloo Edge Community</a> or <a href="https://docs.solo.io/gloo-edge/latest/installation/enterprise/">Gloo Edge Enterprise</a> for various value overrides</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[]</p></td>
 </tr>
 </tbody>
 </table>
