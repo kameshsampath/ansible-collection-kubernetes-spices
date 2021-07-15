@@ -30,7 +30,7 @@
     executable: /bin/bash
   register: glooctl_stat
   changed_when: false
-  
+
 #- debug:
 #    var: glooctl_stat
 

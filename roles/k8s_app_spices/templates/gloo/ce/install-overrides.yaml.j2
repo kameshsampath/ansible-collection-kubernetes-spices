@@ -14,6 +14,8 @@ gatewayProxies:
   gatewayProxy:
     service:
       type: NodePort
-      httpNodePort: 30080
-      httpsNodePort: 30443
+      {% if control_plane_port_mappings is defined and kind_create %}
+      httpNodePort:  {{ control_plane_port_mappings['30080']  | default(30080) }}
+      httpsNodePort: {{ control_plane_port_mappings['30443']  | default(30443) }}
+      {% endif %}
 {% endif %}

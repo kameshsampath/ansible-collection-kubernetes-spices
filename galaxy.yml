@@ -66,4 +66,4 @@ build_ignore:
   - "work"
   - "hacking"
   - "collections"
-  - "modules/my_test.py"
+  - "filter/my_test.py"

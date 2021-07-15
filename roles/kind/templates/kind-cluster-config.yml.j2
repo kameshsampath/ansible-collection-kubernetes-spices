@@ -24,9 +24,12 @@ nodes:
           node-labels: "ingress-ready=true"
   extraPortMappings:
   {% for m in extra_port_mappings %}
-    {% set hostPortOffset = ( extra_port_mappings_offset | int ) * 1000 %}
-    {% set hostPort = ( m.split(':')[1] | int ) +  hostPortOffset %}
-    - containerPort: {{ m.split(':')[2] }}
+    {% set hostPort = ( m.split(':')[1] | int ) | kameshsampath.kubernetes_spices.offset_port %}
+    {% set containerPort =  m.split(':')[2] | int  %}
+    {% if hostPort == containerPort %}
+        {% set containerPort = hostPort  %}
+    {% endif %}
+    - containerPort: {{ containerPort }}
       hostPort: {{ hostPort }}
       {% if kind_ip_family == "ipv6" and m.split(':')[0] == "0.0.0.0" %}
       listenAddress: "::"

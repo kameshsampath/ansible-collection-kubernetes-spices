@@ -34,7 +34,7 @@
       - "0.0.0.0:{{ container_registry_port }}:5000"
 
 ## Document KinD registry
-- name: "Start KinD Cluster: '{{ cluster_name }}'"
+- name: "Get KinD Cluster: '{{ cluster_name }}' kubeconfig"
   become: no
   ansible.builtin.command:
     argv:
@@ -70,3 +70,12 @@
     content: "{{ kubeconfig_result.stdout }}"
     mode: "0700"
     remote_src: true
+
+- name: "Get {{ cluster_name }} Control Plane Ports"
+  community.docker.docker_container_info:
+    name: "{{ cluster_name }}-control-plane"
+  register: control_plane_ports
+
+- name: "Set {{ cluster_name }} Control Plane Ports Fact"
+  set_fact:
+    control_plane_port_mappings: "{{ control_plane_ports.container.NetworkSettings.Ports | kameshsampath.kubernetes_spices.port_mapping }}"
