@@ -1,0 +1,48 @@
+---
+################################################################################
+## Gloo Edge community
+################################################################################
+
+- name: "Add Gloo Community chart repo"
+  kubernetes.core.helm_repository:
+    name: gloo
+    repo_url: "https://storage.googleapis.com/solo-public-helm"
+  when: gloo_edge_edition == 'ce'
+
+- name: "Undeploy Gloo Edge community v{{ gloo_edge_version }}"
+  kubernetes.core.helm:
+    chart_ref: "gloo/gloo"
+    chart_version: "{{ gloo_edge_version }}"
+    release_name: gloo
+    release_namespace: "{{ gloo_write_namespace }}"
+    wait: true
+    state: absent
+  when: gloo_edge_edition == 'ce'
+
+################################################################################
+## Gloo Edge Enterprise
+################################################################################
+
+- name: "Add Gloo Edge enterprise chart repo"
+  kubernetes.core.helm_repository:
+    name: glooe
+    repo_url: "https://storage.googleapis.com/gloo-ee-helm"
+  when: gloo_edge_edition == 'ee'
+
+- name: "Undeploy Gloo Enterprise v{{ gloo_edge_version }}"
+  kubernetes.core.helm:
+    release_name: gloo
+    chart_ref: "glooe/gloo-ee"
+    chart_version: "{{ gloo_edge_version }}"
+    release_namespace: "{{ gloo_write_namespace }}"
+    wait: "{{ true and gloo_proxy_nodeport }}"
+    state: absent
+  when: gloo_edge_edition == 'ee'
+
+- name: "Delete the Gloo Write namespace"
+  kubernetes.core.k8s:
+     kind: Namespace
+     api_version: v1
+     name: "{{ gloo_write_namespace }}"
+     state: absent
+     wait: true

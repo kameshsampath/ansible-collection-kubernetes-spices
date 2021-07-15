@@ -16,6 +16,7 @@
 - name: "asdf-vm source path"
   set_fact:
     asdf_sh: "{{ ansible_env.HOME }}/.asdf/asdf.sh"
+  when: asdf_sh is not defined
 
 - name: Check if helm is installed
   command:

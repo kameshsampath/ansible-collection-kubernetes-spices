@@ -1,46 +1,43 @@
 ---
-- name: Check if glooctl is installed
-  command:
-    argv:
-      - glooctl
-      - version
-  register: glooctl_result
-  ignore_errors: True
-  changed_when: False
+- name: "Add asdf-vm glooctl plugin"
+  become: no
+  ansible.builtin.shell: |
+    source "{{ asdf_sh }}"
+    asdf plugin-add glooctl https://github.com/kameshsampath/asdf-glooctl
+    asdf install glooctl "{{ gloo_edge_version }}"
+    asdf local glooctl "{{ gloo_edge_version }}"
+    asdf reshim glooctl
+  args:
+    executable: /bin/bash
+  changed_when: false
 
-- name: Set glooctl macOS download binary
+- name: "Ensure glooctl version is {{ gloo_edge_version }}"
+  become: no
+  ansible.builtin.shell: |
+    source "{{ asdf_sh }}"
+    asdf current glooctl | awk '{print $2}'
+  args:
+    executable: /bin/bash
+  register: glooctl_version_result
+  changed_when: false
+
+- name: "Get glooctl installation path"
+  become: no
+  ansible.builtin.shell: |
+    source "{{ asdf_sh }}"
+    asdf where glooctl
+  args:
+    executable: /bin/bash
+  register: glooctl_stat
+  changed_when: false
+  
+#- debug:
+#    var: glooctl_stat
+
+- name: "Set glooctl Revision and Binary"
+  become: no
   set_fact:
-    glooctl_download_binary: "https://github.com/solo-io/gloo/releases/download/v{{glooctl_version}}/glooctl-darwin-amd64"
-  when: glooctl_result.rc != 0 and ansible_os_family == "Darwin"
-
-- name: Set glooctl Linux download binary
-  set_fact:
-    glooctl_download_binary: "https://github.com/solo-io/gloo/releases/download/v{{glooctl_version}}/glooctl-linux-amd64"
-  when: glooctl_result.rc != 0 and (ansible_os_family == "RedHat" or ansible_os_family == "CentOS" or ansible_os_family == "Debian")
-
-- name: Set glooctl Windows download binary
-  set_fact:
-    glooctl_download_binary: "https://github.com/solo-io/gloo/releases/download/v{{glooctl_version}}/{{ glooctl_version }}/glooctl-windows-amd64.exe"
-  when: glooctl_result.rc != 0 and ansible_os_family == "Windows"
-
-- name: Create user local bin directory
-  file:
-    path: "{{ansible_env.HOME}}/.local/bin"
-    state: directory
-  when: glooctl_result.rc != 0
-
-- name: Download glooctl binary
-  get_url:
-    url: "{{ glooctl_download_binary }}"
-    dest: "{{ansible_env.HOME}}/.local/bin/glooctl"
-    checksum: "sha256:{{glooctl_download_binary}}.sha256"
-    mode: "0755"
-  when: glooctl_result.rc != 0
-  register: downloaded_glooctl
-
-- name: set glooctl binary fact
-  set_fact:
-    glooctl_binary: "{{ansible_env.HOME}}/.local/bin/glooctl"
+    glooctl_binary: "{{ glooctl_stat.stdout }}/bin/glooctl"
 
 - name: "Ensure gloo write namespace is in gloo watch namespaces"
   set_fact:
@@ -81,9 +78,10 @@
     repo_url: "https://storage.googleapis.com/solo-public-helm"
   when: gloo_edge_edition == 'ce'
 
-- name: "Deploy Gloo Edge community"
+- name: "Deploy Gloo Edge community v{{ gloo_edge_version }}"
   kubernetes.core.helm:
     chart_ref: "gloo/gloo"
+    chart_version: "{{ gloo_edge_version }}"
     release_name: gloo
     release_namespace: "{{ gloo_write_namespace }}"
     values_files: "{{ gloo_install_override_files }}"
@@ -111,10 +109,11 @@
   #- name: "Debug Install values" 
   #  debug: msg="{{ lookup('template', 'gloo/' + gloo_edge_edition + '/install-overrides.yaml.j2') | from_yaml }}"
 
-- name: "Deploy Gloo Enterprise Gateway"
+- name: "Deploy Gloo Enterprise v{{ gloo_edge_version }}"
   kubernetes.core.helm:
     release_name: gloo
     chart_ref: "glooe/gloo-ee"
+    chart_version: "{{ gloo_edge_version }}"
     release_namespace: "{{ gloo_write_namespace }}"
     values_files: "{{ gloo_install_override_files }}"
     create_namespace: true

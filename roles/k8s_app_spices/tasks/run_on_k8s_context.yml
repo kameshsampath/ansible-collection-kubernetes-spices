@@ -34,6 +34,10 @@
   include_tasks: gloo_edge.yml
   when: deploy_gloo_edge
 
+- name: "Undeploy Gloo Edge"
+  include_tasks: rollback/gloo_edge.yml
+  when: not deploy_gloo_edge
+
 ######################################
 ## Knative Serving and Eventing
 ######################################

@@ -19,8 +19,12 @@ The gloo variant to deploy, possible values are:
 * **ce** for community edition
 | ce
 
-| glooctl_version
-| The `glooctl` version to download
+| gloo_deploy
+| Deploy Gloo Edge , `true` deploy and `false` undeploy it
+| false
+
+| gloo_edge_version
+| The Gloo Edge version to download
 | 1.8.0
 
 | gloo_write_namespace

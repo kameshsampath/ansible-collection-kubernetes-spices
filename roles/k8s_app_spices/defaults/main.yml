@@ -11,7 +11,7 @@ helm_version: "3.6.2"
 # Gloo Edge
 deploy_gloo_edge: false
 gloo_edge_edition: ce
-glooctl_version: "1.8.0"
+gloo_edge_version: "1.8.0"
 gloo_write_namespace: gloo-system
 gloo_proxy_nodeport: false
 gloo_discovery_enabled: true
