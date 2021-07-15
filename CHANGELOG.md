@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.0.9](https://www.github.com/kameshsampath/kubernetes_spices/compare/v0.0.8...v0.0.9) (2021-07-15)
+
+
+### Bug Fixes
+
+* add KinD extraPortMappings offset ([bc11c53](https://www.github.com/kameshsampath/kubernetes_spices/commit/bc11c5380add2e4f664141280bb3b0b56983b080))
+
 ### [0.0.8](https://www.github.com/kameshsampath/kubernetes_spices/compare/v0.0.7...v0.0.8) (2021-07-14)
 
 
