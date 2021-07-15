@@ -1,5 +1,13 @@
 # Changelog
 
+### [0.0.10](https://www.github.com/kameshsampath/kubernetes_spices/compare/v0.0.9...v0.0.10) (2021-07-15)
+
+
+### Bug Fixes
+
+* ability to uninstall gloo ([271e607](https://www.github.com/kameshsampath/kubernetes_spices/commit/271e6078f7945477355aeb68c2dfd7a8e6be6ac4))
+* gloo install wait conditions with and without nodeport ([19b9c2d](https://www.github.com/kameshsampath/kubernetes_spices/commit/19b9c2d6903bd737e725d59e8fca599e955ef807))
+
 ### [0.0.9](https://www.github.com/kameshsampath/kubernetes_spices/compare/v0.0.8...v0.0.9) (2021-07-15)
 
 
