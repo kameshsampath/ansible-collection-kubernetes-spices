@@ -223,11 +223,6 @@
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">extra_port_mappings_offset</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The host port offset for the extra port mappings, e.g., if this value is 1 then all the ports mapped on the host will be offset by 100 i.e., <code>extra_port_mappings_offset * 1000</code>. This is very useful for multi cluster setup.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">disable_cni</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Ability to disable the default <code>kindnetd</code> network plugin and deploy a custom network plugin</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
@@ -469,50 +464,6 @@
     - role: kameshsampath.kubernetes_spices.kind
     - role: kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
 </div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="kind-example-playbooks-port-offset"><a class="anchor" href="#kind-example-playbooks-port-offset"></a>KinD cluster with port offset</h3>
-<div class="paragraph">
-<p>KinD default configuration adds the following <code>extraPortMappings</code>,</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">  - "0.0.0.0:80:80"
-  - "0.0.0.0:443:443"
-  - "0.0.0.0:30080:30080"
-  - "0.0.0.0:30443:30443"</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>When you run multiple clusters then there will be a port clash on the host if another KinD cluster already running. To avoid that set the <code>extra_port_mappings_offset</code> to a positive integer to offset the ports shown:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
-- name: vanilla-2
-  hosts: localhost
-  connection: local
-
-  collections:
-    - kubernetes.core
-
-  vars:
-    cluster_name: vanilla-2
-    kind_create: true
-    extra_port_mappings_offset: 1 <i class="conum" data-value="1"></i><b>(1)</b>
-
-  roles:
-    - role: kameshsampath.kubernetes_spices.kind</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>This configuration offsets all ports by <code>1*1000</code></td>
-</tr>
-</table>
 </div>
 </div>
 </div>
