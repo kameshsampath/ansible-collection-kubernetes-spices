@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.0.12](https://www.github.com/kameshsampath/kubernetes_spices/compare/v0.0.11...v0.0.12) (2021-07-15)
+
+
+### Bug Fixes
+
+* mapping gloo nodeport to kind node ports ([3823c66](https://www.github.com/kameshsampath/kubernetes_spices/commit/3823c66364257019bab465b0b83da9c1887689b7)), closes [#12](https://www.github.com/kameshsampath/kubernetes_spices/issues/12)
+
 ### [0.0.11](https://www.github.com/kameshsampath/kubernetes_spices/compare/v0.0.10...v0.0.11) (2021-07-15)
 
 
