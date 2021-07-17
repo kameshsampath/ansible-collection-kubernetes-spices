@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.0.13](https://www.github.com/kameshsampath/kubernetes_spices/compare/v0.0.12...v0.0.13) (2021-07-17)
+
+
+### Bug Fixes
+
+* add keycloak and postgres apps ([8c9b1b4](https://www.github.com/kameshsampath/kubernetes_spices/commit/8c9b1b4405456851ec516a93100ec3320211b56a))
+
 ### [0.0.12](https://www.github.com/kameshsampath/kubernetes_spices/compare/v0.0.11...v0.0.12) (2021-07-15)
 
 
