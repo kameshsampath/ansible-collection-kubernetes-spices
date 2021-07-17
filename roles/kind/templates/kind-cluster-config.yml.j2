@@ -26,7 +26,7 @@ nodes:
   {% for m in extra_port_mappings %}
     {% set hostPort = ( m.split(':')[1] | int ) | kameshsampath.kubernetes_spices.offset_port %}
     {% set containerPort =  m.split(':')[2] | int  %}
-    {% if hostPort == containerPort %}
+    {% if m.split(':')[1] ==  m.split(':')[2] %}
         {% set containerPort = hostPort  %}
     {% endif %}
     - containerPort: {{ containerPort }}

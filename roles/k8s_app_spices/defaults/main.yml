@@ -8,6 +8,11 @@ asdf_version: v0.8.1
 # Helm
 helm_version: "3.6.2"
 
+# Operator Lifecycle Manager 
+deploy_olm: false
+olm_version: "v0.18.2"
+olm_namespace: olm
+
 # Gloo Edge
 deploy_gloo_edge: false
 gloo_edge_edition: ce
@@ -21,9 +26,15 @@ gloo_install_override_files: []
 # Istio
 deploy_istio: false
 istio_versions: 
-  - "1.8.6"
+  - "1.10.2"
 istio_namespace: istio-system
 deploy_istio_gateway: false
+
+# Keycloak
+deploy_keycloak: false
+keycloak_namespace: keycloak
+keycloak_admin_user: admin
+keycloak_admin_password: admin
 
 #Knative
 deploy_knative: false
@@ -37,8 +48,12 @@ registries_skip_tag_resolving:
   - test.org
   - ko.local
   - dev.local
-  - "localhost:5000"
+  - localhost:5000
   - kind-registry.local:5000
+
+#Postgresql
+deploy_postgresql: false
+postgresql_namespace: db
 
 #Tektoncd
 deploy_tektoncd: false

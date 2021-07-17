@@ -10,7 +10,7 @@
     src: "kind-cluster-config.yml.j2"
     mode: "755"
   register: kind_cluster_config_file
-  when: kind_create_config
+  when: not cluster_check_result.exists and kind_create_config
 
 - name: "Start KinD Cluster: '{{ cluster_name }}'"
   ansible.builtin.command:

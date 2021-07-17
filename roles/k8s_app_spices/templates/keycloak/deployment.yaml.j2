@@ -1,0 +1,52 @@
+#jinja2: lstrip_blocks: "True"
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  namespace: {{ keycloak_namespace }}
+  labels:
+    app: keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      {% if kind_create %}
+      nodeSelector:
+         node-role.kubernetes.io/master: ""
+      tolerations:
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+      {% endif %}
+      containers:
+      - name: keycloak
+        image: quay.io/keycloak/keycloak:14.0.0
+        env:
+        - name: KEYCLOAK_USER
+          value: {{ keycloak_admin_user }}
+        - name: KEYCLOAK_PASSWORD
+          value: {{ keycloak_admin_password }}
+        - name: PROXY_ADDRESS_FORWARDING
+          value: "true"
+        ports:
+        - name: http
+          {% if control_plane_port_mappings is defined and kind_create %}
+          hostPort: {{ control_plane_port_mappings['8080']  | default(8080) }}
+          {% endif %}
+          containerPort: 8080
+        - name: https
+          {% if control_plane_port_mappings is defined and kind_create %}
+          hostPort: {{ control_plane_port_mappings['8443']  | default(8443) }}
+          {% endif %}
+          containerPort: 8443
+        readinessProbe:
+          httpGet:
+            path: /auth/realms/master
+            port: 8080
+        

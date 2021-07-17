@@ -22,6 +22,10 @@
 - name: "Install Tools"
   include: tools.yml
 
+- name: "Setup Operator Lifecycle Manager(OLM)"
+  include: olm.yml
+  when: deploy_olm 
+
 ## Handling multiple kubernetes contexts
 - name: "Add Kubernetes Spices"
   include: run_on_k8s_context.yml

@@ -56,7 +56,7 @@
     ISTIO_BINARY: "{{ istio_binary }}"
     ISTIO_NAMESPACE: "{{ istio_namespace }}"
     CONTROL_PLANE_MANIFEST: "{{ lookup('template','istio/istio-control-plane.yaml.j2') }}"
-    ISTIOD_SERVICE_MANIFEST: "{{ lookup('template','istio/istiod-service.yaml.j2') }}"
+    ISTIOD_SERVICE_MANIFEST: "{{ lookup('template','istio/istiod-service.yaml.j2.j2.j2') }}"
   register: istio_install
   changed_when: false
 

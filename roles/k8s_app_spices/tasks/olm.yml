@@ -1,0 +1,49 @@
+---
+
+- name: "Create temporary for olm manifests"
+  ansible.builtin.tempfile:
+    state: directory
+    prefix: "{{ 'olm_' + olm_version}}"
+  register: olm_manifest_dir
+
+- name: "Get OLM Manifests"
+  get_url:
+    dest: "{{ olm_manifest_dir.path }}"
+    url: "{{ item }}"
+  delegate_to: localhost
+  with_items:
+    - "https://github.com/operator-framework/operator-lifecycle-manager/releases/download/{{ olm_version }}/crds.yaml"
+    - "https://github.com/operator-framework/operator-lifecycle-manager/releases/download/{{ olm_version }}/olm.yaml"
+
+- name: "Create OLM crds"
+  kubernetes.core.k8s:
+    src: "{{ olm_manifest_dir.path +'/crds.yaml' }}"
+    state: present
+    wait: yes
+    wait_condition:
+      type: Established
+  register: olm_crds_installed
+
+- name: "Deploy OLM Operators"
+  kubernetes.core.k8s:
+    src: "{{ olm_manifest_dir.path +'/olm.yaml'}}"
+    state: present
+  register: olm_crds_installed
+
+- name: "Wait for OLM Operator"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: "olm-operator"
+    deployment_namespace: "{{ olm_namespace }}"
+
+- name: "Wait for Catalog Operator"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: "catalog-operator"
+    deployment_namespace: "{{ olm_namespace }}"
+
+- name: "Wait for Cluster Service Version::packageserver"
+  include_tasks: utils/k8s_csv_status.yml
+  vars:
+    csv_name: packageserver
+    csv_namespace: "{{ olm_namespace }}"

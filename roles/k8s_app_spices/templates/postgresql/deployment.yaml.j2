@@ -1,0 +1,52 @@
+#jinja2: lstrip_blocks: "True"
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgresql
+  namespace: {{ postgresql_namespace }}
+  labels:
+    app: postgresql
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: postgresql
+      labels:
+        app: postgresql
+    spec:
+      volumes:
+        - name: pgdata
+          persistentVolumeClaim:
+            claimName: pgdata-pvc
+      containers:
+        - name: postgresql
+          image: postgres:13.2-alpine
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: pgsql-credentials
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: pgsql-credentials
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  key: database
+                  name: pgsql-credentials
+          ports:
+             containerPort: 5432
+            {% if control_plane_port_mappings is defined and kind_create %}
+             hostPort: {{ control_plane_port_mappings['8080']  | default(8080) }}
+            {% endif %}
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: pgdata
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: postgresql

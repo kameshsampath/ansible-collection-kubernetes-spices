@@ -1,0 +1,16 @@
+---
+- name: "Wait for Cluster Service Version {{ csv_name }}"
+  kubernetes.core.k8s_info:
+    kind: "ClusterServiceVersion"
+    api_version: "v1alpha1"
+    name: "{{ csv_name }}"
+    namespace: '{{ csv_namespace }}'
+  register: csv_result
+  until:
+    - csv_result.resources is defined
+    - csv_result.resources | length  == 1
+    - csv_result.resources[0].status is defined
+    - csv_result.resources[0].status.phase is defined
+    - csv_result.resources[0].status.phase == 'Succeeded'
+  retries: 30
+  delay: 10

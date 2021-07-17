@@ -39,12 +39,26 @@
   when: not deploy_gloo_edge
 
 ######################################
+## Keycloak
+######################################
+- name: Deploy Keycloak
+  include_tasks: keycloak.yml
+  when: deploy_keycloak
+
+######################################
 ## Knative Serving and Eventing
 ######################################
 - name: Deploy Knative Serving and Eventing
   include_tasks: knative.yml
   when: deploy_knative
-
+  
+######################################
+## Postgresql Database
+######################################
+- name: Deploy Postgresql Database
+  include_tasks: postgresql.yml
+  when: deploy_postgresql
+  
 ###################################
 # Tektoncd
 ###################################

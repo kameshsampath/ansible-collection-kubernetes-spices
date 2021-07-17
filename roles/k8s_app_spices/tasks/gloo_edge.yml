@@ -65,9 +65,14 @@
   set_fact:
     gloo_install_override_files: "{{ gloo_install_override_files + [gloo_install_override_file.dest] }}"
 
-#- debug:
-#    var: gloo_install_override_files
+- set_fact:
+    temp_file: "{{ lookup('file',gloo_install_tmpdir.path +'/install-overrides.yaml') | from_yaml }}"
 
+- debug:
+    var: temp_file
+
+- fail:
+    msg: "check point"
 ################################################################################
 ## Gloo Edge community
 ################################################################################
@@ -106,9 +111,8 @@
     repo_url: "https://storage.googleapis.com/gloo-ee-helm"
   when: gloo_edge_edition == 'ee'
 
-  #- name: "Debug Install values" 
+  #- name: "Debug Install values"
   #  debug: msg="{{ lookup('template', 'gloo/' + gloo_edge_edition + '/install-overrides.yaml.j2') | from_yaml }}"
-
 - name: "Deploy Gloo Enterprise v{{ gloo_edge_version }}"
   kubernetes.core.helm:
     release_name: gloo
@@ -124,7 +128,6 @@
 
   #- debug:
   #    var: glooee_install
-
 - name: "Wait for Gloo Serving::discovery to be ready"
   include_tasks: utils/k8s_deployment_status.yml
   vars:

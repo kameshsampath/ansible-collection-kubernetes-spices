@@ -1,0 +1,25 @@
+---
+- name: "Create Postgresql Namespace"
+  kubernetes.core.k8s:
+    kind: Namespace
+    api_version: v1
+    name: "{{ postgresql_namespace }}"
+    state: present
+  
+- name: "Create Keycloak Service"
+  kubernetes.core.k8s:
+    template: postgresql/service.yaml.j2
+    state: present
+  register: keycloak_deploy
+  
+- name: "Deploy Postgresql"
+  kubernetes.core.k8s:
+    template: postgresql/deployment.yaml.j2
+    state: present
+  register: keycloak_deploy
+
+- name: "Wait for Postgresql::deploy"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: postgresql
+    deployment_namespace: "{{ postgresql_namespace }}"
