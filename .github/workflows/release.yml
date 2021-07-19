@@ -1,4 +1,4 @@
-name: Release Artifacts
+name: Ansible Runner
 
 on:
   release:
@@ -7,100 +7,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  attach-collection-artifacts:
-    runs-on: ubuntu-latest
-    env:
-      DIST_DIR: dist
-    strategy:
-      matrix:
-        python-version:
-          - 3.8
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          ref: "${{ github.event.ref }}"
-
-      - name: Setup python
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install Poetry
-        uses: snok/install-poetry@v1.1.4
-        with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v2
-        with:
-          path: .venv
-          key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
-
-      - name: Install dependencies
-        run: poetry install
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-
-      - name: Build the Ansible Collections tarball
-        id: build-collection
-        run: |
-          poetry env use python
-          poetry run ansible-galaxy collection build --out $DIST_OUT_DIR
-        env:
-          DIST_OUT_DIR: "${{ github.workspace }}/${{ env.DIST_DIR }}"
-          
-      - name: Extract Release Semantic Version
-        id: collection-info
-        env:
-          GALAXY_VERSION: "${{ github.event.release.tag_name }}"
-        run: |
-          echo "::set-output name=galaxy_version::${GALAXY_VERSION#*v}"
-          echo "::set-output name=collection_tarfile::kameshsampath-kubernetes_spices-${GALAXY_VERSION#*v}.tar.gz"
-            
-      - name: "Attach Artifacts to Release"
-        uses: actions/github-script@v4.0.1
-        env:
-          TAG_NAME: ${{ github.event.release.tag_name }}
-          ASSET_NAME: "kameshsampath-kubernetes_spices-${{ steps.collection-version.outputs.galaxy_version }}"
-          ASSET_FILE: "${{ github.workspace }}/${{ env.DIST_DIR }}/${{ steps.collection-version.outputs.collection_tarfile }}"
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            const fs = require('fs')
-            const {TAG_NAME} = process.env
-            const {ASSET_FILE} = process.env
-            const {ASSET_NAME} = process.env
-            const {payload} = context
-
-            const owner = payload.repository.owner.login
-            const repo =  payload.repository.name
-
-            // console.log("Context Repository %s and Owner is %s",repo,owner)
-
-             const { data } = await github.request(`GET /repos/${owner}/${repo}/releases/tags/{tag}`, {
-               tag: TAG_NAME
-             }).catch(err => {
-               console.error("Error getting release %s", JSON.stringify(err.errors))
-             })
-
-             const upload_url = data.upload_url
-
-             const uploadAsset = await github.request({
-              method: "POST",
-              url: upload_url,
-              name: `${ASSET_NAME}.tar.gz`,
-              headers: {
-                "content-type": "application/zip",
-              },
-              data: fs.readFileSync(ASSET_FILE)
-             }).catch(err => {
-               console.log("Error uploading asset %s", err)
-             })
-
-            console.log("Asset upload --> %s ",uploadAsset)
-
-
   ansible-builder-ee:
     runs-on: ubuntu-latest
     env:
