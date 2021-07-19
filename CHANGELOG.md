@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.1.0](https://www.github.com/kameshsampath/kubernetes_spices/compare/v0.0.12...v0.1.0) (2021-07-19)
+
+
+### Features
+
+* kubectx inventory ([d3b57c0](https://www.github.com/kameshsampath/kubernetes_spices/commit/d3b57c0c90824554adf5261315e3787b284cc338))
+* use kubectx inventory ([32759b0](https://www.github.com/kameshsampath/kubernetes_spices/commit/32759b06aef7bf40167067c40454fedc060f0f64))
+
+
+### Bug Fixes
+
+* add keycloak and postgres apps ([8c9b1b4](https://www.github.com/kameshsampath/kubernetes_spices/commit/8c9b1b4405456851ec516a93100ec3320211b56a))
+* Bump Galaxy version to 0.0.13 ([5e12b4f](https://www.github.com/kameshsampath/kubernetes_spices/commit/5e12b4ffcf49b15a96525fcdf1cad6e11670e33b))
+* set cluster ip only when no k8s_contexts ([17e18c9](https://www.github.com/kameshsampath/kubernetes_spices/commit/17e18c9fe03e3848a102eb64ce36343fbf6920e5))
+* set cluster ip only when no k8s_contexts ([867bd90](https://www.github.com/kameshsampath/kubernetes_spices/commit/867bd90e4d154f8ba7fca24226ec589bb443b621))
+
 ### [0.0.13](https://www.github.com/kameshsampath/kubernetes_spices/compare/v0.0.12...v0.0.13) (2021-07-17)
 
 
