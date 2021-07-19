@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Ansible Collection Kubernetes Spices :: Ansible Collection Kubernetes Spices</title>
     <link rel="canonical" href="https://kameshsampath.github.com/kubernetes_spices/ansible-kubernetes-spices/running.html">
-    <link rel="prev" href="common-variables.html">
+    <link rel="prev" href="plugins.html">
     <meta name="generator" content="Antora 2.3.4">
     <link rel="stylesheet" href="../_/css/site.css">
     <script>var uiRootPath = '../_'</script>
@@ -45,7 +45,7 @@
   </li>
   <li class="nav-item" data-depth="1">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="common-variables.html">Roles</a>
+    <a class="nav-link" href="roles.html">Roles</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="role-kubernetes-kind.html">KinD</a>
@@ -55,23 +55,41 @@
     <a class="nav-link" href="role-kubernetes-spices.html">Kubernetes Spices</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="role-kubernetes-spices.html#deploy-isito">Deploy Istio</a>
+    <a class="nav-link" href="role-kubernetes-spices.html#deploy-gloo-edge">Gloo Edge</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="role-kubernetes-spices.html#deploy-knative">Deploy Knative</a>
+    <a class="nav-link" href="role-kubernetes-spices.html#deploy-isito">Istio</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="role-kubernetes-spices.html#deploy-gloo-edge">Deploy Gloo Edge</a>
+    <a class="nav-link" href="role-kubernetes-spices.html#deploy-knative">Knative</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="role-kubernetes-spices.html#deploy-tektoncd">Deploy Tekton</a>
+    <a class="nav-link" href="role-kubernetes-spices.html#deploy-keycloak">Keycloak</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="role-kubernetes-spices.html#deploy-olm">Operator Lifecyle Manager(OLM)</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="role-kubernetes-spices.html#deploy-postgresql">PostrgeSQL</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="role-kubernetes-spices.html#deploy-tektoncd">Tekton</a>
   </li>
 </ul>
   </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="common-variables.html">Common Variables</a>
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="plugins.html">Ansible Plugins</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="plugins.html#inventory">Inventory</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="plugins.html#filters">Filters</a>
+  </li>
+</ul>
   </li>
   <li class="nav-item is-current-page" data-depth="1">
     <a class="nav-link" href="running.html">Running Playbooks</a>
@@ -121,43 +139,115 @@
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>The playbooks could be run using the <a href="https://ansible-builder.readthedocs.io/en/latest/index.html">Ansible Execution</a> environment.</p>
-</div>
-<div class="paragraph">
-<p>The collection builds ansible execution environment and publishes them at <code>quay.io/kameshsampath/kubernetes-spices-ansible-runner</code>.</p>
-</div>
-<div class="admonitionblock warning">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-warning" title="Warning"></i>
-</td>
-<td class="content">
-This page is not complete, a working example will be added soon
-</td>
-</tr>
-</table>
+<p>The playbooks could be run using the <a href="https://ansible-builder.readthedocs.io/en/latest/index.html">Ansible Execution</a> environment. The following sections details how to use the Kubernetes Spice Runner environment to run the playbooks to setup your kubernetes stack.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_running_a_playbook"><a class="anchor" href="#_running_a_playbook"></a>Running a playbook</h2>
+<h2 id="runer-gh-template"><a class="anchor" href="#runer-gh-template"></a>Template project</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To run a playbook you need to create directory structure as explained in <a href="https://ansible-runner.readthedocs.io/en/stable/intro.html#inputdir">Runner Input Directory Hierarchy</a>. Once you have that, you can run the playbook like,</p>
+<p>There is GitHub template project <a href="https://github.com/kameshsampath/kubernetes-spice-runner" target="_blank" rel="noopener">kubernetes-spice-runner</a> that allows you run the playbooks of this collection.</p>
 </div>
 <div class="listingblock">
-<div class="title">run.sh</div>
 <div class="content">
-<pre class="highlightjs highlight"><code>docker run -it --rm --name=ansible-runner \
-  -v `pwd`:/project \
-  quay.io/kameshsampath/kubernetes-spices-ansible-runner</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">gh repo create my-k8s-demos -d"my kubernetes spice runner project" -p kameshsampath/kubernetes-spice-runner</code></pre>
 </div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="running-playbook"><a class="anchor" href="#running-playbook"></a>Running a playbook</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The directory structure follows the <a href="https://ansible-runner.readthedocs.io/en/stable/intro.html#runner-input-directory-hierarchy">Ansible Runner Directory</a> structure.</p>
+</div>
+<div class="paragraph">
+<p>All the variables that you need pass to the Ansible playbooks can be specified in <code>$PROJECT_HOME/setup/extravars</code>.</p>
+</div>
+<div class="paragraph">
+<p>Make a copy of <code>$PROJECT_HOME/hack/env/extravars.example</code> to <code>$PROJECT_HOME/hack/env/extravars</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cp $PROJECT_HOME/hack/env/extravars.example $PROJECT_HOME/hack/env/extravars</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Update the extra vars with the parameters corresponding to the stack you want to install. Refer to <a href="roles.html#roles-overview" class="page">roles</a> to find what you can install.</p>
+</div>
+<div class="paragraph">
+<p>The following example shows the <code>extravars</code> that will create a local KinD cluster called <code>gloo-edge-demo</code> and installs Gloo Edge,</p>
+</div>
+<div class="listingblock">
+<div class="title"><a href="https://github.com/kameshsampath/kubernetes-spice-runner/blob/main/env/extravars.example">extravars</a></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">kind_home_dir: /home/runner/.kube
+cluster_name: gloo-edge-demo
+kind_create: true
+deploy_gloo_edge: true
+# set gloo license key
+gloo_license_key:  my gloo license key</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The template playbook already has the roles included</p>
+</div>
+<div class="listingblock">
+<div class="title"><a href="https://github.com/kameshsampath/kubernetes-spice-runner/blob/main/project/playbook.yml">playbook.yml</a></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">- name: "KinD Cloud"
+  hosts: all
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+
+  roles:
+    - kameshsampath.kubernetes_spices.kind
+    - kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To run the playbook:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"><a href="https://github.com/kameshsampath/kubernetes-spice-runner/blob/main/hack.sh">./hack.sh</a></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Typically, there will be two files:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <code>kubeconfig</code> file for the cluster</p>
+</li>
+<li>
+<p>The KinD configuration file</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If <a href="https://github.com/junegunn/fzf">fzf</a> is installed, the script will list the possible playbooks from the <code>$PROJECT_HOME/project</code> directory.</p>
+</div>
+<div class="paragraph">
+<p>Once the cluster is created it also sets and exports the <code>KUBECONFIG</code> to the local <code>$PROJECT_HOME/.kube/config</code></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="runner-container-image"><a class="anchor" href="#runner-container-image"></a>Container Image</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The collection builds ansible execution environment and publishes them at <code>quay.io/kameshsampath/kubernetes-spices-ansible-runner</code>.</p>
 </div>
 </div>
 </div>
 <nav class="pagination">
-  <span class="prev"><a href="common-variables.html">Common Variables</a></span>
+  <span class="prev"><a href="plugins.html">Ansible Plugins</a></span>
 </nav>
 </article>
   </div>

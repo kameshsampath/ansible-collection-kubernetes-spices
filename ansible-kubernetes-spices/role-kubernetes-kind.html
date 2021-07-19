@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Ansible Collection Kubernetes Spices :: Ansible Collection Kubernetes Spices</title>
     <link rel="canonical" href="https://kameshsampath.github.com/kubernetes_spices/ansible-kubernetes-spices/role-kubernetes-kind.html">
-    <link rel="prev" href="common-variables.html">
+    <link rel="prev" href="roles.html">
     <link rel="next" href="role-kubernetes-spices.html">
     <meta name="generator" content="Antora 2.3.4">
     <link rel="stylesheet" href="../_/css/site.css">
@@ -46,7 +46,7 @@
   </li>
   <li class="nav-item" data-depth="1">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="common-variables.html">Roles</a>
+    <a class="nav-link" href="roles.html">Roles</a>
 <ul class="nav-list">
   <li class="nav-item is-current-page" data-depth="2">
     <a class="nav-link" href="role-kubernetes-kind.html">KinD</a>
@@ -56,23 +56,41 @@
     <a class="nav-link" href="role-kubernetes-spices.html">Kubernetes Spices</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="role-kubernetes-spices.html#deploy-isito">Deploy Istio</a>
+    <a class="nav-link" href="role-kubernetes-spices.html#deploy-gloo-edge">Gloo Edge</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="role-kubernetes-spices.html#deploy-knative">Deploy Knative</a>
+    <a class="nav-link" href="role-kubernetes-spices.html#deploy-isito">Istio</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="role-kubernetes-spices.html#deploy-gloo-edge">Deploy Gloo Edge</a>
+    <a class="nav-link" href="role-kubernetes-spices.html#deploy-knative">Knative</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="role-kubernetes-spices.html#deploy-tektoncd">Deploy Tekton</a>
+    <a class="nav-link" href="role-kubernetes-spices.html#deploy-keycloak">Keycloak</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="role-kubernetes-spices.html#deploy-olm">Operator Lifecyle Manager(OLM)</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="role-kubernetes-spices.html#deploy-postgresql">PostrgeSQL</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="role-kubernetes-spices.html#deploy-tektoncd">Tekton</a>
   </li>
 </ul>
   </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="common-variables.html">Common Variables</a>
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="plugins.html">Ansible Plugins</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="plugins.html#inventory">Inventory</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="plugins.html#filters">Filters</a>
+  </li>
+</ul>
   </li>
   <li class="nav-item" data-depth="1">
     <a class="nav-link" href="running.html">Running Playbooks</a>
@@ -108,7 +126,7 @@
 <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="index.html">Ansible Collection Kubernetes Spices</a></li>
-    <li><a href="common-variables.html">Roles</a></li>
+    <li><a href="roles.html">Roles</a></li>
     <li><a href="role-kubernetes-kind.html">KinD</a></li>
   </ul>
 </nav>
@@ -123,7 +141,7 @@
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>The <a href="https://github.com/kameshsampath/kubernetes_spices/tree/main/roles/kind">kind</a> role helps to create/destroy a <a href="https://kind.sigs.k8s.io">KinD</a> cluster.</p>
+<p>The <a href="https://github.com/kameshsampath/kubernetes_spices/tree/main/roles/kind">kind</a> role helps to create/destroy a <a href="https://kind.sigs.k8s.io">KinD</a> cluster. This always spins a 2 Node cluster with one master and one worker.</p>
 </div>
 <div class="paragraph">
 <p><code>Role Name</code>: <code>kameshsampath.kubernetes_spices.kind</code></p>
@@ -212,7 +230,7 @@
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">extra_port_mappings</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The extra port mappings that could be used to reach various services from the host, accepts a list of values of the format <code>&lt;ip&gt;:host-port:container-port</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The extra port mappings that could be used to reach various services from the host, accepts a list of values of the format <code>&lt;ip&gt;:host-port:container-port</code>. These mappings are applied on Control Plane container.</p></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">  - "0.0.0.0:80:80"
@@ -221,6 +239,29 @@
   - "0.0.0.0:30443:30443"</code></pre>
 </div>
 </div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">extra_port_mappings_off</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Don&#8217;t apply any extra port mappings</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">worker_extra_port_mappings</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The extra port mappings that could be used to reach various services from the host, accepts a list of values of the format <code>&lt;ip&gt;:host-port:container-port</code>. These mappings are applied on worker node container.</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">  - "0.0.0.0:5432:5432"
+  - "0.0.0.0:3306:3306"
+  - "0.0.0.0:27017:27017"
+  - "0.0.0.0:8080:8080"
+  - "0.0.0.0:8443:8443"</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">worker_extra_port_mappings_off</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Don&#8217;t apply any worker extra port mappings</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">disable_cni</p></td>
@@ -444,6 +485,29 @@
 </div>
 </div>
 <div class="sect2">
+<h3 id="kind-with-keycloak"><a class="anchor" href="#kind-with-keycloak"></a>KinD cluster with Keycloak</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+- name: "Keycloak Defaults"
+  hosts: localhost
+  connection: local
+
+  collections:
+    - kubernetes.core
+
+  vars:
+    cluster_name: kind-keycloak
+    kind_create: true
+    deploy_keycloak7: true <i class="conum" data-value="1"></i><b>(1)</b>
+
+  roles:
+    - role: kameshsampath.kubernetes_spices.kind
+    - role: kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
 <h3 id="kind-with-tektoncd"><a class="anchor" href="#kind-with-tektoncd"></a>KinD cluster with Tektoncd</h3>
 <div class="listingblock">
 <div class="content">
@@ -469,7 +533,7 @@
 </div>
 </div>
 <nav class="pagination">
-  <span class="prev"><a href="common-variables.html">Roles</a></span>
+  <span class="prev"><a href="roles.html">Roles</a></span>
   <span class="next"><a href="role-kubernetes-spices.html">Kubernetes Spices</a></span>
 </nav>
 </article>

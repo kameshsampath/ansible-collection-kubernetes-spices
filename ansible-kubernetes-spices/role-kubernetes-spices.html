@@ -6,7 +6,7 @@
     <title>Ansible Collection Kubernetes Spices :: Ansible Collection Kubernetes Spices</title>
     <link rel="canonical" href="https://kameshsampath.github.com/kubernetes_spices/ansible-kubernetes-spices/role-kubernetes-spices.html">
     <link rel="prev" href="role-kubernetes-kind.html">
-    <link rel="next" href="common-variables.html">
+    <link rel="next" href="plugins.html">
     <meta name="generator" content="Antora 2.3.4">
     <link rel="stylesheet" href="../_/css/site.css">
     <script>var uiRootPath = '../_'</script>
@@ -46,7 +46,7 @@
   </li>
   <li class="nav-item" data-depth="1">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="common-variables.html">Roles</a>
+    <a class="nav-link" href="roles.html">Roles</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="role-kubernetes-kind.html">KinD</a>
@@ -56,23 +56,41 @@
     <a class="nav-link" href="role-kubernetes-spices.html">Kubernetes Spices</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="#deploy-isito">Deploy Istio</a>
+    <a class="nav-link" href="#deploy-gloo-edge">Gloo Edge</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="#deploy-knative">Deploy Knative</a>
+    <a class="nav-link" href="#deploy-isito">Istio</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="#deploy-gloo-edge">Deploy Gloo Edge</a>
+    <a class="nav-link" href="#deploy-knative">Knative</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="#deploy-tektoncd">Deploy Tekton</a>
+    <a class="nav-link" href="#deploy-keycloak">Keycloak</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#deploy-olm">Operator Lifecyle Manager(OLM)</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#deploy-postgresql">PostrgeSQL</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#deploy-tektoncd">Tekton</a>
   </li>
 </ul>
   </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="common-variables.html">Common Variables</a>
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="plugins.html">Ansible Plugins</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="plugins.html#inventory">Inventory</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="plugins.html#filters">Filters</a>
+  </li>
+</ul>
   </li>
   <li class="nav-item" data-depth="1">
     <a class="nav-link" href="running.html">Running Playbooks</a>
@@ -108,7 +126,7 @@
 <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="index.html">Ansible Collection Kubernetes Spices</a></li>
-    <li><a href="common-variables.html">Roles</a></li>
+    <li><a href="roles.html">Roles</a></li>
     <li><a href="role-kubernetes-spices.html">Kubernetes Spices</a></li>
   </ul>
 </nav>
@@ -136,10 +154,7 @@
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://istio.io">Istio</a></p>
-</li>
-<li>
-<p><a href="https://www.solo.io/products/gloo-edge/">Gloo Edge</a></p>
+<p><a href="https://www.solo.io/products/gloo-edge/" target="_blank" rel="noopener">Gloo Edge</a></p>
 <div class="ulist">
 <ul>
 <li>
@@ -152,7 +167,10 @@
 </div>
 </li>
 <li>
-<p><a href="https://knative.dev">Knative</a></p>
+<p><a href="https://www.keycloak.org" target="_blank" rel="noopener">Keycloak</a></p>
+</li>
+<li>
+<p><a href="https://knative.dev" target="_blank" rel="noopener">Knative</a></p>
 <div class="ulist">
 <ul>
 <li>
@@ -165,206 +183,15 @@
 </div>
 </li>
 <li>
-<p><a href="https://tekton.dev">Tekton</a></p>
+<p><a href="https://istio.io" target="_blank" rel="noopener">Istio</a></p>
+</li>
+<li>
+<p><a href="http://www.postgresql.org" target="_blank" rel="noopener">PostgreSQL</a></p>
+</li>
+<li>
+<p><a href="https://tekton.dev" target="_blank" rel="noopener">Tekton</a></p>
 </li>
 </ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="deploy-isito"><a class="anchor" href="#deploy-isito"></a>Deploying Istio</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Istio tasks allows you to configure the Istio installation.</p>
-</div>
-<div class="sect2">
-<h3 id="istio-ansible-vars"><a class="anchor" href="#istio-ansible-vars"></a>Ansible Variables</h3>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. Istio Ansible Variables</caption>
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Description</th>
-<th class="tableblock halign-left valign-top">Default Value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">deploy_istio</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">To deploy Istio or not, accepts <code>true</code> or <code>false</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">istio_versions</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The Istio version(s) to install, accepts a list of values.</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">- "1.8.6"</code></pre>
-</div>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">istio_namespace</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The namespace to deploy Istio</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">istio-system</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">deploy_istio_gateway</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">To deploy Istio gateway or not, accepts <code>true</code> or <code>false</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
-<h3 id="isito-example-playbook"><a class="anchor" href="#isito-example-playbook"></a>Example Playbook</h3>
-<div class="paragraph">
-<p>The following example playbook deploys Istio to the Kubernetes cluster:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
-- name: "Demo with Istio"
-  hosts: localhost
-  connection: local
-
-  collections:
-    - kubernetes.core
-    - kameshsampath.kubernetes_spices
-
-  vars:
-    ansible_python_interpreter: "{{ ansible_playbook_python }}"
-    ####
-    ## Istio Configurations
-    ####
-    deploy_istio: true <i class="conum" data-value="1"></i><b>(1)</b>
-    ## Istio Ingress Gateway
-    deploy_istio_gateway: true <i class="conum" data-value="2"></i><b>(2)</b>
-    istio_versions: <i class="conum" data-value="3"></i><b>(3)</b>
-      - "1.10.2"
-
-  roles:
-    - kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Deploy Tekton with defaults</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>You can check the <a href="role-kubernetes-kind.html#kind-with-istio" class="page">KinD</a> example to see how to deploy Istio on to a local KinD cluster.</p>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="deploy-knative"><a class="anchor" href="#deploy-knative"></a>Deploying Knative</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Knative tasks allows you to configure the Knative installation.</p>
-</div>
-<div class="sect2">
-<h3 id="knative-ansible-vars"><a class="anchor" href="#knative-ansible-vars"></a>Ansible Variables</h3>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 2. Knative Ansible Variables</caption>
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Description</th>
-<th class="tableblock halign-left valign-top">Default Value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">deploy_knative</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">To deploy Knative or not, accepts <code>true</code> or <code>false</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">knative_version</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The base Knative version to install</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">v0.23.0</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">knative_serving_version</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The Knative Serving version to install</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">v0.23.0</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">knative_eventing_version</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The Knative Eventing version to install</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">v0.23.0</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">registries_skip_tag_resolving</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The container registries to skip resolving tags</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">  - example.com
-  - example.org
-  - test.com
-  - test.org
-  - ko.local
-  - dev.local
-  - "localhost:5000"
-  - kind-registry.local:5000</code></pre>
-</div>
-</div></div></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
-<h3 id="knative-example-playbook"><a class="anchor" href="#knative-example-playbook"></a>Example Playbook</h3>
-<div class="paragraph">
-<p>The following example playbook deploys Knative to the Kubernetes cluster:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
-- name: "Knative Defaults"
-  hosts: localhost
-  connection: local
-
-  collections:
-    - kubernetes.core
-
-  vars:
-    # to ensure we are on python3
-    ansible_python_interpreter: "{{ ansible_playbook_python }}"
-    # Default versions are v0.23.0, you can override it using knative_serving_version, knative_eventing_version
-    deploy_knative: True <i class="conum" data-value="1"></i><b>(1)</b>
-
-  roles:
-    - role: kameshsampath.kubernetes_spices.kind
-    - role: kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Deploy Knative with defaults</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>You can check the <a href="role-kubernetes-kind.html#kind-with-knative" class="page">KinD</a> example to see how to deploy Knative on to a local KinD cluster.</p>
-</div>
 </div>
 </div>
 </div>
@@ -377,7 +204,7 @@
 <div class="sect2">
 <h3 id="gloo-edge-ansible-vars"><a class="anchor" href="#gloo-edge-ansible-vars"></a>Gloo Edge Ansible Variables</h3>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 3. Gloo Ansible Variables</caption>
+<caption class="title">Table 1. Gloo Ansible Variables</caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -660,6 +487,452 @@
 </div>
 </div>
 <div class="sect1">
+<h2 id="deploy-isito"><a class="anchor" href="#deploy-isito"></a>Deploying Istio</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Istio tasks allows you to configure the Istio installation.</p>
+</div>
+<div class="sect2">
+<h3 id="istio-ansible-vars"><a class="anchor" href="#istio-ansible-vars"></a>Ansible Variables</h3>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 2. Istio Ansible Variables</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">deploy_istio</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">To deploy Istio or not, accepts <code>true</code> or <code>false</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">istio_versions</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Istio version(s) to install, accepts a list of values.</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">- "1.8.6"</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">istio_namespace</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The namespace to deploy Istio</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">istio-system</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">deploy_istio_gateway</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">To deploy Istio gateway or not, accepts <code>true</code> or <code>false</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="isito-example-playbook"><a class="anchor" href="#isito-example-playbook"></a>Example Playbook</h3>
+<div class="paragraph">
+<p>The following example playbook deploys Istio to the Kubernetes cluster:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+- name: "Demo with Istio"
+  hosts: localhost
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    ####
+    ## Istio Configurations
+    ####
+    deploy_istio: true <i class="conum" data-value="1"></i><b>(1)</b>
+    ## Istio Ingress Gateway
+    deploy_istio_gateway: true <i class="conum" data-value="2"></i><b>(2)</b>
+    istio_versions: <i class="conum" data-value="3"></i><b>(3)</b>
+      - "1.10.2"
+
+  roles:
+    - kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Deploy Tekton with defaults</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can check the <a href="role-kubernetes-kind.html#kind-with-istio" class="page">KinD</a> example to see how to deploy Istio on to a local KinD cluster.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="deploy-knative"><a class="anchor" href="#deploy-knative"></a>Deploying Knative</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Knative tasks allows you to configure the Knative installation.</p>
+</div>
+<div class="sect2">
+<h3 id="knative-ansible-vars"><a class="anchor" href="#knative-ansible-vars"></a>Ansible Variables</h3>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 3. Knative Ansible Variables</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">deploy_knative</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">To deploy Knative or not, accepts <code>true</code> or <code>false</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">knative_version</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The base Knative version to install</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">v0.23.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">knative_serving_version</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Knative Serving version to install</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">v0.23.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">knative_eventing_version</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Knative Eventing version to install</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">v0.23.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">registries_skip_tag_resolving</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The container registries to skip resolving tags</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">  - example.com
+  - example.org
+  - test.com
+  - test.org
+  - ko.local
+  - dev.local
+  - "localhost:5000"
+  - kind-registry.local:5000</code></pre>
+</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="knative-example-playbook"><a class="anchor" href="#knative-example-playbook"></a>Example Playbook</h3>
+<div class="paragraph">
+<p>The following example playbook deploys Knative to the Kubernetes cluster:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+- name: "Knative Defaults"
+  hosts: localhost
+  connection: local
+
+  collections:
+    - kubernetes.core
+
+  vars:
+    # to ensure we are on python3
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    # Default versions are v0.23.0, you can override it using knative_serving_version, knative_eventing_version
+    deploy_knative: True <i class="conum" data-value="1"></i><b>(1)</b>
+
+  roles:
+    - role: kameshsampath.kubernetes_spices.kind
+    - role: kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Deploy Knative with defaults</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can check the <a href="role-kubernetes-kind.html#kind-with-knative" class="page">KinD</a> example to see how to deploy Knative on to a local KinD cluster.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="deploy-keycloak"><a class="anchor" href="#deploy-keycloak"></a>Deploying Keycloak</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Keycloak tasks allows you to configure the <a href="https://www.keycloak.org">Keycloak</a> installation.</p>
+</div>
+<div class="sect2">
+<h3 id="keycloak-ansible-vars"><a class="anchor" href="#keycloak-ansible-vars"></a>Ansible Variables</h3>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 4. Tekton Ansible Variables</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">deploy_keycloak</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">To deploy Keycloak or not, accepts <code>true</code> or <code>false</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">keycloak_namespace</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The namespace to install Keycloak</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">keycloak</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">keycloak_admin_user</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Keycloak admin user</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">admin</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">keycloak_admin_password</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Keycloak admin user password</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">admin</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="keycloak-example-playbook"><a class="anchor" href="#keycloak-example-playbook"></a>Example Playbook</h3>
+<div class="paragraph">
+<p>The following example playbook deploys keycloak to the Kubernetes cluster:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+- name: "Keyclaok Defaults"
+  hosts: localhost
+  connection: local
+
+  collections:
+    - kubernetes.core
+
+  vars:
+    deploy_keycloak: true <i class="conum" data-value="1"></i><b>(1)</b>
+
+  roles:
+    - role: kameshsampath.kubernetes_spices.kind
+    - role: kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Deploy Keycloak with defaults</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can check the <a href="role-kubernetes-kind.html#kind-with-keycloak" class="page">KinD</a> example to see how to deploy Keycloak on to a local KinD cluster.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="deploy-olm"><a class="anchor" href="#deploy-olm"></a>Deploying Operator Lifecyle Manager(OLM)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Operator Lifecycle Manager(OLM) tasks allows you to configure the <a href="https://github.com/operator-framework/operator-lifecycle-manager">OLM</a>. Please check <a href="https://opertorhub.io">Operator Hub</a> for various community operators that can be installed using OLM.</p>
+</div>
+<div class="sect2">
+<h3 id="olm-ansible-vars"><a class="anchor" href="#olm-ansible-vars"></a>Ansible Variables</h3>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 5. OLM Ansible Variables</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">deploy_olm</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">To deploy OLM or not, accepts <code>true</code> or <code>false</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">olm_version</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The OLM version to install</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">v0.18.2</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">olm_namespace</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The namespace to install OLM</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">olm</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="olm-example-playbook"><a class="anchor" href="#olm-example-playbook"></a>Example Playbook</h3>
+<div class="paragraph">
+<p>The following example playbook deploys OLM to the Kubernetes cluster:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+- name: "OLM Defaults"
+  hosts: localhost
+  connection: local
+
+  collections:
+    - kubernetes.core
+
+  vars:
+    deploy_olm: true <i class="conum" data-value="1"></i><b>(1)</b>
+
+  roles:
+    - role: kameshsampath.kubernetes_spices.kind
+    - role: kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Deploy OLM with defaults</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can check the <a href="role-kubernetes-kind.html#kind-with-olm" class="page">KinD</a> example to see how to deploy OLM on to a local KinD cluster.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="deploy-postgresql"><a class="anchor" href="#deploy-postgresql"></a>Deploying PostgreSQL</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>PostgreSQL tasks allows you to configure the <a href="http://www.postgresql.org/">PostgreSQL</a> database.</p>
+</div>
+<div class="sect2">
+<h3 id="postgresql-ansible-vars"><a class="anchor" href="#postgresql-ansible-vars"></a>Ansible Variables</h3>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 6. Postgresql Ansible Variables</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">deploy_postgresql</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">To deploy Postgresql or not, accepts <code>true</code> or <code>false</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">postgresql_namespace</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The namespace to install Postgresql</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">db</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">postgresql_admin_user</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Postgresql admin user</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">postgres</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">postgresql_admin_password</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Postgresql admin user password</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">postgres</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">postgresql_db</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Postgresql database</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">demodb</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="postgesql-example-playbook"><a class="anchor" href="#postgesql-example-playbook"></a>Example Playbook</h3>
+<div class="paragraph">
+<p>The following example playbook deploys keycloak to the Kubernetes cluster:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+- name: "Postgresql Defaults"
+  hosts: localhost
+  connection: local
+
+  collections:
+    - kubernetes.core
+
+  vars:
+    deploy_postgresql: true <i class="conum" data-value="1"></i><b>(1)</b>
+
+  roles:
+    - role: kameshsampath.kubernetes_spices.kind
+    - role: kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Deploy Postgresql with defaults</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can check the <a href="role-kubernetes-kind.html#kind-with-postgesql" class="page">KinD</a> example to see how to deploy PostgreSQL on to a local KinD cluster.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="deploy-tektoncd"><a class="anchor" href="#deploy-tektoncd"></a>Deploying Tektoncd</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -668,7 +941,7 @@
 <div class="sect2">
 <h3 id="tektoncd-ansible-vars"><a class="anchor" href="#tektoncd-ansible-vars"></a>Ansible Variables</h3>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 4. Tekton Ansible Variables</caption>
+<caption class="title">Table 7. Tekton Ansible Variables</caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -732,14 +1005,14 @@
 </table>
 </div>
 <div class="paragraph">
-<p>You can check the <a href="role-kubernetes-kind.html#kind-with-tektoncd" class="page">KinD</a> example to see how to deploy Istio on to a local KinD cluster.</p>
+<p>You can check the <a href="role-kubernetes-kind.html#kind-with-tektoncd" class="page">KinD</a> example to see how to deploy Tektoncd on to a local KinD cluster.</p>
 </div>
 </div>
 </div>
 </div>
 <nav class="pagination">
   <span class="prev"><a href="role-kubernetes-kind.html">KinD</a></span>
-  <span class="next"><a href="common-variables.html">Common Variables</a></span>
+  <span class="next"><a href="plugins.html">Ansible Plugins</a></span>
 </nav>
 </article>
   </div>

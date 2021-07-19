@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Ansible Collection Kubernetes Spices :: Ansible Collection Kubernetes Spices</title>
-    <link rel="canonical" href="https://kameshsampath.github.com/kubernetes_spices/ansible-kubernetes-spices/common-variables.html">
+    <link rel="canonical" href="https://kameshsampath.github.com/kubernetes_spices/ansible-kubernetes-spices/roles.html">
     <link rel="prev" href="setup.html">
     <link rel="next" href="role-kubernetes-kind.html">
     <meta name="generator" content="Antora 2.3.4">
@@ -46,7 +46,7 @@
   </li>
   <li class="nav-item is-current-page" data-depth="1">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="common-variables.html">Roles</a>
+    <a class="nav-link" href="roles.html">Roles</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="role-kubernetes-kind.html">KinD</a>
@@ -56,23 +56,41 @@
     <a class="nav-link" href="role-kubernetes-spices.html">Kubernetes Spices</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="role-kubernetes-spices.html#deploy-isito">Deploy Istio</a>
+    <a class="nav-link" href="role-kubernetes-spices.html#deploy-gloo-edge">Gloo Edge</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="role-kubernetes-spices.html#deploy-knative">Deploy Knative</a>
+    <a class="nav-link" href="role-kubernetes-spices.html#deploy-isito">Istio</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="role-kubernetes-spices.html#deploy-gloo-edge">Deploy Gloo Edge</a>
+    <a class="nav-link" href="role-kubernetes-spices.html#deploy-knative">Knative</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="role-kubernetes-spices.html#deploy-tektoncd">Deploy Tekton</a>
+    <a class="nav-link" href="role-kubernetes-spices.html#deploy-keycloak">Keycloak</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="role-kubernetes-spices.html#deploy-olm">Operator Lifecyle Manager(OLM)</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="role-kubernetes-spices.html#deploy-postgresql">PostrgeSQL</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="role-kubernetes-spices.html#deploy-tektoncd">Tekton</a>
   </li>
 </ul>
   </li>
 </ul>
   </li>
-  <li class="nav-item is-current-page" data-depth="1">
-    <a class="nav-link" href="common-variables.html">Common Variables</a>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="plugins.html">Ansible Plugins</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="plugins.html#inventory">Inventory</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="plugins.html#filters">Filters</a>
+  </li>
+</ul>
   </li>
   <li class="nav-item" data-depth="1">
     <a class="nav-link" href="running.html">Running Playbooks</a>
@@ -108,10 +126,10 @@
 <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="index.html">Ansible Collection Kubernetes Spices</a></li>
-    <li><a href="common-variables.html">Roles</a></li>
+    <li><a href="roles.html">Roles</a></li>
   </ul>
 </nav>
-  <div class="edit-this-page"><a href="https://github.com/kameshsampath/kubernetes_spices/edit/main/documentation/modules/ROOT/pages/common-variables.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="https://github.com/kameshsampath/kubernetes_spices/edit/main/documentation/modules/ROOT/pages/roles.adoc">Edit this Page</a></div>
   </div>
   <div class="content">
 <aside class="toc sidebar" data-title="Contents" data-levels="2">
@@ -122,52 +140,16 @@
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>The following ansible variables are common to all the roles depending on th contexts where they are applied.</p>
+<p>The Collection as Ansible roles that allows you to automate mundane setup tasks.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="role-common-vars"><a class="anchor" href="#role-common-vars"></a>Common Variables</h2>
+<h2 id="roles-overview"><a class="anchor" href="#roles-overview"></a>Overview</h2>
 <div class="sectionbody">
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. Common  Ansible Variables</caption>
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Description</th>
-<th class="tableblock halign-left valign-top">Default Value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">k8s_contexts</p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>The list of Kubernetes contexts from the <code>$KUBECONFIG</code> file. These contexts will be looped over when applying other tasks such as Istio, Knative etc.,  To add the values to the list use the command:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl config get-contexts | awk 'NR&gt;1{print $2}'</code></pre>
-</div>
-</div>
 <div class="paragraph">
-<p>This parameter accepts a list e.g.</p>
+<p>The collection has the following roles</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">- kind-vanilla
-- bar
-- foo</code></pre>
-</div>
-</div></div></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-</tbody>
-</table>
 </div>
 </div>
 <nav class="pagination">
