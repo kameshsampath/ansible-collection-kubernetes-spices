@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.1.1](https://www.github.com/kameshsampath/kubernetes_spices/compare/v0.1.0...v0.1.1) (2021-07-19)
+
+
+### Bug Fixes
+
+* split workflows ([a59d7e5](https://www.github.com/kameshsampath/kubernetes_spices/commit/a59d7e528c95122e850c086909b63864a5b35a17))
+
 ## [0.1.0](https://www.github.com/kameshsampath/kubernetes_spices/compare/v0.0.12...v0.1.0) (2021-07-19)
 
 
