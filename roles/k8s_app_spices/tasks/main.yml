@@ -6,25 +6,32 @@
       - -p
       - "{{ minikube_profile_name }}"
       - ip
-  when: k8s_cluster_ip is not defined and kubernetes_cluster_type == 'minikube'
+  when:
+    - not k8s_contexts is defined
+    - k8s_cluster_ip is not defined
+    - kubernetes_cluster_type == 'minikube'
   register: minikube_ip_result
 
 - name: Set minikube IP as Kubernetes Cluster IP
   set_fact:
     k8s_cluster_ip: "{{ minikube_ip_result.stdout }}"
-  when: k8s_cluster_ip is not defined and kubernetes_cluster_type == 'minikube'
+  when:
+    - k8s_cluster_ip is not defined
+    - not k8s_contexts is defined
+    - kubernetes_cluster_type == 'minikube'
 
 - name: Set Kubernetes Cluster IP for KinD
   set_fact:
     k8s_cluster_ip: "127.0.0.1"
-  when: k8s_cluster_ip is not defined and kubernetes_cluster_type == 'kind'
+  when:
+    - kind_create or k8s_cluster_ip is not defined
 
 - name: "Install Tools"
   include: tools.yml
 
 - name: "Setup Operator Lifecycle Manager(OLM)"
   include: olm.yml
-  when: deploy_olm 
+  when: deploy_olm
 
 ## Handling multiple kubernetes contexts
 - name: "Add Kubernetes Spices"

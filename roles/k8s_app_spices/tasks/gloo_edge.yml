@@ -65,14 +65,12 @@
   set_fact:
     gloo_install_override_files: "{{ gloo_install_override_files + [gloo_install_override_file.dest] }}"
 
-- set_fact:
-    temp_file: "{{ lookup('file',gloo_install_tmpdir.path +'/install-overrides.yaml') | from_yaml }}"
+#- set_fact:
+#    temp_file: "{{ lookup('file',gloo_install_tmpdir.path +'/install-overrides.yaml') | from_yaml }}"
 
-- debug:
-    var: temp_file
+#- debug:
+#    var: temp_file
 
-- fail:
-    msg: "check point"
 ################################################################################
 ## Gloo Edge community
 ################################################################################
