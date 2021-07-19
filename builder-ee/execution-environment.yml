@@ -4,7 +4,7 @@ version: 1
 build_arg_defaults:
   EE_BASE_IMAGE: quay.io/ansible/ansible-runner:stable-2.10-devel
 
-# ansible_config: 'ansible.cfg'
+ansible_config: 'ansible.cfg'
 
 dependencies:
   galaxy: requirements.yml
@@ -20,10 +20,12 @@ additional_build_steps:
     && curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 \
     && chmod 700 get_helm.sh \
     && ./get_helm.sh \
+    && helm plugin install https://github.com/databus23/helm-diff \
     && wget -O/usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.6.3/yq_linux_amd64 \
     && wget -O/usr/local/bin/kubectl https://dl.k8s.io/release/v1.21.0/bin/linux/amd64/kubectl \
     && chmod +x /usr/local/bin/kubectl /usr/local/bin/yq \
     && dnf -y clean all \
     && kubectl version --client=true \
     && yq --version \
-    && helm version
+    && helm version \
+    && rm -rf /tmp/*

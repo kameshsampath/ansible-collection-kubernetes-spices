@@ -7,7 +7,6 @@
       - "{{ minikube_profile_name }}"
       - ip
   when:
-    - not k8s_contexts is defined
     - k8s_cluster_ip is not defined
     - kubernetes_cluster_type == 'minikube'
   register: minikube_ip_result
@@ -17,14 +16,14 @@
     k8s_cluster_ip: "{{ minikube_ip_result.stdout }}"
   when:
     - k8s_cluster_ip is not defined
-    - not k8s_contexts is defined
     - kubernetes_cluster_type == 'minikube'
 
 - name: Set Kubernetes Cluster IP for KinD
   set_fact:
     k8s_cluster_ip: "127.0.0.1"
   when:
-    - kind_create or k8s_cluster_ip is not defined
+    - kind_create | default(False)
+    - k8s_cluster_ip is not defined
 
 - name: "Install Tools"
   include: tools.yml
@@ -33,17 +32,6 @@
   include: olm.yml
   when: deploy_olm
 
-## Handling multiple kubernetes contexts
-- name: "Add Kubernetes Spices"
-  include: run_on_k8s_context.yml
-  vars:
-    k8s_use_context: "{{ k8s_context_item }}"
-  loop: "{{ k8s_contexts }}"
-  loop_control:
-    loop_var: k8s_context_item
-  when: k8s_contexts is defined
-
 ## Handle default kubernetes context
 - name: "Add Kubernetes Spices to Default Kubernetes Context"
   include: run_on_k8s_context.yml
-  when: k8s_contexts is defined or kind_create

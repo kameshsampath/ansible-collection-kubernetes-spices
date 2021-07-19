@@ -1,20 +1,78 @@
 = Running Playbooks
 
-The playbooks could be run using the https://ansible-builder.readthedocs.io/en/latest/index.html[Ansible Execution] environment. 
+include::_attributes.adoc[]
 
-The collection builds ansible execution environment and publishes them at `quay.io/kameshsampath/kubernetes-spices-ansible-runner`.
+The playbooks could be run using the https://ansible-builder.readthedocs.io/en/latest/index.html[Ansible Execution] environment. The following sections details how to use the Kubernetes Spice Runner environment to run the playbooks to setup your kubernetes stack.
 
-WARNING: This page is not complete, a working example will be added soon
+[#runer-gh-template]
+== Template project
 
+There is GitHub template project https://github.com/kameshsampath/kubernetes-spice-runner[kubernetes-spice-runner^] that allows you run the playbooks of this collection.
+
+[source,bash]
+----
+gh repo create my-k8s-demos -d"my kubernetes spice runner project" -p kameshsampath/kubernetes-spice-runner
+----
+
+[#running-playbook]
 == Running a playbook
 
-To run a playbook you need to create directory structure as explained in https://ansible-runner.readthedocs.io/en/stable/intro.html#inputdir[Runner Input Directory Hierarchy]. Once you have that, you can run the playbook like,
+The directory structure follows the https://ansible-runner.readthedocs.io/en/stable/intro.html#runner-input-directory-hierarchy[Ansible Runner Directory] structure.
 
-[source]
-.run.sh
+All the variables that you need pass to the Ansible playbooks can be specified in `$PROJECT_HOME/setup/extravars`.
+
+Make a copy of `$PROJECT_HOME/hack/env/extravars.example` to `$PROJECT_HOME/hack/env/extravars`:
+
+[source,bash]
 ----
-docker run -it --rm --name=ansible-runner \
-  -v `pwd`:/project \
-  quay.io/kameshsampath/kubernetes-spices-ansible-runner 
+cp $PROJECT_HOME/hack/env/extravars.example $PROJECT_HOME/hack/env/extravars
 ----
 
+Update the extra vars with the parameters corresponding to the stack you want to install. Refer to xref:roles.adoc#roles-overview[roles] to find what you can install.
+
+The following example shows the `extravars` that will create a local KinD cluster called `gloo-edge-demo` and installs Gloo Edge,
+
+[source,yaml]
+.https://github.com/kameshsampath/kubernetes-spice-runner/blob/main/env/extravars.example[extravars]
+----
+include::example$extravars.yml[]
+----
+
+The template playbook already has the roles included 
+
+[source,yaml]
+.https://github.com/kameshsampath/kubernetes-spice-runner/blob/main/project/playbook.yml[playbook.yml]
+----
+- name: "KinD Cloud"
+  hosts: all
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+
+  roles:
+    - kameshsampath.kubernetes_spices.kind
+    - kameshsampath.kubernetes_spices.k8s_app_spices
+----
+
+To run the playbook:
+
+[source,bash,subs="+macros,attributes+"]
+----
+https://github.com/kameshsampath/kubernetes-spice-runner/blob/main/hack.sh[./hack.sh]
+----
+
+Typically, there will be two files:
+
+* The `kubeconfig` file for the cluster
+* The KinD configuration file
+
+If https://github.com/junegunn/fzf[fzf] is installed, the script will list the possible playbooks from the `$PROJECT_HOME/project` directory.
+
+Once the cluster is created it also sets and exports the `KUBECONFIG` to the local `$PROJECT_HOME/.kube/config`
+
+[#runner-container-image]
+== Container Image
+
+The collection builds ansible execution environment and publishes them at `quay.io/kameshsampath/kubernetes-spices-ansible-runner`.

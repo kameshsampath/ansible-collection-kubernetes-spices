@@ -1,0 +1,35 @@
+Operator Lifecycle Manager(OLM) tasks allows you to configure the https://github.com/operator-framework/operator-lifecycle-manager[OLM]. Please check https://opertorhub.io[Operator Hub] for various community operators that can be installed using OLM.
+
+[#olm-ansible-vars]
+== Ansible Variables
+
+.OLM Ansible Variables
+|===
+| Name | Description | Default Value
+
+| deploy_olm
+| To deploy OLM or not, accepts `true` or `false`
+| false
+
+| olm_version
+| The OLM version to install
+| v0.18.2
+
+| olm_namespace
+| The namespace to install OLM
+| olm
+
+|===
+
+[#olm-example-playbook]
+== Example Playbook
+
+The following example playbook deploys OLM to the Kubernetes cluster:
+
+[source,yaml,subs="+macros,attributes+"]
+----
+include::example$olm.yml[]
+----
+<.> Deploy OLM with defaults
+
+You can check the xref:role-kubernetes-kind.adoc#kind-with-olm[KinD] example to see how to deploy OLM on to a local KinD cluster.

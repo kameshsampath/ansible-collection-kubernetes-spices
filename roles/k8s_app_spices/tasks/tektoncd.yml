@@ -27,6 +27,8 @@
 
 - name: Deploy Tektoncd Pipelines and Triggers
   kubernetes.core.k8s:
+    context: "{{ k8s_current_context }}"
+    kubeconfig: "{{ kubeconfig_file }}"
     definition: "{{ item.manifest | from_yaml_all | list }}"
     state: present
   loop:

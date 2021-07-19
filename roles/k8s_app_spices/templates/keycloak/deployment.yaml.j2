@@ -16,14 +16,6 @@ spec:
       labels:
         app: keycloak
     spec:
-      {% if kind_create %}
-      nodeSelector:
-         node-role.kubernetes.io/master: ""
-      tolerations:
-        - key: "node-role.kubernetes.io/master"
-          operator: "Exists"
-          effect: "NoSchedule"
-      {% endif %}
       containers:
       - name: keycloak
         image: quay.io/keycloak/keycloak:14.0.0

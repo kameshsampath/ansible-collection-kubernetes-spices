@@ -1,0 +1,8 @@
+= Roles
+include::_attributes.adoc[]
+
+The Collection as Ansible roles that allows you to automate mundane setup tasks.
+
+[#roles-overview]
+== Overview
+The collection has the following roles 

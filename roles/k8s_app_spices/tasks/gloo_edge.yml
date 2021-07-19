@@ -92,6 +92,8 @@
     update_repo_cache: true
     wait: "{{ true and gloo_proxy_nodeport }}"
     wait_timeout: 5m
+    context: "{{ k8s_current_context }}"
+    kubeconfig: "{{ kubeconfig_file }}"
   when: gloo_edge_edition == 'ce'
 
 ################################################################################
@@ -113,6 +115,8 @@
   #  debug: msg="{{ lookup('template', 'gloo/' + gloo_edge_edition + '/install-overrides.yaml.j2') | from_yaml }}"
 - name: "Deploy Gloo Enterprise v{{ gloo_edge_version }}"
   kubernetes.core.helm:
+    context: "{{ k8s_current_context }}"
+    kubeconfig: "{{ kubeconfig_file }}"
     release_name: gloo
     chart_ref: "glooe/gloo-ee"
     chart_version: "{{ gloo_edge_version }}"

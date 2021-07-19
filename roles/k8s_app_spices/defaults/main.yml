@@ -54,6 +54,9 @@ registries_skip_tag_resolving:
 #Postgresql
 deploy_postgresql: false
 postgresql_namespace: db
+postgresql_admin_user: postgres
+postgresql_admin_password: postgres
+postgresql_db: demodb
 
 #Tektoncd
 deploy_tektoncd: false

@@ -14,7 +14,7 @@ content:
 asciidoc:
   attributes:
     title: "Ansible Collection Kubernetes Spices"
-    kubernetes-version: v1.21.-00
+    kubernetes-version: v1.21.0
     page-pagination: true
   extensions:
     - ./lib/remote-include-processor.js

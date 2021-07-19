@@ -1,0 +1,146 @@
+== Ansible Plugins
+
+include::_attributes.adoc[]
+
+The Collection also provides the following https://docs.ansible.com/ansible/latest/plugins/plugins.html[Ansible Plugins] as part of the collection install.
+
+[#inventory]
+== Inventory
+
+Plugin FQN: `kameshsampath.kubernetes_spices.kubectx`
+
+This plugin helps run the kubernetes tasks against specific contexts.
+The plugin uses the `pass:[$KUBECONFIG]` build the context list.
+
+=== How to use it ?
+
+Add the plugin as new or to existing list of plugin configurations in the `ansible.cfg`,
+
+[source,ini]
+.ansible.cfg
+----
+[inventory]
+enable_plugins = kameshsampath.kubernetes_spices.kubectx
+----
+
+Create a file `kubectx.yaml` or `kubectx.yml` inside your inventory directory and add the content like:
+
+[source,yaml]
+.kubectx.yml
+----
+plugin: kameshsampath.kubernetes_spices.kubectx #<.>
+use_contexts: #<.>
+  - name: cloud-1 #<.>
+  - name: kind-cloud-0
+    from: foo/.kube/config #<.>
+
+----
+<.> The ansible plugin to parse the configuration
+<.> The contexts to use from the `$KUBECONFIG` as part of the playbook Kubernetes Tasks
+<.> the name of the context
+<.> The Kubeconfig file where the context is available, if not provided default kubeconfig path `$HOME/.kube/config` will be used
+
+An example `kubectx.yaml` as shown above will produce an inventory like:
+
+[source,json]
+----
+{
+    "_meta": {
+        "hostvars": {
+            "cloud-1": {
+                "k8s_context_cluster": "cloud-1",
+                "k8s_context_user": "cloud-1",
+                "k8s_current_context": "cloud-1",
+                "kubeconfig_file": "~/.kube/config"
+            }
+        }
+    },
+    "all": {
+        "children": [
+            "ungrouped"
+        ]
+    },
+    "ungrouped": {
+        "hosts": [
+            "cloud-1"
+        ]
+    }
+}
+
+----
+
+[NOTE]
+====
+The `use_contexts` of the plugin acts like filter, which picks available contexts from the pass:[$KUBECONFIG]
+====
+
+[#filters]
+== Filters
+
+=== Port Offset
+
+The port offset filter allows you to port offset if they found to be not available.
+For an example with `KinD` role we may spin multiple clusters which might have same config for `extraPortMappings`.
+In those cases using this filter allows you do the port offset on the `host` port.
+
+==== Using the filter
+
+[source,yaml]
+----
+- name: "Offset Port 8080"
+  debug: "{{ 8080 | kameshsampath.kubernetes_spices.offset_port }}"  #<.>
+----
+<.> the filter will try to bind the host(`localhost`) port to 8080, if not bindable then offsets it by `100` i.e. `8180`
+
+The filter also accepts an `offset` parameter, which is by default set to 100.
+
+[source,yaml]
+----
+- name: "Offset Port 8080"
+  debug: "{{ 8080 | kameshsampath.kubernetes_spices.offset_port(offset=200) }}"  #<.>
+----
+<.> now the filter uses the offset value as `200` resulting in the port to be `8280`
+
+=== Port Mapping
+
+The port mapping filter helps to build simple dict of `Ports` of a Docker container that is mapped to particular interface ip defaults to `0.0.0.0`.
+When applying this filter the following Docker Port mapping:
+
+[source,json]
+----
+{
+"Ports":{
+   "30080/tcp": [
+        {
+            "HostIp": "0.0.0.0",
+            "HostPort": "30080"
+        }
+    ],
+    "30443/tcp": [
+        {
+            "HostIp": "0.0.0.0",
+            "HostPort": "30443"
+        }
+    ],
+    "3306/tcp": [
+        {
+            "HostIp": "0.0.0.0",
+            "HostPort": "3306"
+        }
+    ],
+    "5432/tcp": [
+        {
+            "HostIp": "0.0.0.0",
+            "HostPort": "5432"
+        }
+    ]
+  }
+}
+----
+
+will result in a Dict like:
+
+[source,hash]
+----
+{"30080": 30080,"30443": 30443,"3306": 3306, "5432": 5432}
+----

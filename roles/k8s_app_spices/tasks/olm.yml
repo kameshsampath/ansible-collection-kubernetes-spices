@@ -17,6 +17,8 @@
 
 - name: "Create OLM crds"
   kubernetes.core.k8s:
+    context: "{{ k8s_current_context }}"
+    kubeconfig: "{{ kubeconfig_file }}"
     src: "{{ olm_manifest_dir.path +'/crds.yaml' }}"
     state: present
     wait: yes
@@ -26,6 +28,8 @@
 
 - name: "Deploy OLM Operators"
   kubernetes.core.k8s:
+    context: "{{ k8s_current_context }}"
+    kubeconfig: "{{ kubeconfig_file }}"
     src: "{{ olm_manifest_dir.path +'/olm.yaml'}}"
     state: present
   register: olm_crds_installed
