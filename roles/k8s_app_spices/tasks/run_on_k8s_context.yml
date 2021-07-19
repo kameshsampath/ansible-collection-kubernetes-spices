@@ -1,20 +1,4 @@
 ###################################
-# Change Kube Context
-###################################
-- name: "Running on Kubernetes Context"
-  debug: msg="Running on Kubernetes Context:{{ k8s_use_context }}"
-  when: k8s_use_context is defined
-  
-- name: "Change kube context"
-  ansible.builtin.command:
-    argv:
-      - kubectl
-      - config 
-      - set-context 
-      - "{{ k8s_use_context }}"
-  when: k8s_use_context is defined
-
-###################################
 # Istio
 ###################################
 

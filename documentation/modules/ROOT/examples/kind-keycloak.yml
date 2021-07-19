@@ -1,0 +1,17 @@
+
+---
+- name: "Keycloak Defaults"
+  hosts: localhost
+  connection: local
+
+  collections:
+    - kubernetes.core
+
+  vars:
+    cluster_name: kind-keycloak
+    kind_create: true
+    deploy_keycloak7: true #<.>
+
+  roles:
+    - role: kameshsampath.kubernetes_spices.kind
+    - role: kameshsampath.kubernetes_spices.k8s_app_spices

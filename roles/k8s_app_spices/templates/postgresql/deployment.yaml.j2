@@ -41,7 +41,7 @@ spec:
           ports:
              containerPort: 5432
             {% if control_plane_port_mappings is defined and kind_create %}
-             hostPort: {{ control_plane_port_mappings['8080']  | default(8080) }}
+             hostPort: {{ control_plane_port_mappings['5432']  | default(5432) }}
             {% endif %}
           volumeMounts:
             - mountPath: /var/lib/postgresql/data

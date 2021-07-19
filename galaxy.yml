@@ -6,7 +6,7 @@ namespace: kameshsampath
 # The name of the collection. Has the same character restrictions as 'namespace'
 name: kubernetes_spices
 # The version of the collection. Must be compatible with semantic versioning
-version: 0.0.12
+version: 0.0.13
 # The path to the Markdown (.md) readme file. This path is relative to the root of the collection
 readme: README.md
 # A list of the collection's content authors. Can be just the name or in the format 'Full Name <email> (url)
@@ -55,15 +55,41 @@ build_ignore:
   - ".project"
   - ".classpath"
   - ".factorypath"
-  - "documentation/build"
-  - "documentation/.collections"
+  - "documentation"
   - ".kube"
+  - ".venv"
   - ".settings"
   - ".github"
   - "**/*.pem"
   - "**/temp.json"
   - "*.tar.gz"
   - "work"
-  - "hacking"
+  - "hack"
   - "collections"
   - "filter/my_test.py"
+  - "gh-pages"
+  - "node_modules"
+  - "supplemental-ui"
+  - "lib"
+  - "builder-ee"
+  - "gh-pages"
+  - "FILES.json"
+  - "dev-site.yml"
+  - "site.yml"
+  - "Vagrantfile"
+  - "Makefile"
+  - "site.sh"
+  - "yarn*"
+  - "package.json"
+  - "playbook.yml"
+  - "ansible.cfg"
+  - "gulpfile*"
+  - "poetry*"
+  - "pyproject.toml"
+  - ".ansible-lint"
+  - ".editorconfig"
+  - ".gitignore"
+  - ".gitpod.Dockerfile"
+  - ".gitpod.yml"
+  - ".tool-versions"
+  - ".yamllint"

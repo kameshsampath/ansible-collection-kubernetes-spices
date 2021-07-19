@@ -1,6 +1,8 @@
 ---
 - name: "Wait for Cluster Service Version {{ csv_name }}"
   kubernetes.core.k8s_info:
+    context: "{{ k8s_current_context }}"
+    kubeconfig: "{{ kubeconfig_file }}"
     kind: "ClusterServiceVersion"
     api_version: "v1alpha1"
     name: "{{ csv_name }}"

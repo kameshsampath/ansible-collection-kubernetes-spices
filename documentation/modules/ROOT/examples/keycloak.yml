@@ -1,0 +1,14 @@
+---
+- name: "Keyclaok Defaults"
+  hosts: localhost
+  connection: local
+
+  collections:
+    - kubernetes.core
+
+  vars:
+    deploy_keycloak: true #<.>
+
+  roles:
+    - role: kameshsampath.kubernetes_spices.kind
+    - role: kameshsampath.kubernetes_spices.k8s_app_spices

@@ -1,0 +1,16 @@
+---
+- name: "Tektoncd Defaults"
+  hosts: localhost
+  connection: local
+
+  collections:
+    - kubernetes.core
+
+  vars:
+    cluster_name: kind-olm
+    kind_create: true
+    deploy_olm: true #<.>
+
+  roles:
+    - role: kameshsampath.kubernetes_spices.kind
+    - role: kameshsampath.kubernetes_spices.k8s_app_spices

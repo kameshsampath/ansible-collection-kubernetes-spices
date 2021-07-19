@@ -39,7 +39,7 @@ builder-ee/requirements.txt:	requirements.txt
 	cp $(CURRENT_DIR)/requirements.txt $@
 	
 .PHONY:
-image:  
+container-file:  
 	$(ANSIBLE_BUILDER) create \
   --file  $(CURRENT_DIR)/$(BUILDER_EE_CONTEXT)/execution-environment.yml \
 	--context $(CURRENT_DIR)/$(BUILDER_EE_CONTEXT) \
@@ -53,5 +53,5 @@ image-build:
 	--container-runtime $(CONTAINER_RUNTIME)
 
 .PHONY:	push
-push:	image
+push:	image-build
 	@$(CONTAINER_RUNTIME) push $(ANSIBLE_RUNNER_IMAGE)

@@ -32,4 +32,4 @@ include::example$tektoncd.yml[]
 ----
 <.> Deploy Tektoncd with defaults
 
-You can check the xref:role-kubernetes-kind.adoc#kind-with-tektoncd[KinD] example to see how to deploy Istio on to a local KinD cluster.
+You can check the xref:role-kubernetes-kind.adoc#kind-with-tektoncd[KinD] example to see how to deploy Tektoncd on to a local KinD cluster.

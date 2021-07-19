@@ -11,10 +11,10 @@ Please have them installed and configured before you get started with any of the
 |===
 |**Tool**|**macOS**|**Fedora**|**windows**
 
-| `Git`
-| https://git-scm.com/download/mac[Download]
-| https://git-scm.com/download/linux[Download]
-| https://git-scm.com/download/win[Download]
+| https://cli.github.com[GitHub CLI]
+| https://cli.github.com[Install]
+| https://cli.github.com[Install]
+| https://cli.github.com[Install]
 
 | `Docker`
 | https://docs.docker.com/docker-for-mac/install[Docker for Mac]

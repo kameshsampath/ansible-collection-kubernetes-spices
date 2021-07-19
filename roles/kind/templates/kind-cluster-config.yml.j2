@@ -22,6 +22,7 @@ nodes:
       nodeRegistration:
         kubeletExtraArgs:
           node-labels: "ingress-ready=true"
+  {% if not extra_port_mappings_off %}
   extraPortMappings:
   {% for m in extra_port_mappings %}
     {% set hostPort = ( m.split(':')[1] | int ) | kameshsampath.kubernetes_spices.offset_port %}
@@ -37,7 +38,25 @@ nodes:
       listenAddress: {{ m.split(':')[0] }}
       {% endif %}
   {% endfor %}
+ {% endif %}
 - role: worker
+  {% if not worker_extra_port_mappings_off %}
+  extraPortMappings:
+  {% for m in worker_extra_port_mappings %}
+    {% set hostPort = ( m.split(':')[1] | int ) | kameshsampath.kubernetes_spices.offset_port %}
+    {% set containerPort =  m.split(':')[2] | int  %}
+    {% if m.split(':')[1] ==  m.split(':')[2] %}
+        {% set containerPort = hostPort  %}
+    {% endif %}
+    - containerPort: {{ containerPort }}
+      hostPort: {{ hostPort }}
+      {% if kind_ip_family == "ipv6" and m.split(':')[0] == "0.0.0.0" %}
+      listenAddress: "::"
+      {% else %}
+      listenAddress: {{ m.split(':')[0] }}
+      {% endif %}
+  {% endfor %}
+  {% endif %}
   kubeadmConfigPatches:
     - |
       kind: InitConfiguration
