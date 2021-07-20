@@ -1,0 +1,19 @@
+---
+- name: "Download tools"
+  hosts: localhost
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    # Create Cluster
+    kind_create: false
+    # Destroy Cluster
+    kind_destroy: false
+
+  roles:
+    - kameshsampath.kubernetes_spices.kind
+    - kameshsampath.kubernetes_spices.k8s_app_spices

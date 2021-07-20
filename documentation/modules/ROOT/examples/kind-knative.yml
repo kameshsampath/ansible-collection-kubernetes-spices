@@ -1,0 +1,32 @@
+---
+# This runs only for clusters that are built and run locally
+# e.g. KinD
+- name: "Local Cloud"
+  hosts: kind
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    kind_create: true
+    cluster_name: gloo-edge-demo
+  roles:
+    - name: kameshsampath.kubernetes_spices.kind
+
+- name: "Knative Defaults"
+  hosts: localhost
+  connection: local
+
+  collections:
+    - kubernetes.core
+
+  vars:
+    # to ensure we are on python3
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    # Default versions are v0.23.0, you can override it using knative_serving_version, knative_eventing_version
+    deploy_knative: True #<.>
+    
+  roles:
+    - role: kameshsampath.kubernetes_spices.k8s_app_spices
