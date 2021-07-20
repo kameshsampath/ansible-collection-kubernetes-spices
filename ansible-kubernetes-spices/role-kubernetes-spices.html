@@ -289,40 +289,7 @@
 <h4 id="gloo-example-playbook-ee"><a class="anchor" href="#gloo-example-playbook-ee"></a>Enterprise Edition</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
-- name: "Gloo Edge Enterprise Demo"
-  hosts: spices
-  connection: local
-
-  collections:
-    - kubernetes.core
-    - kameshsampath.kubernetes_spices
-
-  vars:
-    ansible_python_interpreter: "{{ ansible_playbook_python }}"
-    ####
-    ## Gloo Edge Configuration
-    ####
-    # Gloo Edge Setup
-    deploy_gloo_edge: true <i class="conum" data-value="1"></i><b>(1)</b>
-    # deploy Gloo Edge Enterprise
-    gloo_edge_edition: "ee" <i class="conum" data-value="2"></i><b>(2)</b>
-    # Set Gloo Edge Enterprise License Key
-    gloo_license_key: "{{ ansible_env.GLOO_LICENSE_KEY }}" <i class="conum" data-value="3"></i><b>(3)</b>
-    # Enable/disable discovery true/false
-    gloo_discovery_enabled: false <i class="conum" data-value="4"></i><b>(4)</b>
-    # Namespace to install Gloo into
-    gloo_write_namespace: my-gloo <i class="conum" data-value="5"></i><b>(5)</b>
-    # Gloo Watch Namespaces
-    gloo_watch_namespaces: <i class="conum" data-value="6"></i><b>(6)</b>
-      - demo-1-8-6
-      - demo-1-10-2
-      - my-gloo
-    # Use NodePorts for Gloo Proxy http/https true/false
-    gloo_proxy_nodeport: true <i class="conum" data-value="7"></i><b>(7)</b>
-
-  roles:
-    - kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">Unresolved include directive in modules/ROOT/partials/_deploy_gloo_edge.adoc - include::example$gloo-edge-ee.yml[]</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -394,36 +361,7 @@
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
-- name: "Gloo Edge Community Demo"
-  hosts: spices
-  connection: local
-
-  collections:
-    - kubernetes.core
-    - kameshsampath.kubernetes_spices
-
-  vars:
-    ansible_python_interpreter: "{{ ansible_playbook_python }}"
-
-    ## Gloo Edge Configuration
-    ####
-    # Gloo Edge Setup
-    deploy_gloo_edge: true <i class="conum" data-value="1"></i><b>(1)</b>
-    # Enable/disable discovery true/false
-    gloo_discovery_enabled: false <i class="conum" data-value="2"></i><b>(2)</b>
-    # Namespace to install Gloo into
-    gloo_write_namespace: my-gloo <i class="conum" data-value="3"></i><b>(3)</b>
-    # Gloo Watch Namespaces
-    gloo_watch_namespaces: <i class="conum" data-value="4"></i><b>(4)</b>
-      - demo-1-8-6
-      - demo-1-10-2
-      - my-gloo
-    # Use NodePorts for Gloo Proxy http/https true/false
-    gloo_proxy_nodeport: true <i class="conum" data-value="5"></i><b>(5)</b>
-
-  roles:
-    - kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">Unresolved include directive in modules/ROOT/partials/_deploy_gloo_edge.adoc - include::example$gloo-edge-ce.yml[]</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -541,28 +479,7 @@
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
-- name: "Demo with Istio"
-  hosts: spices
-  connection: local
-
-  collections:
-    - kubernetes.core
-    - kameshsampath.kubernetes_spices
-
-  vars:
-    ansible_python_interpreter: "{{ ansible_playbook_python }}"
-    ####
-    ## Istio Configurations
-    ####
-    deploy_istio: true <i class="conum" data-value="1"></i><b>(1)</b>
-    ## Istio Ingress Gateway
-    deploy_istio_gateway: true <i class="conum" data-value="2"></i><b>(2)</b>
-    istio_versions: <i class="conum" data-value="3"></i><b>(3)</b>
-      - "1.10.2"
-
-  roles:
-    - kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">Unresolved include directive in modules/ROOT/partials/_deploy_istio.adoc - include::example$istio.yml[]</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -648,23 +565,7 @@
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
-# Apply Knative
-- name: "Knative Defaults"
-  hosts: localhost
-  connection: spices
-
-  collections:
-    - kubernetes.core
-
-  vars:
-    # to ensure we are on python3
-    ansible_python_interpreter: "{{ ansible_playbook_python }}"
-    # Default versions are v0.23.0, you can override it using knative_serving_version, knative_eventing_version
-    deploy_knative: True <i class="conum" data-value="1"></i><b>(1)</b>
-
-  roles:
-    - role: kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">Unresolved include directive in modules/ROOT/partials/_deploy_knative.adoc - include::example$knative.yml[]</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -734,19 +635,7 @@
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
-- name: "Keyclaok Defaults"
-  hosts: spices
-  connection: local
-
-  collections:
-    - kubernetes.core
-
-  vars:
-    deploy_keycloak: true <i class="conum" data-value="1"></i><b>(1)</b>
-
-  roles:
-    - role: kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">Unresolved include directive in modules/ROOT/partials/_deploy_keycloak.adoc - include::example$keycloak.yml[]</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -811,19 +700,7 @@
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
-- name: "OLM Defaults"
-  hosts: spices
-  connection: local
-
-  collections:
-    - kubernetes.core
-
-  vars:
-    deploy_olm: true <i class="conum" data-value="1"></i><b>(1)</b>
-
-  roles:
-    - role: kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">Unresolved include directive in modules/ROOT/partials/_deploy_olm.adoc - include::example$olm.yml[]</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -898,19 +775,7 @@
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
-- name: "Postgresql Defaults"
-  hosts: spices
-  connection: local
-
-  collections:
-    - kubernetes.core
-
-  vars:
-    deploy_postgresql: true <i class="conum" data-value="1"></i><b>(1)</b>
-
-  roles:
-    - role: kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">Unresolved include directive in modules/ROOT/partials/_deploy_postgresql.adoc - include::example$postgesql.yml[]</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -975,19 +840,7 @@
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
-- name: "Tektoncd Defaults"
-  hosts: spices
-  connection: local
-
-  collections:
-    - kubernetes.core
-
-  vars:
-    deploy_tektoncd: true <i class="conum" data-value="1"></i><b>(1)</b>
-
-  roles:
-    - role: kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">Unresolved include directive in modules/ROOT/partials/_deploy_tektoncd.adoc - include::example$tektoncd.yml[]</code></pre>
 </div>
 </div>
 <div class="colist arabic">
