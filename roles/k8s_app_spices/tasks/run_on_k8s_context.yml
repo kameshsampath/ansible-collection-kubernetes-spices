@@ -20,7 +20,7 @@
 
 - name: "Undeploy Gloo Edge"
   include_tasks: rollback/gloo_edge.yml
-  when: not deploy_gloo_edge
+  when: rollback_gloo_edge
 
 ######################################
 ## Keycloak

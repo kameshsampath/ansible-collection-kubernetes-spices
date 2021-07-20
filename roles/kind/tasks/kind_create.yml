@@ -84,14 +84,15 @@
 - name: "Get KinD {{cluster_name}} kube context"
   set_fact:
     current_context: "{{ kubeconfig_result.stdout | from_yaml }}"
-        
+
+# Adding the created cluster to spices group so that the spices can be added
 - name: "Add KinD Custer {{ cluster_name }} to use_contexts"
   ansible.builtin.add_host:
     name: "{{ current_context.contexts[0].name }}"
     groups:
-      - all
-      - ungrouped
+      - spices
     k8s_current_context: "{{ current_context.contexts[0].name }}"
+    is_local: True
     k8s_context_cluster: "{{ current_context.contexts[0].name }}"
     k8s_context_user: "{{ current_context.contexts[0].name }}"
     kubeconfig_file: "{{ kubeconfig_file.dest }}"

@@ -15,6 +15,7 @@ olm_namespace: olm
 
 # Gloo Edge
 deploy_gloo_edge: false
+rollback_gloo_edge: false
 gloo_edge_edition: ce
 gloo_edge_version: "1.8.0"
 gloo_write_namespace: gloo-system

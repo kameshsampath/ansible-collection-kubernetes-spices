@@ -4,6 +4,11 @@ include::_attributes.adoc[]
 
 The playbooks could be run using the https://ansible-builder.readthedocs.io/en/latest/index.html[Ansible Execution] environment. The following sections details how to use the Kubernetes Spice Runner environment to run the playbooks to setup your kubernetes stack.
 
+[#open-issues]
+== Open Issues
+
+- [ ] https://github.com/kameshsampath/kubernetes_spices/issues/14[ISSUE-14]
+
 [#runer-gh-template]
 == Template project
 
@@ -19,42 +24,57 @@ gh repo create my-k8s-demos -d"my kubernetes spice runner project" -p kameshsamp
 
 The directory structure follows the https://ansible-runner.readthedocs.io/en/stable/intro.html#runner-input-directory-hierarchy[Ansible Runner Directory] structure.
 
-All the variables that you need pass to the Ansible playbooks can be specified in `$PROJECT_HOME/setup/extravars`.
-
-Make a copy of `$PROJECT_HOME/hack/env/extravars.example` to `$PROJECT_HOME/hack/env/extravars`:
-
-[source,bash]
-----
-cp $PROJECT_HOME/hack/env/extravars.example $PROJECT_HOME/hack/env/extravars
-----
-
-Update the extra vars with the parameters corresponding to the stack you want to install. Refer to xref:roles.adoc#roles-overview[roles] to find what you can install.
-
-The following example shows the `extravars` that will create a local KinD cluster called `gloo-edge-demo` and installs Gloo Edge,
-
-[source,yaml]
-.https://github.com/kameshsampath/kubernetes-spice-runner/blob/main/env/extravars.example[extravars]
-----
-include::example$extravars.yml[]
-----
-
 The template playbook already has the roles included 
 
 [source,yaml]
 .https://github.com/kameshsampath/kubernetes-spice-runner/blob/main/project/playbook.yml[playbook.yml]
 ----
-- name: "KinD Cloud"
-  hosts: all
+---
+# This runs only for clusters that are built and run locally
+# e.g. KinD
+- name: "Local Cloud"
+  hosts: kind
   connection: local
 
   collections:
     - kubernetes.core
     - kameshsampath.kubernetes_spices
-
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    kind_create: true
+    cluster_name: gloo-edge-demo
   roles:
-    - kameshsampath.kubernetes_spices.kind
-    - kameshsampath.kubernetes_spices.k8s_app_spices
+    - name: kameshsampath.kubernetes_spices.kind
+# Applies stack to all the cloud
+- name: "Spice the Cloud"
+  hosts: spices
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    ####
+    ## Gloo Edge Configuration
+    ####
+    # Deploy Gloo Edge
+    deploy_gloo_edge: true
+    gloo_write_namespace: my-gloo
+    # gloo_discovery_enabled: false
+    gloo_edge_edition: ee
+    gloo_watch_namespaces:
+      - hybrid-cloud
+      - bookinfo
+    gloo_license_key: "{{ ansible_env.GLOO_LICENSE_KEY }}"
+  roles:
+    - name: kameshsampath.kubernetes_spices.k8s_app_spices
 ----
+
+[NOTE]
+====
+When new KinD cluster is created, it's Kube Contexts is automatically added to the `spices` group. That allows to apply stacks to local as well as cloud based clusters.
+====
 
 To run the playbook:
 
@@ -76,3 +96,26 @@ Once the cluster is created it also sets and exports the `KUBECONFIG` to the loc
 == Container Image
 
 The collection builds ansible execution environment and publishes them at `quay.io/kameshsampath/kubernetes-spices-ansible-runner`.
+
+[#runner-overide-vars]
+
+== Overriding Values
+
+You can pass extra variables to playbooks using `$PROJECT_HOME/setup/extravars`.
+
+Make a copy of `$PROJECT_HOME/hack/env/extravars.example` to `$PROJECT_HOME/hack/env/extravars`:
+
+[source,bash]
+----
+cp $PROJECT_HOME/hack/env/extravars.example $PROJECT_HOME/hack/env/extravars
+----
+
+Update the extra vars with the parameters corresponding to the stack you want to install. Refer to xref:roles.adoc#roles-overview[roles] to find what you can install.
+
+The following example shows the `extravars` that will create a local KinD cluster with a different `kind_home_dir` set to `/home/runner/.kube`
+
+[source,yaml]
+.https://github.com/kameshsampath/kubernetes-spice-runner/blob/main/env/extravars.example[extravars]
+----
+include::example$extravars.yml[]
+----

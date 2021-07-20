@@ -1,6 +1,1 @@
 kind_home_dir: /home/runner/.kube
-cluster_name: gloo-edge-demo
-kind_create: true
-deploy_gloo_edge: true
-# set gloo license key 
-gloo_license_key:  my gloo license key

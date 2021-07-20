@@ -26,6 +26,6 @@ worker_extra_port_mappings:
   - "0.0.0.0:27017:27017"
   - "0.0.0.0:8080:8080"
   - "0.0.0.0:8443:8443"
-worker_extra_port_mappings_off: true
+worker_extra_port_mappings_off: false
 disable_cni: false
 kind_network_name: kind

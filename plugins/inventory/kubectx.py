@@ -82,12 +82,21 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         t_contexts = kubernetes.config.list_kube_config_contexts(kube_config)
 
         use_contexts = config_data.get('use_contexts')
+        kctx_kind = "kind"
+        kctx_spices = "spices"
+
+        self.inventory.add_group(kctx_kind)
+        self.inventory.add_group(kctx_spices)
+        
         # print(f"Contexts: {contexts}")
+        self.inventory.add_host("localhost")
+        self.inventory.add_child(kctx_kind, "localhost")
 
         if use_contexts is None or len(use_contexts) == 0:
             # print(f"Adding default current context to list {t_contexts[1]}")
             ctx = dict(t_contexts[1])
             name = ctx.get("name")
+            self.inventory.add_child(kctx_spices, name)
             self._set_host_vars(name, ctx)
             self.set_variable(name, 'kubeconfig_file', kube_config)
         else:
@@ -100,6 +109,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                     # print(f"comparing { ctx.get('name')} == {name}")
                     if name == ctx.get('name'):
                         self._set_host_vars(name, t)
+                        self.inventory.add_child(kctx_spices, name)
                         kubeconfig_file = ctx.get("from")
                         # print(f"Context {name} Kubeconfig {kubeconfig_file}")
                         if kubeconfig_file is None:
