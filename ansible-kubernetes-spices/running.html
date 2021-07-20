@@ -144,6 +144,18 @@
 </div>
 </div>
 <div class="sect1">
+<h2 id="open-issues"><a class="anchor" href="#open-issues"></a>Open Issues</h2>
+<div class="sectionbody">
+<div class="ulist checklist">
+<ul class="checklist">
+<li>
+<p><i class="fa fa-square-o"></i> <a href="https://github.com/kameshsampath/kubernetes_spices/issues/14">ISSUE-14</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="runer-gh-template"><a class="anchor" href="#runer-gh-template"></a>Template project</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -163,51 +175,66 @@
 <p>The directory structure follows the <a href="https://ansible-runner.readthedocs.io/en/stable/intro.html#runner-input-directory-hierarchy">Ansible Runner Directory</a> structure.</p>
 </div>
 <div class="paragraph">
-<p>All the variables that you need pass to the Ansible playbooks can be specified in <code>$PROJECT_HOME/setup/extravars</code>.</p>
-</div>
-<div class="paragraph">
-<p>Make a copy of <code>$PROJECT_HOME/hack/env/extravars.example</code> to <code>$PROJECT_HOME/hack/env/extravars</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cp $PROJECT_HOME/hack/env/extravars.example $PROJECT_HOME/hack/env/extravars</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Update the extra vars with the parameters corresponding to the stack you want to install. Refer to <a href="roles.html#roles-overview" class="page">roles</a> to find what you can install.</p>
-</div>
-<div class="paragraph">
-<p>The following example shows the <code>extravars</code> that will create a local KinD cluster called <code>gloo-edge-demo</code> and installs Gloo Edge,</p>
-</div>
-<div class="listingblock">
-<div class="title"><a href="https://github.com/kameshsampath/kubernetes-spice-runner/blob/main/env/extravars.example">extravars</a></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">kind_home_dir: /home/runner/.kube
-cluster_name: gloo-edge-demo
-kind_create: true
-deploy_gloo_edge: true
-# set gloo license key
-gloo_license_key:  my gloo license key</code></pre>
-</div>
-</div>
-<div class="paragraph">
 <p>The template playbook already has the roles included</p>
 </div>
 <div class="listingblock">
 <div class="title"><a href="https://github.com/kameshsampath/kubernetes-spice-runner/blob/main/project/playbook.yml">playbook.yml</a></div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">- name: "KinD Cloud"
-  hosts: all
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+# This runs only for clusters that are built and run locally
+# e.g. KinD
+- name: "Local Cloud"
+  hosts: kind
   connection: local
 
   collections:
     - kubernetes.core
     - kameshsampath.kubernetes_spices
-
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    kind_create: true
+    cluster_name: gloo-edge-demo
   roles:
-    - kameshsampath.kubernetes_spices.kind
-    - kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
+    - name: kameshsampath.kubernetes_spices.kind
+# Applies stack to all the cloud
+- name: "Spice the Cloud"
+  hosts: spices
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    ####
+    ## Gloo Edge Configuration
+    ####
+    # Deploy Gloo Edge
+    deploy_gloo_edge: true
+    gloo_write_namespace: my-gloo
+    # gloo_discovery_enabled: false
+    gloo_edge_edition: ee
+    gloo_watch_namespaces:
+      - hybrid-cloud
+      - bookinfo
+    gloo_license_key: "{{ ansible_env.GLOO_LICENSE_KEY }}"
+  roles:
+    - name: kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
 </div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>When new KinD cluster is created, it&#8217;s Kube Contexts is automatically added to the <code>spices</code> group. That allows to apply stacks to local as well as cloud based clusters.</p>
+</div>
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>To run the playbook:</p>
@@ -243,6 +270,34 @@ gloo_license_key:  my gloo license key</code></pre>
 <div class="sectionbody">
 <div class="paragraph">
 <p>The collection builds ansible execution environment and publishes them at <code>quay.io/kameshsampath/kubernetes-spices-ansible-runner</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="runner-overide-vars"><a class="anchor" href="#runner-overide-vars"></a>Overriding Values</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can pass extra variables to playbooks using <code>$PROJECT_HOME/setup/extravars</code>.</p>
+</div>
+<div class="paragraph">
+<p>Make a copy of <code>$PROJECT_HOME/hack/env/extravars.example</code> to <code>$PROJECT_HOME/hack/env/extravars</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cp $PROJECT_HOME/hack/env/extravars.example $PROJECT_HOME/hack/env/extravars</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Update the extra vars with the parameters corresponding to the stack you want to install. Refer to <a href="roles.html#roles-overview" class="page">roles</a> to find what you can install.</p>
+</div>
+<div class="paragraph">
+<p>The following example shows the <code>extravars</code> that will create a local KinD cluster with a different <code>kind_home_dir</code> set to <code>/home/runner/.kube</code></p>
+</div>
+<div class="listingblock">
+<div class="title"><a href="https://github.com/kameshsampath/kubernetes-spice-runner/blob/main/env/extravars.example">extravars</a></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">kind_home_dir: /home/runner/.kube</code></pre>
+</div>
 </div>
 </div>
 </div>
