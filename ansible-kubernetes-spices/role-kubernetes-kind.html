@@ -279,7 +279,22 @@
 <h3 id="kind-example-playbooks-create"><a class="anchor" href="#kind-example-playbooks-create"></a>KinD cluster with all defaults</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">Unresolved include directive in modules/ROOT/pages/role-kubernetes-kind.adoc - include::example$kind-vanilla.yaml[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+# This runs only for clusters that are built and run locally
+# e.g. KinD
+- name: "Local Cloud"
+  hosts: kind
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    kind_create: true
+    cluster_name: vanilla
+  roles:
+    - name: kameshsampath.kubernetes_spices.kind</code></pre>
 </div>
 </div>
 </div>
@@ -287,7 +302,19 @@
 <h3 id="_destroy_kind_cluster"><a class="anchor" href="#_destroy_kind_cluster"></a>Destroy KinD cluster</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">Unresolved include directive in modules/ROOT/pages/role-kubernetes-kind.adoc - include::example$kind-destroy.yaml[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+- name: Destroy Cluster
+  hosts: kind
+  connection: local
+
+  collections:
+    - kubernetes.core
+
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    kind_create: false <i class="conum" data-value="1"></i><b>(1)</b>
+  roles:
+    - role: kameshsampath.kubernetes_spices.kind</code></pre>
 </div>
 </div>
 </div>
@@ -295,7 +322,25 @@
 <h3 id="_kind_cluster_with_ipv6"><a class="anchor" href="#_kind_cluster_with_ipv6"></a>KinD cluster with ipv6</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">Unresolved include directive in modules/ROOT/pages/role-kubernetes-kind.adoc - include::example$kind-vanilla-ipv6.yaml[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+# This runs only for clusters that are built and run locally
+# e.g. KinD
+- name: "Local Cloud"
+  hosts: kind
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    kind_create: true
+    cluster_name: vanilla
+    # valid values are ipv4, ipv6, dual
+    kind_ip_family: ipv6
+
+  roles:
+    - role: kameshsampath.kubernetes_spices.kind</code></pre>
 </div>
 </div>
 </div>
@@ -303,7 +348,51 @@
 <h3 id="kind-with-gloo-edge-ce"><a class="anchor" href="#kind-with-gloo-edge-ce"></a>KinD cluster with Gloo Edge CE</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">Unresolved include directive in modules/ROOT/pages/role-kubernetes-kind.adoc - include::example$kind-gloo-edge-ce.yml[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+# This runs only for clusters that are built and run locally
+# e.g. KinD
+- name: "Local Cloud"
+  hosts: kind
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    kind_create: true
+    cluster_name: gloo-edge-demo
+  roles:
+    - name: kameshsampath.kubernetes_spices.kind
+# Applies stack to all the cloud
+- name: "Gloo Edge Community"
+  hosts: spices
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    ## Gloo Edge Configuration
+    ####
+    # Gloo Edge Setup
+    deploy_gloo_edge: true <i class="conum" data-value="1"></i><b>(1)</b>
+    # Enable/disable discovery true/false
+    gloo_discovery_enabled: false <i class="conum" data-value="2"></i><b>(2)</b>
+    # Namespace to install Gloo into
+    gloo_write_namespace: my-gloo <i class="conum" data-value="3"></i><b>(3)</b>
+    # Gloo Watch Namespaces
+    gloo_watch_namespaces: <i class="conum" data-value="4"></i><b>(4)</b>
+      - demo-1-8-6
+      - demo-1-10-2
+      - my-gloo
+    # Use NodePorts for Gloo Proxy http/https true/false
+    gloo_proxy_nodeport: true <i class="conum" data-value="5"></i><b>(5)</b>
+
+  roles:
+    - kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
 </div>
 </div>
 </div>
@@ -311,7 +400,57 @@
 <h3 id="kind-with-gloo-edge-ee"><a class="anchor" href="#kind-with-gloo-edge-ee"></a>KinD cluster with Gloo Edge EE</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">Unresolved include directive in modules/ROOT/pages/role-kubernetes-kind.adoc - include::example$kind-gloo-edge-ee.yml[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+# This runs only for clusters that are built and run locally
+# e.g. KinD
+- name: "Local Cloud"
+  hosts: kind
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    kind_create: true
+    cluster_name: gloo-edge-demo
+  roles:
+    - name: kameshsampath.kubernetes_spices.kind
+
+# Apply stack to local and remote clouds
+- name: "Gloo Edge Enterprise Demo"
+  hosts: spices
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    ####
+    ## Gloo Edge Configuration
+    ####
+    # Gloo Edge Setup
+    deploy_gloo_edge: true <i class="conum" data-value="1"></i><b>(1)</b>
+    # deploy Gloo Edge Enterprise
+    gloo_edge_edition: "ee" <i class="conum" data-value="2"></i><b>(2)</b>
+    # Set Gloo Edge Enterprise License Key
+    gloo_license_key: "{{ ansible_env.GLOO_LICENSE_KEY }}" <i class="conum" data-value="3"></i><b>(3)</b>
+    # Enable/disable discovery true/false
+    gloo_discovery_enabled: false <i class="conum" data-value="4"></i><b>(4)</b>
+    # Namespace to install Gloo into
+    gloo_write_namespace: my-gloo <i class="conum" data-value="5"></i><b>(5)</b>
+    # Gloo Watch Namespaces
+    gloo_watch_namespaces: <i class="conum" data-value="6"></i><b>(6)</b>
+      - demo-1-8-6
+      - demo-1-10-2
+      - my-gloo
+    # Use NodePorts for Gloo Proxy http/https true/false
+    gloo_proxy_nodeport: true <i class="conum" data-value="7"></i><b>(7)</b>
+
+  roles:
+    - kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
 </div>
 </div>
 </div>
@@ -319,7 +458,44 @@
 <h3 id="kind-with-istio"><a class="anchor" href="#kind-with-istio"></a>KinD cluster with Istio</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">Unresolved include directive in modules/ROOT/pages/role-kubernetes-kind.adoc - include::example$kind-istio.yml[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+# This runs only for clusters that are built and run locally
+# e.g. KinD
+- name: "Local Cloud"
+  hosts: kind
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    kind_create: true
+    cluster_name: istio
+  roles:
+    - name: kameshsampath.kubernetes_spices.kind
+# Apply stack
+- name: "Demo with Istio"
+  hosts: spices
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    ####
+    ## Istio Configurations
+    ####
+    deploy_istio: true <i class="conum" data-value="1"></i><b>(1)</b>
+    ## Istio Ingress Gateway
+    deploy_istio_gateway: true <i class="conum" data-value="2"></i><b>(2)</b>
+    istio_versions: <i class="conum" data-value="3"></i><b>(3)</b>
+      - "1.10.2"
+
+  roles:
+    - kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
 </div>
 </div>
 </div>
@@ -327,7 +503,38 @@
 <h3 id="kind-with-knative"><a class="anchor" href="#kind-with-knative"></a>KinD cluster with Knative</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">Unresolved include directive in modules/ROOT/pages/role-kubernetes-kind.adoc - include::example$kind-knative.yml[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+# This runs only for clusters that are built and run locally
+# e.g. KinD
+- name: "Local Cloud"
+  hosts: kind
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    kind_create: true
+    cluster_name: gloo-edge-demo
+  roles:
+    - name: kameshsampath.kubernetes_spices.kind
+
+- name: "Knative Defaults"
+  hosts: localhost
+  connection: local
+
+  collections:
+    - kubernetes.core
+
+  vars:
+    # to ensure we are on python3
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    # Default versions are v0.23.0, you can override it using knative_serving_version, knative_eventing_version
+    deploy_knative: True <i class="conum" data-value="1"></i><b>(1)</b>
+
+  roles:
+    - role: kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
 </div>
 </div>
 </div>
@@ -335,7 +542,36 @@
 <h3 id="kind-with-keycloak"><a class="anchor" href="#kind-with-keycloak"></a>KinD cluster with Keycloak</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">Unresolved include directive in modules/ROOT/pages/role-kubernetes-kind.adoc - include::example$kind-keycloak.yml[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+# This runs only for clusters that are built and run locally
+# e.g. KinD
+- name: "Local Cloud"
+  hosts: kind
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    kind_create: true
+    cluster_name: keycloak
+  roles:
+    - name: kameshsampath.kubernetes_spices.kind
+
+#Apply keycloak
+- name: "Keycloak Defaults"
+  hosts: spices
+  connection: local
+
+  collections:
+    - kubernetes.core
+
+  vars:
+    deploy_keycloak7: true <i class="conum" data-value="1"></i><b>(1)</b>
+
+  roles:
+    - role: kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
 </div>
 </div>
 </div>
@@ -343,7 +579,35 @@
 <h3 id="kind-with-tektoncd"><a class="anchor" href="#kind-with-tektoncd"></a>KinD cluster with Tektoncd</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">Unresolved include directive in modules/ROOT/pages/role-kubernetes-kind.adoc - include::example$kind-tektoncd.yml[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+# This runs only for clusters that are built and run locally
+# e.g. KinD
+- name: "Local Cloud"
+  hosts: kind
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    kind_create: true
+    cluster_name: tektoncd
+  roles:
+    - name: kameshsampath.kubernetes_spices.kind
+# Apply Tekton
+- name: "Tektoncd Defaults"
+  hosts: localhost
+  connection: local
+
+  collections:
+    - kubernetes.core
+
+  vars:
+    deploy_tektoncd: true <i class="conum" data-value="1"></i><b>(1)</b>
+
+  roles:
+    - role: kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
 </div>
 </div>
 </div>
