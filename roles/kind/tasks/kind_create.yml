@@ -70,6 +70,7 @@
     content: "{{ kubeconfig_result.stdout }}"
     mode: "0700"
     remote_src: true
+  register: kubeconfig_file
 
 - name: "Get {{ cluster_name }} Control Plane Ports"
   community.docker.docker_container_info:
@@ -79,3 +80,18 @@
 - name: "Set {{ cluster_name }} Control Plane Ports Fact"
   set_fact:
     control_plane_port_mappings: "{{ control_plane_ports.container.NetworkSettings.Ports | kameshsampath.kubernetes_spices.port_mapping }}"
+
+- name: "Get KinD {{cluster_name}} kube context"
+  set_fact:
+    current_context: "{{ kubeconfig_result.stdout | from_yaml }}"
+        
+- name: "Add KinD Custer {{ cluster_name }} to use_contexts"
+  ansible.builtin.add_host:
+    name: "{{ current_context.contexts[0].name }}"
+    groups:
+      - all
+      - ungrouped
+    k8s_current_context: "{{ current_context.contexts[0].name }}"
+    k8s_context_cluster: "{{ current_context.contexts[0].name }}"
+    k8s_context_user: "{{ current_context.contexts[0].name }}"
+    kubeconfig_file: "{{ kubeconfig_file.dest }}"
