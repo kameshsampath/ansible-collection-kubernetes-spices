@@ -280,20 +280,21 @@
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
-- name: vanilla
-  hosts: localhost
+# This runs only for clusters that are built and run locally
+# e.g. KinD
+- name: "Local Cloud"
+  hosts: kind
   connection: local
 
   collections:
     - kubernetes.core
-
+    - kameshsampath.kubernetes_spices
   vars:
     ansible_python_interpreter: "{{ ansible_playbook_python }}"
-    cluster_name: vanilla
     kind_create: true
-
+    cluster_name: vanilla
   roles:
-    - role: kameshsampath.kubernetes_spices.kind</code></pre>
+    - name: kameshsampath.kubernetes_spices.kind</code></pre>
 </div>
 </div>
 </div>
@@ -302,8 +303,8 @@
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
-- name: Converge
-  hosts: localhost
+- name: Destroy Cluster
+  hosts: kind
   connection: local
 
   collections:
@@ -322,56 +323,24 @@
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
-- name: vanilla
-  hosts: localhost
-  connection: local
-
-  collections:
-    - kubernetes.core
-
-  vars:
-    ansible_python_interpreter: "{{ ansible_playbook_python }}"
-    cluster_name: vanilla
-    # valid values are ipv4, ipv6, dual
-    kind_ip_family: ipv6
-    # Create Cluster
-    kind_create: true
-    # Destroy Cluster
-    kind_destroy: false
-
-  roles:
-    - role: kameshsampath.kubernetes_spices.kind</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="kind-with-istio"><a class="anchor" href="#kind-with-istio"></a>KinD cluster with Istio</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
-- name: "Demo with Istio"
-  hosts: localhost
+# This runs only for clusters that are built and run locally
+# e.g. KinD
+- name: "Local Cloud"
+  hosts: kind
   connection: local
 
   collections:
     - kubernetes.core
     - kameshsampath.kubernetes_spices
-
   vars:
     ansible_python_interpreter: "{{ ansible_playbook_python }}"
-    cluster_name: kind-istio
     kind_create: true
-    ####
-    ## Istio Configurations
-    ####
-    deploy_istio: true <i class="conum" data-value="1"></i><b>(1)</b>
-    ## Istio Ingress Gateway
-    deploy_istio_gateway: true <i class="conum" data-value="2"></i><b>(2)</b>
-    istio_versions: <i class="conum" data-value="3"></i><b>(3)</b>
-      - "1.10.2"
+    cluster_name: vanilla
+    # valid values are ipv4, ipv6, dual
+    kind_ip_family: ipv6
 
   roles:
-    - kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
+    - role: kameshsampath.kubernetes_spices.kind</code></pre>
 </div>
 </div>
 </div>
@@ -380,8 +349,24 @@
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
-- name: "Gloo Edge Enterprise Demo"
-  hosts: localhost
+# This runs only for clusters that are built and run locally
+# e.g. KinD
+- name: "Local Cloud"
+  hosts: kind
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    kind_create: true
+    cluster_name: gloo-edge-demo
+  roles:
+    - name: kameshsampath.kubernetes_spices.kind
+# Applies stack to all the cloud
+- name: "Gloo Edge Community"
+  hosts: spices
   connection: local
 
   collections:
@@ -390,8 +375,6 @@
 
   vars:
     ansible_python_interpreter: "{{ ansible_playbook_python }}"
-    cluster_name: kind-gloo-ce
-    kind_create: true
     ## Gloo Edge Configuration
     ####
     # Gloo Edge Setup
@@ -409,7 +392,6 @@
     gloo_proxy_nodeport: true <i class="conum" data-value="5"></i><b>(5)</b>
 
   roles:
-    - kameshsampath.kubernetes_spices.kind
     - kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
 </div>
 </div>
@@ -419,8 +401,25 @@
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+# This runs only for clusters that are built and run locally
+# e.g. KinD
+- name: "Local Cloud"
+  hosts: kind
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    kind_create: true
+    cluster_name: gloo-edge-demo
+  roles:
+    - name: kameshsampath.kubernetes_spices.kind
+
+# Apply stack to local and remote clouds
 - name: "Gloo Edge Enterprise Demo"
-  hosts: localhost
+  hosts: spices
   connection: local
 
   collections:
@@ -429,8 +428,6 @@
 
   vars:
     ansible_python_interpreter: "{{ ansible_playbook_python }}"
-    cluster_name: kind-gloo-ee
-    kind_create: true
     ####
     ## Gloo Edge Configuration
     ####
@@ -453,7 +450,51 @@
     gloo_proxy_nodeport: true <i class="conum" data-value="7"></i><b>(7)</b>
 
   roles:
-    - kameshsampath.kubernetes_spices.kind
+    - kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="kind-with-istio"><a class="anchor" href="#kind-with-istio"></a>KinD cluster with Istio</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+# This runs only for clusters that are built and run locally
+# e.g. KinD
+- name: "Local Cloud"
+  hosts: kind
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    kind_create: true
+    cluster_name: istio
+  roles:
+    - name: kameshsampath.kubernetes_spices.kind
+# Apply stack
+- name: "Demo with Istio"
+  hosts: spices
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    ####
+    ## Istio Configurations
+    ####
+    deploy_istio: true <i class="conum" data-value="1"></i><b>(1)</b>
+    ## Istio Ingress Gateway
+    deploy_istio_gateway: true <i class="conum" data-value="2"></i><b>(2)</b>
+    istio_versions: <i class="conum" data-value="3"></i><b>(3)</b>
+      - "1.10.2"
+
+  roles:
     - kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
 </div>
 </div>
@@ -463,6 +504,22 @@
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+# This runs only for clusters that are built and run locally
+# e.g. KinD
+- name: "Local Cloud"
+  hosts: kind
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    kind_create: true
+    cluster_name: gloo-edge-demo
+  roles:
+    - name: kameshsampath.kubernetes_spices.kind
+
 - name: "Knative Defaults"
   hosts: localhost
   connection: local
@@ -471,15 +528,12 @@
     - kubernetes.core
 
   vars:
-    cluster_name: kind-knative
-    kind_create: true
     # to ensure we are on python3
     ansible_python_interpreter: "{{ ansible_playbook_python }}"
     # Default versions are v0.23.0, you can override it using knative_serving_version, knative_eventing_version
     deploy_knative: True <i class="conum" data-value="1"></i><b>(1)</b>
 
   roles:
-    - role: kameshsampath.kubernetes_spices.kind
     - role: kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
 </div>
 </div>
@@ -489,20 +543,34 @@
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+# This runs only for clusters that are built and run locally
+# e.g. KinD
+- name: "Local Cloud"
+  hosts: kind
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    kind_create: true
+    cluster_name: keycloak
+  roles:
+    - name: kameshsampath.kubernetes_spices.kind
+
+#Apply keycloak
 - name: "Keycloak Defaults"
-  hosts: localhost
+  hosts: spices
   connection: local
 
   collections:
     - kubernetes.core
 
   vars:
-    cluster_name: kind-keycloak
-    kind_create: true
     deploy_keycloak7: true <i class="conum" data-value="1"></i><b>(1)</b>
 
   roles:
-    - role: kameshsampath.kubernetes_spices.kind
     - role: kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
 </div>
 </div>
@@ -512,6 +580,22 @@
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+# This runs only for clusters that are built and run locally
+# e.g. KinD
+- name: "Local Cloud"
+  hosts: kind
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    kind_create: true
+    cluster_name: tektoncd
+  roles:
+    - name: kameshsampath.kubernetes_spices.kind
+# Apply Tekton
 - name: "Tektoncd Defaults"
   hosts: localhost
   connection: local
@@ -520,12 +604,9 @@
     - kubernetes.core
 
   vars:
-    cluster_name: kind-tektoncd
-    kind_create: true
     deploy_tektoncd: true <i class="conum" data-value="1"></i><b>(1)</b>
 
   roles:
-    - role: kameshsampath.kubernetes_spices.kind
     - role: kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
 </div>
 </div>

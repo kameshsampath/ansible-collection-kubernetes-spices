@@ -291,7 +291,7 @@
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
 - name: "Gloo Edge Enterprise Demo"
-  hosts: localhost
+  hosts: spices
   connection: local
 
   collections:
@@ -322,7 +322,6 @@
     gloo_proxy_nodeport: true <i class="conum" data-value="7"></i><b>(7)</b>
 
   roles:
-    - kameshsampath.kubernetes_spices.kind
     - kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
 </div>
 </div>
@@ -396,8 +395,8 @@
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
-- name: "Gloo Edge Enterprise Demo"
-  hosts: localhost
+- name: "Gloo Edge Community Demo"
+  hosts: spices
   connection: local
 
   collections:
@@ -424,7 +423,6 @@
     gloo_proxy_nodeport: true <i class="conum" data-value="5"></i><b>(5)</b>
 
   roles:
-    - kameshsampath.kubernetes_spices.kind
     - kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
 </div>
 </div>
@@ -545,7 +543,7 @@
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
 - name: "Demo with Istio"
-  hosts: localhost
+  hosts: spices
   connection: local
 
   collections:
@@ -651,9 +649,10 @@
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+# Apply Knative
 - name: "Knative Defaults"
   hosts: localhost
-  connection: local
+  connection: spices
 
   collections:
     - kubernetes.core
@@ -665,7 +664,6 @@
     deploy_knative: True <i class="conum" data-value="1"></i><b>(1)</b>
 
   roles:
-    - role: kameshsampath.kubernetes_spices.kind
     - role: kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
 </div>
 </div>
@@ -738,7 +736,7 @@
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
 - name: "Keyclaok Defaults"
-  hosts: localhost
+  hosts: spices
   connection: local
 
   collections:
@@ -748,7 +746,6 @@
     deploy_keycloak: true <i class="conum" data-value="1"></i><b>(1)</b>
 
   roles:
-    - role: kameshsampath.kubernetes_spices.kind
     - role: kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
 </div>
 </div>
@@ -816,7 +813,7 @@
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
 - name: "OLM Defaults"
-  hosts: localhost
+  hosts: spices
   connection: local
 
   collections:
@@ -826,7 +823,6 @@
     deploy_olm: true <i class="conum" data-value="1"></i><b>(1)</b>
 
   roles:
-    - role: kameshsampath.kubernetes_spices.kind
     - role: kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
 </div>
 </div>
@@ -904,7 +900,7 @@
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
 - name: "Postgresql Defaults"
-  hosts: localhost
+  hosts: spices
   connection: local
 
   collections:
@@ -914,7 +910,6 @@
     deploy_postgresql: true <i class="conum" data-value="1"></i><b>(1)</b>
 
   roles:
-    - role: kameshsampath.kubernetes_spices.kind
     - role: kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
 </div>
 </div>
@@ -982,7 +977,7 @@
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
 - name: "Tektoncd Defaults"
-  hosts: localhost
+  hosts: spices
   connection: local
 
   collections:
@@ -992,7 +987,6 @@
     deploy_tektoncd: true <i class="conum" data-value="1"></i><b>(1)</b>
 
   roles:
-    - role: kameshsampath.kubernetes_spices.kind
     - role: kameshsampath.kubernetes_spices.k8s_app_spices</code></pre>
 </div>
 </div>
