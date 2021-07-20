@@ -125,14 +125,6 @@ include::example$kind-destroy.yaml[]
 include::example$kind-vanilla-ipv6.yaml[]
 ----
 
-[#kind-with-istio]
-=== KinD cluster with Istio
-
-[source,yaml]
-----
-include::example$kind-istio.yml[]
-----
-
 [#kind-with-gloo-edge-ce]
 === KinD cluster with Gloo Edge CE
 
@@ -147,6 +139,14 @@ include::example$kind-gloo-edge-ce.yml[]
 [source,yaml]
 ----
 include::example$kind-gloo-edge-ee.yml[]
+----
+
+[#kind-with-istio]
+=== KinD cluster with Istio
+
+[source,yaml]
+----
+include::example$kind-istio.yml[]
 ----
 
 [#kind-with-knative]

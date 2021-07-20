@@ -1,6 +1,6 @@
 ---
 - name: "Tektoncd Defaults"
-  hosts: localhost
+  hosts: spices
   connection: local
 
   collections:
@@ -10,5 +10,4 @@
     deploy_tektoncd: true #<.>
 
   roles:
-    - role: kameshsampath.kubernetes_spices.kind
     - role: kameshsampath.kubernetes_spices.k8s_app_spices

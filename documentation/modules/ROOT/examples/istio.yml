@@ -1,6 +1,6 @@
 ---
 - name: "Demo with Istio"
-  hosts: localhost
+  hosts: spices
   connection: local
 
   collections:

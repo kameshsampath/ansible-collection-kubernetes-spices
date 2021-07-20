@@ -1,4 +1,20 @@
 ---
+# This runs only for clusters that are built and run locally
+# e.g. KinD
+- name: "Local Cloud"
+  hosts: kind
+  connection: local
+
+  collections:
+    - kubernetes.core
+    - kameshsampath.kubernetes_spices
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    kind_create: true
+    cluster_name: tektoncd
+  roles:
+    - name: kameshsampath.kubernetes_spices.kind
+# Apply Tekton
 - name: "Tektoncd Defaults"
   hosts: localhost
   connection: local
@@ -7,10 +23,7 @@
     - kubernetes.core
 
   vars:
-    cluster_name: kind-tektoncd
-    kind_create: true
     deploy_tektoncd: true #<.>
 
   roles:
-    - role: kameshsampath.kubernetes_spices.kind
     - role: kameshsampath.kubernetes_spices.k8s_app_spices

@@ -1,6 +1,6 @@
 ---
-- name: Converge
-  hosts: localhost
+- name: Destroy Cluster
+  hosts: kind
   connection: local
 
   collections:

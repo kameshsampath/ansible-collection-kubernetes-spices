@@ -1,7 +1,8 @@
 ---
+# Apply Knative
 - name: "Knative Defaults"
   hosts: localhost
-  connection: local
+  connection: spices
 
   collections:
     - kubernetes.core
@@ -13,5 +14,4 @@
     deploy_knative: True #<.>
     
   roles:
-    - role: kameshsampath.kubernetes_spices.kind
     - role: kameshsampath.kubernetes_spices.k8s_app_spices
