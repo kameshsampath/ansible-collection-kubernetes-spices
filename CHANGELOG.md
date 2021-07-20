@@ -1,5 +1,13 @@
 # Changelog
 
+### [0.1.2](https://www.github.com/kameshsampath/kubernetes_spices/compare/v0.1.1...v0.1.2) (2021-07-20)
+
+
+### Bug Fixes
+
+* add newly created KinD cluster to kubectx inventory ([601be9a](https://www.github.com/kameshsampath/kubernetes_spices/commit/601be9a4bbc84eca3137c9e774a952a7377c54d6))
+* group the contexts ([e5a5248](https://www.github.com/kameshsampath/kubernetes_spices/commit/e5a52483ad4141eab990f5eae9e7f95779ea0dbb))
+
 ### [0.1.1](https://www.github.com/kameshsampath/kubernetes_spices/compare/v0.1.0...v0.1.1) (2021-07-19)
 
 
