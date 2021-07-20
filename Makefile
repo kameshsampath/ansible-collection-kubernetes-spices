@@ -3,7 +3,7 @@ CURRENT_DIR = $(shell pwd)
 BUILDER_EE_CONTEXT=builder-ee
 BUILDER_EE_FILE=$(CURRENT_DIR)/builder-ee/execution-environment.yml
 CONTAINER_RUNTIME=docker
-ANSIBLE_RUNNER_IMAGE=quay.io/kameshsampath/kubernetes-spices-ansible-runner
+ANSIBLE_RUNNER_IMAGE=ghcr.io/kameshsampath/kubernetes-spices-ansible-runner
 
 ANSIBLE_BUILDER := poetry run ansible-builder
 
