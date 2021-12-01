@@ -41,6 +41,20 @@
       - use-context
       - "{{ kubernetes_spices_argocd_k8s_context }}"
 
+- name: "Ensure helm-secrets-private-keys secret exists"
+  kubernetes.core.k8s_info:
+    name: helm-secrets-private-keys
+    namespace: argocd
+    kind: Secret
+    context: "{{ kubernetes_spices_argocd_k8s_context }}"
+  register: helm_secrets_result
+  when: kubernetes_spices_argocd_helm_secerts_plugin
+
+- name: "Fail when no helm private key secrets is found"
+  fail:
+    msg: "No helm-secrets-private-keys found"
+  when: kubernetes_spices_argocd_helm_secerts_plugin and helm_secrets_result.resources | length <= 0
+
 - name: "Add Argocd Helm Repo"
   kubernetes.core.helm_repository:
     name: argo
