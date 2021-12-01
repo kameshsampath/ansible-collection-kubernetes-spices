@@ -14,8 +14,6 @@ pipx install poetry
 make shell-env
 ```
 
-__NOTE__: For Windows its recommended to use Windows Subsystem for Linux (WSL)
-
 ## License
 
 [GPL v3](https://github.com/kameshsampath/ansible-collection-kubernetes-spices/tree/master/LICENSE)
