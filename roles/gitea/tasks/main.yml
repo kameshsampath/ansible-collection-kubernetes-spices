@@ -243,8 +243,8 @@
     context: "{{ kubernetes_spices_gitea_k8s_context }}"
   register: git_service_result
 
-- debug:
-    var: github_template_repo
+# - debug:
+#     var: github_template_repo
 
 - name: "Set Gitea Service Facts"
   set_fact:

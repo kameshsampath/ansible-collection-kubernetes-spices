@@ -2,6 +2,7 @@
 server:
   service:
     type: LoadBalancer
+{% if kubernetes_spices_argocd_helm_secerts_plugin %}
 repoServer:
   env:
     - name: HELM_PLUGINS
@@ -50,3 +51,4 @@ repoServer:
       volumeMounts:
         - mountPath: /custom-tools
           name: custom-tools
+{% endif %}

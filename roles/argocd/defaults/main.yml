@@ -2,3 +2,4 @@
 # defaults file for argocd
 kubernetes_spices_argocd_namespace: argocd
 kubernetes_spices_argocd_version: 2.1.6
+kubernetes_spices_argocd_helm_secerts_plugin: false
