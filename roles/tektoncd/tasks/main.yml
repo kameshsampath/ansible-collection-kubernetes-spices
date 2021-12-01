@@ -1,0 +1,119 @@
+---
+- name: "Ensure work dir set"
+  set_fact:
+    work_dir: "{{ work_dir | default(playbook_dir) }}"
+
+- name: "Ensure bin dir is set"
+  set_fact:
+    bin_dir: "{{ bin_dir | default( work_dir + '/bin' ) }}"
+
+- name: "Ensure {{ bin_dir}}"
+  ansible.builtin.file:
+     state: directory
+     path: "{{ bin_dir }}"
+
+- name: "Tektoncd Kube Context"
+  debug:
+    var: kubernetes_spices_tektoncd_k8s_context
+
+- name: "Fail if the Gitea kube context is not defined"
+  fail:
+    msg: "Tektoncd Kube Context is not defined, please set the variable 'kubernetes_spices_tektoncd_k8s_context' to kubernetes context where you wish to have Tektoncd installed "
+  when: kubernetes_spices_tektoncd_k8s_context is not defined 
+
+- name: "Download tektoncd-cli (macOS)"
+  ansible.builtin.get_url:
+    url: "https://github.com/tektoncd/cli/releases/download/v{{ kubernetes_spices_tkn_cli_version }}/tkn_{{ kubernetes_spices_tkn_cli_version }}_Linux_x86_64.tar.gz"
+    checksum: "sha256:https://github.com/tektoncd/cli/releases/download/v{{ kubernetes_spices_tkn_cli_version }}/checksums.txt"
+    dest: "{{ work_dir }}/tkn-cli-amd64.tar.gz"
+    timeout: 30
+  when: ansible_os_family == 'Darwin'
+
+- name: "Download tektoncd-cli (linux) "
+  ansible.builtin.get_url:
+    url: "https://github.com/tektoncd/cli/releases/download/v{{ kubernetes_spices_tkn_cli_version }}/tkn_{{ kubernetes_spices_tkn_cli_version }}_Darwin_x86_64.tar.gz"
+    checksum: "sha256:https://github.com/tektoncd/cli/releases/download/v{{ kubernetes_spices_tkn_cli_version }}/checksums.txt"
+    dest: "{{ work_dir }}/tkn-cli-amd64.tar.gz"
+    timeout: 30
+  when: ansible_os_family == 'RedHat' or ansible_os_family == 'Debian'
+
+- name: "Install tektoncd-cli"
+  ansible.builtin.unarchive:
+    src: "{{ work_dir }}/tkn-cli-amd64.tar.gz"
+    dest: "{{ bin_dir }}"
+    extra_opts:
+      - "--strip-components=1"
+      - "--exclude=README.md"
+      - "--exclude=LICENSE"
+
+# tasks file for tektoncd
+- name: "Set Tektoncd manifest dir"
+  set_fact:
+    tektoncd_manifests_dir: "/tmp/tektoncd"
+
+- name: "Make temp directory for Tektoncd Manifests"
+  file:
+    path: "{{ tektoncd_manifests_dir }}"
+    state: directory
+
+- name: "Get Tektoncd Manifests"
+  get_url:
+    dest: "{{ tektoncd_manifests_dir }}/{{ item.name }}"
+    url: "{{ item.manifest_url }}"
+  delegate_to: localhost
+  loop:
+    - name: pipelines.yaml
+      manifest_url: "https://storage.googleapis.com/tekton-releases/pipeline/previous/{{ kubernetes_spices_tektoncd_pipelines_version }}/release.yaml"
+    - name: triggers.yaml
+      manifest_url: "https://github.com/tektoncd/triggers/releases/download/{{ kubernetes_spices_tektoncd_triggers_version }}/release.yaml"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: "Tektoncd Kube Context"
+  debug:
+    var: kubernetes_spices_tektoncd_k8s_context
+
+- name: "Fail if the Tektoncd kube context is not defined"
+  fail:
+    msg: "Tekton Kube Context is not defined, please set the variable 'kubernetes_spices_tektoncd_k8s_context' to kubernetes context where you wish to have tektoncd installed "
+  when: kubernetes_spices_gitea_k8s_context is not defined 
+
+- name: "Deploy Tektoncd Pipelines and Triggers"
+  kubernetes.core.k8s:
+    context: "{{ kubernetes_spices_tektoncd_k8s_context }}"
+    kubeconfig: "{{ kubeconfig_file }}"
+    definition: "{{ item.manifest | from_yaml_all | list }}"
+    state: present
+  loop:
+    - name: pipelines.yaml
+      manifest: "{{ lookup('file',tektoncd_manifests_dir + '/pipelines.yaml') }}"
+    - name: triggers.yaml
+      manifest: "{{ lookup('file',tektoncd_manifests_dir + '/triggers.yaml') }}"
+  loop_control:
+    label: "{{ item.name }}"
+  changed_when: False
+  register: tektoncd_deploy
+
+- name: "Wait for Tektoncd Pipelines::controller"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: tekton-pipelines-controller
+    deployment_namespace: tekton-pipelines
+
+- name: "Wait for Tektoncd Pipelines::webhook"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: tekton-pipelines-webhook
+    deployment_namespace: tekton-pipelines
+
+- name: "Wait for Tektoncd Triggers::controller"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: tekton-triggers-controller
+    deployment_namespace: tekton-pipelines
+
+- name: "Wait for Tektoncd Triggers::webhook"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: tekton-triggers-webhook
+    deployment_namespace: tekton-pipelines

@@ -1,0 +1,13 @@
+---
+- name: 'Wait for Deployment'
+  kubernetes.core.k8s_info:
+    context: "{{ kubernetes_spices_tektoncd_k8s_context }}"
+    kind: 'Deployment'
+    name: '{{ deployment_name }}'
+    namespace: '{{ deployment_namespace }}'
+  register: webhook_result
+  until:
+    - webhook_result.resources[0].status.availableReplicas is defined
+    - webhook_result.resources[0].status.availableReplicas == webhook_result.resources[0].status.replicas
+  retries: 30
+  delay: 10

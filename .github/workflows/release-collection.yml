@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - 3.8
+          - 3.10.0
     steps:
       - uses: actions/checkout@v2
         with:
@@ -99,3 +99,10 @@ jobs:
              })
 
             console.log("Asset upload --> %s ",uploadAsset)
+      - name: "Publish to Galaxy"
+        id: publish-collection
+        run: |
+          poetry env use python
+          poetry run ansible-galaxy collection publish --server https://galaxy.ansible.com --token ${{ secrets.ANSIBLE_GALAXY_API_KEY }} $DIST_OUT_DIR/${{ steps.collection-info.outputs.collection_tarfile }}
+        env:
+          DIST_OUT_DIR: "${{ github.workspace }}/${{ env.DIST_DIR }}"

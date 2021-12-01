@@ -1,0 +1,4 @@
+---
+kubernetes_spices_tektoncd_pipelines_version: v0.29.0
+kubernetes_spices_tektoncd_triggers_version: v0.16.0
+kubernetes_spices_tkn_cli_version: 0.21.0

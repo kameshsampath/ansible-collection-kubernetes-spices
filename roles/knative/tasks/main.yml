@@ -1,0 +1,144 @@
+---
+- name: Set Knative manifests dir
+  set_fact:
+    knative_manifests_dir: "/tmp/knative/{{ knative_version }}"
+
+- name: Make temp directory for Knative Manifests
+  file:
+    path: "{{ knative_manifests_dir }}"
+    state: directory
+
+- name: "Knative Kube Context"
+  debug:
+    var: kubernetes_spices_knative_k8s_context
+
+- name: "Fail if the Gitea kube context is not defined"
+  fail:
+    msg: "Knative Kube Context is not defined, please set the variable 'kubernetes_spices_knative_k8s_context' to kubernetes context where you wish to have Knative installed "
+  when: kubernetes_spices_knative_k8s_context is not defined 
+
+- name: Get Knative Manifests
+  get_url:
+    dest: "{{ knative_manifests_dir }}"
+    url: "{{ item }}"
+  delegate_to: localhost
+  with_items:
+    - "https://github.com/knative/serving/releases/download/knative-{{ kubernetes_spices_knative_serving_version }}/serving-crds.yaml"
+    - "https://github.com/knative/serving/releases/download/knative-{{ kubernetes_spices_knative_serving_version }}/serving-core.yaml"
+    - "https://github.com/knative/eventing/releases/download/knative-{{ kubernetes_spices_knative_eventing_version }}/eventing-crds.yaml"
+    - "https://github.com/knative/eventing/releases/download/knative-{{ kubernetes_spices_knative_eventing_version }}/eventing-core.yaml"
+    - "https://github.com/knative/net-kourier/releases/download/knative-{{ knative_version }}/kourier.yaml"
+
+- name: "Deploy Knative Serving"
+  kubernetes.core.k8s:
+    context: "{{ kubernetes_spices_knative_k8s_context }}"
+    kubeconfig: "{{ kubeconfig_file }}"
+    definition: "{{ item.manifest | from_yaml_all | list }}"
+    state: present
+  loop:
+    - name: serving-crds.yaml
+      manifest: "{{ lookup('file',knative_manifests_dir + '/serving-crds.yaml') }}"
+    - name: serving-core.yaml
+      manifest: "{{ lookup('file',knative_manifests_dir + '/serving-core.yaml') }}"
+  loop_control:
+    label: "{{ item.name }}"
+  # TODO: #3 Check why controllers are configured always and fix it
+  changed_when: False
+  register: knative_serving_deploy
+
+- name: "Wait for Knative Serving::activator"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: activator
+    deployment_namespace: knative-serving
+
+- name: "Wait for Knative Serving::autoscaler"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: autoscaler
+    deployment_namespace: knative-serving
+
+- name: "Wait for Knative Serving::controller"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: controller
+    deployment_namespace: knative-serving
+
+- name: "Wait for Knative Serving::webhook"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: webhook
+    deployment_namespace: knative-serving
+
+- name: "Deploy Knative Eventing"
+  kubernetes.core.k8s:
+    context: "{{ kubernetes_spices_knative_k8s_context }}"
+    definition: "{{ item.manifest | from_yaml_all | list }}"
+    state: present
+  loop:
+    - name: eventing-crds.yaml
+      manifest: "{{ lookup('file',knative_manifests_dir + '/eventing-crds.yaml') }}"
+    - name: eventing.yaml
+      manifest: "{{ lookup('file',knative_manifests_dir + '/eventing-core.yaml') }}"
+  loop_control:
+    label: "{{ item.name }}"
+  # TODO: #3 Check why controllers are configured always and fix it
+  changed_when: False
+  register: knative_eventing_deploy
+
+- name: "Wait for Knative Eventing::eventing-controller"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: eventing-controller
+    deployment_namespace: knative-eventing
+
+- name: "Wait for Knative Eventing::eventing-webhook"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: eventing-webhook
+    deployment_namespace: knative-eventing
+
+- name: "Wait for Knative Eventing::imc-controller"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: imc-controller
+    deployment_namespace: knative-eventing
+
+- name: "Wait for Knative Eventing::imc-dispatcher"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: imc-dispatcher
+    deployment_namespace: knative-eventing
+
+- name: "Wait for Knative Eventing::mt-broker-controller"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: mt-broker-controller
+    deployment_namespace: knative-eventing
+
+- name: "Wait for Knative Eventing::mt-broker-filter"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: mt-broker-filter
+    deployment_namespace: knative-eventing
+
+- name: "Wait for Knative Eventing::mt-broker-ingress"
+  include_tasks: utils/k8s_deployment_status.yml
+  vars:
+    deployment_name: mt-broker-ingress
+    deployment_namespace: knative-eventing
+
+- name: "Deploy Kourier"
+  kubernetes.core.k8s:
+    context: "{{ kubernetes_spices_knative_k8s_context }}"
+    definition: "{{ item.manifest | from_yaml_all | list }}"
+    state: present
+  loop:
+    - name: kourier.yaml
+      manifest: "{{ lookup('file',knative_manifests_dir + '/kourier.yaml') }}"
+  loop_control:
+    label: "{{ item.name }}"
+  # TODO: #3 Check why controllers are configured always and fix it
+  changed_when: False
+  register: knative_kourier_deploy
+

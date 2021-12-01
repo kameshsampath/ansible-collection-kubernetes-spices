@@ -1,0 +1,23 @@
+#jinja2: lstrip_blocks: "True"
+apiVersion: gateway.solo.io/v1
+kind: VirtualService
+metadata:
+  name: gitea-http
+  namespace: gitea
+spec:
+  sslConfig:
+    secretRef:
+      name: gitea-upstream-tls
+      namespace: gitea
+  virtualHost:
+    domains:
+      - "{{ gloo_http_lb_ip }}"
+      - "{{ gloo_nip_io }}"
+    routes:
+      - matchers:
+          - prefix: /
+        routeAction:
+          single:
+            upstream:
+              name: gitea-gitea-http-3000
+              namespace: gitea

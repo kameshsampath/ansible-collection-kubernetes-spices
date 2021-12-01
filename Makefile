@@ -1,16 +1,24 @@
 CURRENT_DIR = $(shell pwd)
+POETRY_COMMAND := $(shell which poetry)
 
 BUILDER_EE_CONTEXT=builder-ee
 BUILDER_EE_FILE=$(CURRENT_DIR)/builder-ee/execution-environment.yml
 CONTAINER_RUNTIME=docker
 ANSIBLE_RUNNER_IMAGE=ghcr.io/kameshsampath/kubernetes-spices-ansible-runner
 
-ANSIBLE_BUILDER := poetry run ansible-builder
+ANSIBLE_BUILDER := $(shell $(POETRY_COMMAND) run ansible-builder)
 
-VERSION=`cat version.txt`
-COLLECTION_FQN=kameshsampath.kubernetes_spices
 TEST_ARGS ?= ""
 PYTHON_VERSION ?= `python -c 'import platform; print("{0}.{1}".format(platform.python_version_tuple()[0], platform.python_version_tuple()[1]))'`
+
+ENV_FILE := $(CURRENT_DIR)/.envrc
+
+GALAXY_VERSION := $(shell yq eval '.version' $(CURRENT_DIR)/galaxy.yml)
+VERSION := $(GALAXY_VERSION)
+RELEASE_ARTIFACT := "$(DIST_DIR)/$(COLLECTION_FQN)-$(GALAXY_VERSION).tar.gz"
+
+shell-env:
+	@$(POETRY_COMMAND) install
 
 clean:
 	rm -f kameshsampath-kubernetes_spices-${VERSION}.tar.gz
@@ -55,3 +63,18 @@ image-build:
 .PHONY:	push
 push:	image-build
 	@$(CONTAINER_RUNTIME) push $(ANSIBLE_RUNNER_IMAGE)
+
+build_collection:
+	direnv allow $(ENV_FILE)
+	@$(POETRY_COMMAND) run ansible-galaxy collection build \
+	  --out $(DIST_DIR) \
+		--force \
+	  $(EXTRA_ARGS)
+
+publish_collection:
+	direnv allow $(ENV_FILE)
+	@$(POETRY_COMMAND) run ansible-galaxy collection publish \
+	  $(RELEASE_ARTIFACT) \
+		--server $(ANSIBLE_GALAXY_SERVER_RELEASE_SERVER) \
+		--token $(ANSIBLE_GALAXY_SERVER_RELEASE_GALAXY_TOKEN) \
+		$(EXTRA_ARGS)

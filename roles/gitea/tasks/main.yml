@@ -1,0 +1,284 @@
+---
+- name: "Ensure work dir set"
+  set_fact:
+    work_dir: "{{ work_dir | default(playbook_dir) }}"
+
+- name: "Ensure bin dir is set"
+  set_fact:
+    bin_dir: "{{ bin_dir | default( work_dir + '/bin' ) }}"
+
+- name: "Ensure {{ bin_dir}}"
+  ansible.builtin.file:
+     state: directory
+     path: "{{ bin_dir }}"
+
+- name: "Download gitea (macOS)"
+  ansible.builtin.get_url:
+    url: "https://dl.gitea.io/gitea/{{ kubernetes_spices_gitea_cli_version }}/gitea-{{ kubernetes_spices_gitea_cli_version }}-darwin-10.12-amd64"
+    checksum: "sha256:https://dl.gitea.io/gitea/{{ kubernetes_spices_gitea_cli_version }}/gitea-{{ kubernetes_spices_gitea_cli_version }}-darwin-10.12-amd64.sha256"
+    dest: "{{ bin_dir }}/gitea"
+    mode: "0755"
+    timeout: 30
+  when: ansible_os_family == 'Darwin'
+
+- name: "Download gitea (linux)"
+  ansible.builtin.get_url:
+    url: "https://dl.gitea.io/gitea/{{ kubernetes_spices_gitea_cli_version }}/gitea-{{ kubernetes_spices_gitea_cli_version }}-linux-amd64"
+    checksum: "sha256:https://dl.gitea.io/gitea/{{ kubernetes_spices_gitea_cli_version }}/gitea-{{ kubernetes_spices_gitea_cli_version }}-linux-amd64.sha256"
+    dest: "{{ bin_dir }}/gitea"
+    mode: "0755"
+  when: ansible_os_family == 'RedHat' or ansible_os_family == 'Debian'
+
+- name: "Gitea Kube Context"
+  debug:
+    var: kubernetes_spices_gitea_k8s_context
+
+- name: "Fail if the Gitea kube context is not defined"
+  fail:
+    msg: "Gitea Kube Context is not defined, please set the variable 'kubernetes_spices_gitea_k8s_context' to kubernetes context where you wish to have Gitea installed "
+  when: kubernetes_spices_gitea_k8s_context is not defined 
+
+- name: "Ensure we are in {{ kubernetes_spices_gitea_k8s_context }} context"
+  ansible.builtin.command:
+    argv:
+      - kubectl 
+      - config 
+      - use-context
+      - "{{ kubernetes_spices_gitea_k8s_context }}"
+  environment:
+    KUBECONFIG: "{{ work_dir }}/.kube/config"
+
+- name: "Create gitea admin user"
+  set_fact:
+    gitea_admin_user:
+      username: 'gitea'
+      password: "{{ lookup('password', work_dir + '/gitea.password chars=ascii_letters,digits,punctuation') }}"
+      email: 'gitea@example.com'
+
+
+# - debug:
+#     var: gitea_admin_user
+#   tags:
+#     - gitea
+
+- name: "Add Gitea Helm Repo"
+  kubernetes.core.helm_repository:
+    name: gitea-charts
+    repo_url: "https://dl.gitea.io/charts/"
+
+- name: "Query Gitea Versions"
+  ansible.builtin.command:
+    argv:
+      - helm
+      - search 
+      - repo
+      - gitea-charts/gitea
+      - -ojson
+  register: gitea_version_info
+  changed_when: false
+  when: gitea_version is not defined
+
+- name: "Fail when version Gitea info does not exist"
+  fail:
+    msg: "Gitea Version not available"
+  when: gitea_version is not defined and gitea_version_info.stdout is not defined
+
+- name: "Set Gitea Version"
+  set_fact:
+    gitea_version: "{{ gitea_version_info.stdout  | from_json | first | community.general.json_query('version') }}"
+  when: gitea_version is not defined
+
+- name: "Gitea Version"
+  debug: 
+    var: gitea_version
+
+- name: "Generate Gitea config"
+  ansible.builtin.template:
+    src: "{{ playbook_dir }}/templates/gitea/gitea-values.yaml.j2"
+    dest: "{{ work_dir }}/gitea-values.yaml"
+
+- name: "Deploy Gitea"
+  kubernetes.core.helm:
+    release_name: gitea
+    chart_ref: gitea-charts/gitea
+    release_namespace: "{{ kubernetes_spices_gitea_namespace }}"
+    create_namespace: yes
+    chart_version: "{{ gitea_version }}"
+    values_files:
+        - "{{ work_dir }}/gitea-values.yaml"
+    update_repo_cache: yes
+    context: "{{ kubernetes_spices_gitea_k8s_context }}"
+    wait: yes
+  tags:
+    - gitea
+
+# Setup Gitea for external access
+
+- name: "Add Gloo Edge Community Repo"
+  kubernetes.core.helm_repository:
+    name: gloo
+    repo_url: "https://storage.googleapis.com/solo-public-helm"
+
+- name: "Query Gloo Versions"
+  ansible.builtin.command:
+    argv:
+      - helm
+      - search 
+      - repo
+      - gloo/gloo
+      - -ojson
+  register: gloo_version_info
+  changed_when: false
+  when: kubernetes_spices_gitea_gloo_version is not defined
+
+- name: "Fail when version gloo info does not exist"
+  fail:
+    msg: "Gloo Version not available"
+  when: kubernetes_spices_gitea_gloo_version is not defined and gloo_version_info.stdout is not defined
+
+- name: "Set Gloo Version"
+  set_fact:
+    gloo_version: "{{ gloo_version_info.stdout  | from_json | first | community.general.json_query('version') }}"
+  when: kubernetes_spices_gitea_gloo_version is not defined
+
+- name: "Gitea Gloo Version"
+  debug: 
+    var: kubernetes_spices_gitea_gloo_version
+
+- name: "Deploy Gloo"
+  kubernetes.core.helm:
+    release_name: gloo
+    chart_ref: gloo/gloo
+    release_namespace: "{{ kubernetes_spices_gitea_namespace}}"
+    create_namespace: yes
+    chart_version: "{{ kubernetes_spices_gitea_gloo_version }}"
+    values:
+      discovery:
+        enabled: false
+        fdsMode: DISABLED
+      settings:
+        writeNamespace: "{{ kubernetes_spices_gitea_namespace  }}"
+        watchNamespace: "{{ kubernetes_spices_gitea_namespace  }}"
+    update_repo_cache: yes
+    context: "{{ kubernetes_spices_gitea_k8s_context }}"
+    wait: yes
+
+- name: "Get Gloo Proxy HTTP Address"
+  kubernetes.core.k8s_info:
+    kind: Service
+    name:  gateway-proxy
+    namespace: "{{ kubernetes_spices_gitea_namespace  }}"
+    context: "{{ kubernetes_spices_gitea_k8s_context }}"
+  register: gatewway_proxy_http_svc_result
+
+- name: "Set Gitea Gloo Facts"
+  set_fact:
+    gloo_http_lb_ip: "{{ gatewway_proxy_http_svc_result.resources[0] | community.general.json_query(svcQuery) | first  }}"
+    gloo_nip_io: "gitea-{{ gatewway_proxy_http_svc_result.resources[0] | community.general.json_query(svcQuery) | first  }}.nip.io"
+  vars:
+    svcQuery: 'status.loadBalancer.ingress[*].ip'
+
+- name: 'Create SSL Dir'
+  file:
+    path: "{{ work_dir}}/ssl/private"
+    state: directory
+    recurse: yes
+
+- name: "Generate Gitea CSR Privatekey"
+  community.crypto.openssl_privatekey:
+    path: "{{ work_dir}}/ssl/private/gitea-privkey.pem"
+      
+- name: "Generate an Gitea OpenSSL CSR"
+  community.crypto.openssl_csr:
+    path: "{{ work_dir}}/ssl/gitea.csr"
+    privatekey_path: "{{ work_dir}}/ssl/private/gitea-privkey.pem"
+    common_name: "{{ gloo_nip_io }}"
+    subject_alt_name:
+        - "IP:{{ gloo_http_lb_ip }}"
+        - "DNS:{{ gloo_nip_io }}"
+    
+- name: "Generate Gitea Self Signed OpenSSL certificate"
+  community.crypto.x509_certificate:
+    path: "{{ gitea_tls_cert_path }}"
+    privatekey_path: "{{ work_dir}}/ssl/private/gitea-privkey.pem"
+    csr_path: "{{ work_dir}}/ssl/gitea.csr"
+    provider: selfsigned
+
+- name: "Slurp Gitea Certificate"
+  ansible.builtin.slurp:
+    src: "{{ gitea_tls_cert_path }}"
+  register: gitea_tls_cert_b64
+
+- name: "Slurp Gitea private key"
+  ansible.builtin.slurp:
+    src: "{{ work_dir}}/ssl/private/gitea-privkey.pem"
+  register: gitea_tls_key_b64
+
+- name: "Create Gitea SSL Secret"
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: gitea-upstream-tls
+        namespace: "{{ kubernetes_spices_gitea_namespace  }}"
+      type: kubernetes.io/tls
+      data:
+        tls.key: "{{ gitea_tls_key_b64['content'] }}"
+        tls.crt: "{{ gitea_tls_cert_b64['content'] }}"
+
+- name: "Create/Update Gitea Upstream and Route"
+  kubernetes.core.k8s:
+    template: 
+      - path: "{{ playbook_dir }}/templates/gitea/gitea-upstream.yaml.j2"
+      - path: "{{ playbook_dir }}/templates/gitea/gitea-virtual-service.yaml.j2"
+    context: "{{ gitea_k8s_context }}"
+    namespace: "{{ kubernetes_spices_gitea_namespace  }}"
+    state: present
+
+# Default Repo Configuration
+- name: "Query Git url"
+  kubernetes.core.k8s_info:
+    kind: Service
+    name: gateway-proxy
+    namespace: "{{ kubernetes_spices_gitea_namespace  }}"
+    context: "{{ gitea_k8s_context }}"
+  register: git_service_result
+
+- name: "Set Gitea Repo Facts"
+  set_fact:
+    git_url: "https://gitea-{{ git_service_result.resources[0] | json_query(q) | first }}.nip.io"
+    git_repo_fqn: "https://gitea-{{ git_service_result.resources[0] | json_query(q) | first }}.nip.io/{{ gitea_admin_user.username }}/{{ github_template_repo | basename }}"
+    gitea_repo_name: "{{ github_template_repo | basename }}"
+  vars:
+    q: "status.loadBalancer.ingress[*].ip"
+
+- name: "Clone the template repo from github"
+  ansible.builtin.uri:
+    url: "{{ git_url }}/api/v1/repos/migrate"
+    user: "{{ gitea_admin_user.username }}"
+    password: "{{ gitea_admin_user.password }}"
+    method: POST
+    body:
+      clone_addr: '{{ github_template_repo }}'
+      uid: 1
+      repo_name: "{{ gitea_repo_name }}"
+    return_content: yes
+    status_code: 
+      - 200
+      - 201
+    body_format: json
+    validate_certs: no
+    force_basic_auth: yes
+  register: clone_repo_result
+  when: gitea_repo_name is defined
+
+- name: "Add demo origin to current git repo"
+  ansible.builtin.command:
+    argv:
+      - git
+      - remote
+      - add
+      - demo
+      - "{{ git_repo_fqn }}"
+  when: not clone_repo_result.failed

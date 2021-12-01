@@ -1,0 +1,13 @@
+---
+kubernetes_spices_knative_version: v1.0.0
+kubernetes_spices_knative_eventing_version: v1.0.0
+kubernetes_spices_knative_serving_version: v1.0.0
+kubernetes_spices_registries_skip_tag_resolving:
+  - example.com
+  - example.org
+  - test.com
+  - test.org
+  - ko.local
+  - dev.local
+  - localhost:5000
+  - kind-registry.local:5000
