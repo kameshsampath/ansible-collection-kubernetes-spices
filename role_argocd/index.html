@@ -273,6 +273,20 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#using-helm-secrets-plugin" class="md-nav__link">
+    Using helm secrets plugin
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-age-key" class="md-nav__link">
+    Create age key
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -371,6 +385,20 @@
         <li class="md-nav__item">
   <a href="#example-playbook" class="md-nav__link">
     Example Playbook
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-helm-secrets-plugin" class="md-nav__link">
+    Using helm secrets plugin
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-age-key" class="md-nav__link">
+    Create age key
   </a>
   
 </li>
@@ -478,6 +506,11 @@
 <td>The argocd version to be used</td>
 <td>2.1.6</td>
 </tr>
+<tr>
+<td>kubernetes_spices_argocd_helm_secerts_plugin</td>
+<td>Use helm secrets plugin with argocd applications</td>
+<td>false</td>
+</tr>
 </tbody>
 </table>
 <h2 id="example-playbook">Example Playbook<a class="headerlink" href="#example-playbook" title="Permanent link">&para;</a></h2>
@@ -495,6 +528,37 @@
 <li>The default credentials to access argocd will be <code>admin/password</code></li>
 </ul>
 </div>
+<h2 id="using-helm-secrets-plugin">Using helm secrets plugin<a class="headerlink" href="#using-helm-secrets-plugin" title="Permanent link">&para;</a></h2>
+<p>To use helm secrets plugin with Argocd applications, enable the plugin configuration by adding enable the flag <code>kubernetes_spices_argocd_helm_secerts_plugin</code> to <code>true</code>.</p>
+<p>Lets take an example of <a href="https://github.com/mozilla/sops">sops</a> and <a href="https://github.com/FiloSottile/age">age</a>,</p>
+<h2 id="create-age-key">Create age key<a class="headerlink" href="#create-age-key" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>age-keygen -o key.txt
+</code></pre></div>
+<p>Move the <code>key.txt</code> to secure place, preferably <code>$HOME/.ssh</code>. Assuming you moved it to <code>$HOME/.ssh</code>, lets set that as local environment variables for convinience:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SOPS_AGE_KEY_FILE</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/.ssh/key.txt&quot;</span>
+</code></pre></div>
+<p>Also note and export the <strong>publickey</strong> in the <code>$SOPS_AGE_KEY_FILE</code> as <code>$SOPS_AGE_RECIPIENTS</code></p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SOPS_AGE_RECIPIENTS</span><span class="o">=</span><span class="k">$(</span>cat <span class="nv">$SOPS_AGE_KEY_FILE</span>  <span class="p">|</span> awk <span class="s1">&#39;NR==2{ print $4}&#39;</span><span class="k">)</span>
+</code></pre></div>
+<p>Ensure the sops configration <code>.sops.yml</code> is updated with your <em>age</em> publickey,</p>
+<div class="highlight"><pre><span></span><code>yq <span class="nb">eval</span> <span class="s1">&#39;.creation_rules[0].age |= strenv(SOPS_AGE_RECIPIENTS)&#39;</span> .sops.yml 
+</code></pre></div>
+<p>We need to make the age key to be available to the Argocd repo server so that it can decrypt the secrets,</p>
+<div class="highlight"><pre><span></span><code>kubectl create ns argocd
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>kubectl create secret generic helm-secrets-private-keys <span class="se">\</span>
+  --namespace<span class="o">=</span>argocd <span class="se">\</span>
+  --from-file<span class="o">=</span>key.txt<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SOPS_AGE_KEY_FILE</span><span class="s2">&quot;</span>
+</code></pre></div>
+<p>Now you an use the same play to deploy Argocd with helm secrets enabled,</p>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="s">&quot;Setup</span><span class="nv"> </span><span class="s">Argocd&quot;</span>
+  <span class="nt">hosts</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">localhost</span>
+  <span class="nt">vars</span><span class="p">:</span>
+    <span class="nt">kubernetes_spices_argocd_k8s_context</span><span class="p">:</span> <span class="s">&#39;mgmt&#39;</span>
+  <span class="nt">roles</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nt"> role</span><span class="p">:</span> <span class="nv">kameshsampath.kubernetes_spices.argocd</span> <span class="p p-Indicator">}</span>
+</code></pre></div>
+<p>You can check the <a href="https://github.com/kameshsampath/helm-secret-demo">example project</a> to deploy Keycloak using helm secrets plugin enabled with Argocd.</p>
 
               
             </article>
