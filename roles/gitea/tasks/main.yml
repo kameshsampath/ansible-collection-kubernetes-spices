@@ -109,8 +109,6 @@
     update_repo_cache: yes
     context: "{{ kubernetes_spices_gitea_k8s_context }}"
     wait: yes
-  tags:
-    - gitea
 
 # Setup Gitea for external access
 
@@ -138,7 +136,7 @@
 
 - name: "Set Gloo Version"
   set_fact:
-    gloo_version: "{{ gloo_version_info.stdout  | from_json | first | community.general.json_query('version') }}"
+    kubernetes_spices_gitea_gloo_version: "{{ gloo_version_info.stdout  | from_json | first | community.general.json_query('version') }}"
   when: kubernetes_spices_gitea_gloo_version is not defined
 
 - name: "Gitea Gloo Version"
@@ -232,7 +230,7 @@
     template: 
       - path: "{{ playbook_dir }}/templates/gitea/gitea-upstream.yaml.j2"
       - path: "{{ playbook_dir }}/templates/gitea/gitea-virtual-service.yaml.j2"
-    context: "{{ gitea_k8s_context }}"
+    context: "{{ kubernetes_spices_gitea_k8s_context }}"
     namespace: "{{ kubernetes_spices_gitea_namespace  }}"
     state: present
 
@@ -242,16 +240,25 @@
     kind: Service
     name: gateway-proxy
     namespace: "{{ kubernetes_spices_gitea_namespace  }}"
-    context: "{{ gitea_k8s_context }}"
+    context: "{{ kubernetes_spices_gitea_k8s_context }}"
   register: git_service_result
+
+- debug:
+    var: github_template_repo
+
+- name: "Set Gitea Service Facts"
+  set_fact:
+    git_url: "https://gitea-{{ git_service_result.resources[0] | json_query(q) | first }}.nip.io"
+  vars:
+    q: "status.loadBalancer.ingress[*].ip"
 
 - name: "Set Gitea Repo Facts"
   set_fact:
-    git_url: "https://gitea-{{ git_service_result.resources[0] | json_query(q) | first }}.nip.io"
     git_repo_fqn: "https://gitea-{{ git_service_result.resources[0] | json_query(q) | first }}.nip.io/{{ gitea_admin_user.username }}/{{ github_template_repo | basename }}"
     gitea_repo_name: "{{ github_template_repo | basename }}"
   vars:
     q: "status.loadBalancer.ingress[*].ip"
+  when: github_template_repo is defined
 
 - name: "Clone the template repo from github"
   ansible.builtin.uri:
@@ -271,7 +278,7 @@
     validate_certs: no
     force_basic_auth: yes
   register: clone_repo_result
-  when: gitea_repo_name is defined
+  when: github_template_repo is defined
 
 - name: "Add demo origin to current git repo"
   ansible.builtin.command:
@@ -281,4 +288,11 @@
       - add
       - demo
       - "{{ git_repo_fqn }}"
-  when: not clone_repo_result.failed
+  when: github_template_repo is defined and not clone_repo_result.failed
+
+- name: "Dump Gitea Repo Details"
+  ansible.builtin.copy:
+     dest: "{{ work_dir }}/gitea_details.txt"
+     content: |
+        gitea_url: {{ git_url }}
+        gitea_credentails: {{ gitea_admin_user }}
