@@ -1,6 +1,6 @@
-- name: "Setup Knative"
+- name: "Setup Gitea"
   hosts: localhost
   vars:
     kubernetes_spices_argocd_k8s_context: 'mgmt'
   roles:
-    - { role: kameshsampath.kubernetes_spices.knative }
+    - { role: kameshsampath.kubernetes_spices.gitea }

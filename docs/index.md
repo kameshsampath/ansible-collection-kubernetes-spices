@@ -1,17 +1,15 @@
-# Welcome to MkDocs
+---
+title: Overview
+summary: Ansible Collection Kubernetes Spices
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+authors:
+  - Kamesh Sampath<kamesh.sampath@hotmail.com>
+date: 2021-12-01
+---
 
-## Commands
+A Ansible collection to install various components on to Kubernetes clusters. Currently the following components can be installed,
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
-
-## Project layout
-
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+- [x] [Argocd](./role_argocd.md)
+- [x] [Gitea](./role_gitea.md)
+- [x] [Knative](./role_knative.md)
+- [x] [Tektoncd](./role_tekton.md)

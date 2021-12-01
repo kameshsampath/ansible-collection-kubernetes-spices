@@ -1,7 +1,7 @@
 Role Name
 =========
 
-Role to install [Tektoncd](https://tektoncd.dev)
+Role to install [Tektoncd](https://tekton.dev)
 
 Role Variables
 --------------
