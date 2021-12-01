@@ -1,38 +1,26 @@
 namespace: kameshsampath
 name: kubernetes_spices
-
-version: 0.0.1
-
+version: 0.2.0
 readme: README.md
-
 authors:
   - Kamesh Sampath <kamesh.sampath@hotmail.com>
-
 description: Spice your Kubernetes clusters with extra addtional components
-
 license_file: "LICENSE"
-
 tags:
   - knative
   - tektoncd
   - gitea
   - argocd
-
 dependencies:
   ansible.posix: '>=1.2.0'
   community.general: '>=1.2.0'
   kubernetes.core: '>=2.2.0'
   community.aws: ">=1.4.0"
   community.docker: ">=1.7.0"
-
 repository: https://github.com/kameshsampath/ansible-collection-kubernetes_spices
-
 documentation: https://kameshsampath.github.io/ansible-collection-kubernetes_spices
-
 homepage: https://github.com/kameshsampath/ansible-collection-kubernetes_spices
-
 issues: https://github.com/kameshsampath/ansible-collection-kubernetes_spices
-
 build_ignore:
   - ".cache"
   - ".idea"
