@@ -18,7 +18,7 @@ dependencies:
   community.aws: ">=1.4.0"
   community.docker: ">=1.7.0"
 repository: https://github.com/kameshsampath/ansible-collection-kubernetes_spices
-documentation: https://kameshsampath.github.io/ansible-collection-kubernetes_spices
+documentation: https://kameshsampath.github.io/ansible-collection-kubernetes-spices/
 homepage: https://github.com/kameshsampath/ansible-collection-kubernetes_spices
 issues: https://github.com/kameshsampath/ansible-collection-kubernetes_spices
 build_ignore:
