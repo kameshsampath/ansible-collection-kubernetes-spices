@@ -1,31 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url>
-<loc>https://kameshsampath.github.com/kubernetes_spices/ansible-kubernetes-spices/index.html</loc>
-<lastmod>2021-07-20T07:02:37.881Z</lastmod>
-</url>
-<url>
-<loc>https://kameshsampath.github.com/kubernetes_spices/ansible-kubernetes-spices/plugins.html</loc>
-<lastmod>2021-07-20T07:02:37.881Z</lastmod>
-</url>
-<url>
-<loc>https://kameshsampath.github.com/kubernetes_spices/ansible-kubernetes-spices/role-kubernetes-kind.html</loc>
-<lastmod>2021-07-20T07:02:37.881Z</lastmod>
-</url>
-<url>
-<loc>https://kameshsampath.github.com/kubernetes_spices/ansible-kubernetes-spices/role-kubernetes-spices.html</loc>
-<lastmod>2021-07-20T07:02:37.881Z</lastmod>
-</url>
-<url>
-<loc>https://kameshsampath.github.com/kubernetes_spices/ansible-kubernetes-spices/roles.html</loc>
-<lastmod>2021-07-20T07:02:37.881Z</lastmod>
-</url>
-<url>
-<loc>https://kameshsampath.github.com/kubernetes_spices/ansible-kubernetes-spices/running.html</loc>
-<lastmod>2021-07-20T07:02:37.881Z</lastmod>
-</url>
-<url>
-<loc>https://kameshsampath.github.com/kubernetes_spices/ansible-kubernetes-spices/setup.html</loc>
-<lastmod>2021-07-20T07:02:37.881Z</lastmod>
-</url>
+    <url>
+         <loc>https://kameshsampath.github.com/ansible-collection-kubernetes_spices/</loc>
+         <lastmod>2021-12-01</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kameshsampath.github.com/ansible-collection-kubernetes_spices/role_argocd/</loc>
+         <lastmod>2021-12-01</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kameshsampath.github.com/ansible-collection-kubernetes_spices/role_gitea/</loc>
+         <lastmod>2021-12-01</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kameshsampath.github.com/ansible-collection-kubernetes_spices/role_knative/</loc>
+         <lastmod>2021-12-01</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kameshsampath.github.com/ansible-collection-kubernetes_spices/role_tektoncd/</loc>
+         <lastmod>2021-12-01</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
 </urlset>
