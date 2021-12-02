@@ -123,17 +123,17 @@
     namespace: "{{ kubernetes_spices_argocd_namespace }}"
     context: "{{ kubernetes_spices_argocd_k8s_context }}"
   register: argocd_initial_admin_secret_result
-  when: argocd_password_details is not defined
+  when: not st_argocd_password_file.stat.exists
 
 - name: "Set Argocd Admin user password fact"
   set_fact:
     kubernetes_spices_argocd_admin_password: "{{ argocd_initial_admin_secret_result.resources[0].data.password | b64decode }}"
-  when: argocd_password_details is not defined and argocd_initial_admin_secret_result.resources | length == 1
+  when: argocd_initial_admin_secret_result is defined and argocd_initial_admin_secret_result.resources | length == 1
 
 - name: "Set Argocd Admin user password fact"
   set_fact:
-    kubernetes_spices_argocd_admin_password: "{{ argocd_password_details['content'] | b64decode }}"
-  when: argocd_password_details is defined 
+      kubernetes_spices_argocd_admin_password: "{{ argocd_password_details['content'] | b64decode }}"
+  when: argocd_password_details is defined  and not argocd_initial_admin_secret_result is defined 
 
 - name: "Get Argocd Server Service"
   kubernetes.core.k8s_info:

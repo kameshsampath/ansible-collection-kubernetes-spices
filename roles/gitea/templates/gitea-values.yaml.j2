@@ -1,4 +1,15 @@
 #jinja2: lstrip_blocks: "True"
+ingress:
+  hosts:
+    - host: {{ gloo_nip_io }}
+      paths:
+         - path: /
+           pathType:  Prefix
+  tls:
+    - secretName: gitea-upstream-tls
+      hosts:
+       - "{{ gloo_http_lb_ip }}"
+       - "{{ gloo_nip_io }}"
 service:
   http:
     type: LoadBalancer
