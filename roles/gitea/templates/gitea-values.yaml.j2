@@ -13,14 +13,13 @@ ingress:
 service:
   http:
     type: LoadBalancer
-    annotations:
-      metallb.universe.tf/allow-shared-ip: test
   ssh:
     type: LoadBalancer
-    annotations:
-      metallb.universe.tf/allow-shared-ip: test
 gitea:
   admin:
     username: {{ gitea_admin_user.username }}
     password: '{{ gitea_admin_user.password }}'
     email: {{ gitea_admin_user.email }}
+  config:
+    server:
+      ROOT_URL: "https://{{ gloo_nip_io }}"

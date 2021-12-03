@@ -103,8 +103,15 @@
     name:  gateway-proxy
     namespace: "{{ kubernetes_spices_gitea_namespace  }}"
     context: "{{ kubernetes_spices_gitea_k8s_context }}"
-  register: gatewway_proxy_http_svc_result
+  register: gateway_proxy_http_svc_result
 
+- name: "Set Gitea Gloo Facts"
+  set_fact:
+    gloo_http_lb_ip: "{{ gateway_proxy_http_svc_result.resources[0] | community.general.json_query(svcQuery) | first  }}"
+    gloo_nip_io: "gitea-{{ gateway_proxy_http_svc_result.resources[0] | community.general.json_query(svcQuery) | first  }}.nip.io"
+  vars:
+    svcQuery: 'status.loadBalancer.ingress[*].ip'
+  
 - name: 'Create SSL Dir'
   file:
     path: "{{ work_dir}}/ssl/private"
@@ -159,13 +166,6 @@
       data:
         tls.key: "{{ gitea_tls_key_b64['content'] }}"
         tls.crt: "{{ gitea_tls_cert_b64['content'] }}"
-
-- name: "Set Gitea Gloo Facts"
-  set_fact:
-    gloo_http_lb_ip: "{{ gatewway_proxy_http_svc_result.resources[0] | community.general.json_query(svcQuery) | first  }}"
-    gloo_nip_io: "gitea-{{ gatewway_proxy_http_svc_result.resources[0] | community.general.json_query(svcQuery) | first  }}.nip.io"
-  vars:
-    svcQuery: 'status.loadBalancer.ingress[*].ip'
 
 - name: "Create gitea admin user"
   set_fact:
