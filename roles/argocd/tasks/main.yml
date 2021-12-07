@@ -224,7 +224,7 @@
 
 - name: "Dump Argocd Repo Details"
   ansible.builtin.copy:
-     dest: "{{ work_dir }}/argocd_details.txt"
+     dest: "{{ work_dir }}/argocd_details.yaml"
      content: |
         username: admin
         password: password

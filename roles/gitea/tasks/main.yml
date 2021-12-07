@@ -297,7 +297,7 @@
 
 - name: "Dump Gitea Repo Details"
   ansible.builtin.copy:
-     dest: "{{ work_dir }}/gitea_details.txt"
+     dest: "{{ work_dir }}/gitea_details.yaml"
      content: |
         gitea_url: {{ git_url }}
         gitea_credentails: {{ gitea_admin_user }}
