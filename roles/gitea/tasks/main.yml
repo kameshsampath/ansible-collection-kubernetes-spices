@@ -312,6 +312,6 @@
     path: "{{ work_dir }}/.envrc"
     marker: "# {mark} ANSIBLE MANAGED BLOCK GITEA"
     block: |
-      export GITEA_USERANAME="{{ gitea_admin_user.username }}"
+      export GITEA_USERNAME="{{ gitea_admin_user.username }}"
       export GITEA_PASSWORD="{{ gitea_admin_user.password }}"
   when: st_envrc_file.stat.exists
