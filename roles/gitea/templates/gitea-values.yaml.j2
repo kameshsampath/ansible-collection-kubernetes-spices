@@ -10,15 +10,6 @@ ingress:
       hosts:
        - "{{ gloo_http_lb_ip }}"
        - "{{ gloo_nip_io }}"
-service:
-  http:
-    type: LoadBalancer
-    annotations:
-      metallb.universe.tf/allow-shared-ip: gitea
-  ssh:
-    type: LoadBalancer
-    annotations:
-      metallb.universe.tf/allow-shared-ip: gitea
 gitea:
   admin:
     username: {{ gitea_admin_user.username }}

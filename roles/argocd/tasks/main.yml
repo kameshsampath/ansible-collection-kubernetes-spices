@@ -121,8 +121,8 @@
     path: "{{ work_dir }}/argocd_admin.password"
   register: st_argocd_password_file
 
-- debug:
-    var: st_argocd_password_file
+#- debug:
+#    var: st_argocd_password_file
 
 - name: "Get Argocd Inital admin Password"
   kubernetes.core.k8s_info:
