@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.2.3](https://www.github.com/kameshsampath/ansible-collection-kubernetes-spices/compare/v0.2.2...v0.2.3) (2021-12-07)
+
+
+### Bug Fixes
+
+* update .envrc with gitea and argocd credentials ([786d25b](https://www.github.com/kameshsampath/ansible-collection-kubernetes-spices/commit/786d25b5b7bd50afe7f0042f6f97f7934c6a6f9e))
+
 ### [0.2.2](https://www.github.com/kameshsampath/ansible-collection-kubernetes-spices/compare/v0.2.1...v0.2.2) (2021-12-07)
 
 
