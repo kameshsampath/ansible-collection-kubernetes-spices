@@ -229,3 +229,17 @@
         username: admin
         password: password
         serviceUrl: 'https://{{ kubernetes_spices_argocd_server_address }}'
+
+- name: "Checking if .envrc file exists"
+  ansible.builtin.stat:
+    path: "{{ work_dir }}/.envrc"
+  register: st_envrc_file
+  
+- name: "Checking if .envrc file exists"
+  ansible.builtin.blockinfile:
+    path: "{{ work_dir }}/.envrc"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK ARGOCD"
+    block: |
+      export ARGOCD_ADMIN_USERANAME="admin"
+      export ARGOCD_ADMIN_PASSWORD="password"
+  when: st_envrc_file.stat.exists

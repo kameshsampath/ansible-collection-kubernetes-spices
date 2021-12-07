@@ -301,3 +301,17 @@
      content: |
         gitea_url: {{ git_url }}
         gitea_credentails: {{ gitea_admin_user }}
+
+- name: "Checking if .envrc file exists"
+  ansible.builtin.stat:
+    path: "{{ work_dir }}/.envrc"
+  register: st_envrc_file
+  
+- name: "Checking if .envrc file exists"
+  ansible.builtin.blockinfile:
+    path: "{{ work_dir }}/.envrc"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK GITEA"
+    block: |
+      export GITEA_USERANAME="{{ gitea_admin_user.username }}"
+      export GITEA_PASSWORD="{{ gitea_admin_user.password }}"
+  when: st_envrc_file.stat.exists
