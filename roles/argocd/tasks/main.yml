@@ -121,11 +121,8 @@
     path: "{{ work_dir }}/argocd_admin.password"
   register: st_argocd_password_file
 
-- name: "Slurp argocd password file"
-  ansible.builtin.slurp:
-    src: "{{ work_dir }}/argocd_admin.password"
-  register: argocd_password_details
-  when: st_argocd_password_file.stat.exists
+- debug:
+    var: st_argocd_password_file
 
 - name: "Get Argocd Inital admin Password"
   kubernetes.core.k8s_info:
@@ -136,6 +133,12 @@
   register: argocd_initial_admin_secret_result
   when: not st_argocd_password_file.stat.exists
 
+- name: "Slurp argocd password file"
+  ansible.builtin.slurp:
+    src: "{{ work_dir }}/argocd_admin.password"
+  register: argocd_password_details
+  when: ( argocd_initial_admin_secret_result | length == 0 ) and st_argocd_password_file.stat.exists 
+    
 - name: "Set Argocd Admin user password fact"
   set_fact:
     kubernetes_spices_argocd_admin_password: "{{ argocd_initial_admin_secret_result.resources[0].data.password | b64decode }}"
@@ -144,7 +147,7 @@
 - name: "Set Argocd Admin user password fact"
   set_fact:
       kubernetes_spices_argocd_admin_password: "{{ argocd_password_details['content'] | b64decode }}"
-  when: argocd_password_details is defined 
+  when: argocd_password_details.changed
 
 - name: "Get Argocd Server Service"
   kubernetes.core.k8s_info:
