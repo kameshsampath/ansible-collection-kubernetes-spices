@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.2.4](https://www.github.com/kameshsampath/ansible-collection-kubernetes-spices/compare/v0.2.3...v0.2.4) (2021-12-07)
+
+
+### Bug Fixes
+
+* user clusterip for gitea ([f035f43](https://www.github.com/kameshsampath/ansible-collection-kubernetes-spices/commit/f035f438e6fc230b3971669a4babc3a186fe3eb1))
+
 ### [0.2.3](https://www.github.com/kameshsampath/ansible-collection-kubernetes-spices/compare/v0.2.2...v0.2.3) (2021-12-07)
 
 
