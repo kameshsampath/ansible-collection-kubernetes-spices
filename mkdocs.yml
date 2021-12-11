@@ -19,6 +19,7 @@ nav:
   - 'Roles':
       - 'Argocd': "role_argocd.md"
       - 'Gitea': "role_gitea.md"
+      - 'Istio': "role_istio.md"
       - 'Knative': "role_knative.md"
       - 'Tektoncd': "role_tektoncd.md"
   
@@ -53,4 +54,3 @@ markdown_extensions:
       custom_checkbox: true
   - pymdownx.highlight:
       linenums_style: pymdownx-inline
-

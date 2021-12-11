@@ -1,0 +1,81 @@
+- name: "Istio Kube Context"
+  debug:
+    var: kubernetes_spices_istio_k8s_context
+
+- name: "Fail if the Istio kube context is not defined"
+  fail:
+    msg: "Istio Kube Context is not defined, please set the variable 'kubernetes_spices_istio_k8s_context' to kubernetes context where you wish to have Gitea installed "
+  when: kubernetes_spices_istio_k8s_context is not defined 
+
+- name: "Add Istio Helm Repo"
+  kubernetes.core.helm_repository:
+    name: istio
+    repo_url: "https://istio-release.storage.googleapis.com/charts"
+
+- name: "Query Istio Versions"
+  ansible.builtin.command:
+    argv:
+      - helm
+      - search 
+      - repo
+      - istio/istio
+      - -ojson
+  register: istio_version_info
+  changed_when: false
+  when: kubernetes_spices_gitea_gloo_version is not defined
+
+- name: "Fail when version istio info does not exist"
+  fail:
+    msg: "Istio Version not available"
+  when: kubernetes_spices_istio_version is not defined and istio_version_info.stdout is not defined
+
+- name: "Set Istio Version Facts"
+  set_fact:
+    kubernetes_spices_istio_version: "{{ istio_version_info.stdout  | from_json | first | community.general.json_query('version') }}"
+  when: kubernetes_spices_istio_version is not defined
+
+- name: "Set Istio Revision Fact"
+  set_fact:
+    kubernetes_spices_istio_revision: "{{ kubernetes_spices_istio_revision | kameshsampath.kubernetes_spices.version_to_revision }}"
+  when: kubernetes_spices_istio_version is not defined
+
+- name: "Istio Version"
+  debug: 
+    var: kubernetes_spices_istio_version
+
+- name: "Istio Revision"
+  debug: 
+    var: kubernetes_spices_istio_revision
+    
+- name: "Undeploy Istio Gateways"
+  kubernetes.core.helm:
+    release_name: "ingress-gateway-{{ kubernetes_spices_istio_revision }}"
+    chart_ref: istio/gateway
+    release_namespace: "{{ kubernetes_spices_istio_gateways_namespace}}"
+    chart_version: "{{ kubernetes_spices_istio_version }}"
+    update_repo_cache: yes
+    context: "{{ kubernetes_spices_istio_k8s_context }}"
+    wait: yes
+    state: absent
+
+- name: "Undeploy Istio Discovery"
+  kubernetes.core.helm:
+    release_name: "istiod-{{ kubernetes_spices_istio_revision }}"
+    chart_ref: istio/istiod
+    release_namespace: "{{ kubernetes_spices_istio_namespace}}"
+    chart_version: "{{ kubernetes_spices_istio_version }}"
+    update_repo_cache: yes
+    context: "{{ kubernetes_spices_istio_k8s_context }}"
+    wait: yes
+    state: absent
+
+- name: "Undeploy Istio Base"
+  kubernetes.core.helm:
+    release_name: "istio-{{ kubernetes_spices_istio_revision }}"
+    chart_ref: istio/base
+    release_namespace: "{{ kubernetes_spices_istio_namespace}}"
+    chart_version: "{{ kubernetes_spices_istio_version }}"
+    update_repo_cache: yes
+    context: "{{ kubernetes_spices_istio_k8s_context }}"
+    wait: yes
+    state: absent

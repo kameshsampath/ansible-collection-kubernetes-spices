@@ -1,0 +1,31 @@
+#jinja2: lstrip_blocks: "True"
+revision: {{ kubernetes_spices_istio_revision }}
+labels:
+  istio: ingressgateway
+  version: {{ kubernetes_spices_istio_revision }}
+  app: istio-ingressgateway
+  {% if kubernetes_spices_gloo_mesh_cluster_name is defined %}
+  # matches spec.values.global.network in istiod deployment
+  topology.istio.io/network: {{ kubernetes_spices_gloo_mesh_cluster_name }}
+  {% endif %}
+env:
+  # Required by Gloo Mesh for east/west routing
+  - name: ISTIO_META_ROUTER_MODE
+    value: "sni-dnat"
+service:
+   ports:
+    - name: status-port
+      port: 15021
+      targetPort: 15021
+    - name: http2
+      port: 80
+      targetPort: 8080
+    - name: https
+      port: 443
+      targetPort: 8443
+    - name: tcp
+      port: 31400
+      targetPort: 31400
+    - name: tls
+      port: 15443
+      targetPort: 15443

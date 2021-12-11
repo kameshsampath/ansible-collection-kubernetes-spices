@@ -1,0 +1,8 @@
+#jinja2: lstrip_blocks: "True"
+operatorNamespace: {{ kubernetes_spices_istio_operator_namespace }}
+watchedNamespaces: {{ kubernetes_spices_istio_namespace }},{{ kubernetes_spices_istio_gateways_namespace }}
+global:
+  istioNamespce: {{ kubernetes_spices_istio_namespace }}
+  hub: {{ kubernetes_spices_istio_image_hub }}
+  tag: {{ kubernetes_spices_istio_version }}
+revision: {{ kubernetes_spices_istio_revision }}

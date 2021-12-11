@@ -1,0 +1,11 @@
+- hosts: all
+
+  vars:
+    work_dir: "{{ playbook_dir }}/work"
+    kubeconfig_dir: "{{ work_dir }}/.kube"
+    minikube_profiles:
+      cluster1:
+        create: no
+        destroy: yes
+  roles:
+    - role: kameshsampath.minikube

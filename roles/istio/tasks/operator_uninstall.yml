@@ -1,0 +1,82 @@
+---
+- name: "Istio Kube Context"
+  debug:
+    var: kubernetes_spices_istio_k8s_context
+
+- name: "Fail if the Istio kube context is not defined"
+  fail:
+    msg: "Istio Kube Context is not defined, please set the variable 'kubernetes_spices_istio_k8s_context' to kubernetes context where you wish to have Gitea installed "
+  when: kubernetes_spices_istio_k8s_context is not defined 
+
+- name: "Fail when version istio info does not exist"
+  fail:
+    msg: "Istio Version not available"
+  when: kubernetes_spices_istio_version is not defined 
+
+- name: "Set Istio Revision Fact"
+  set_fact:
+    kubernetes_spices_istio_revision: "{{ kubernetes_spices_istio_version | kameshsampath.kubernetes_spices.version_to_revision }}"
+
+- name: "Istio Version"
+  debug: 
+    var: kubernetes_spices_istio_version
+
+- name: "Istio Revision"
+  debug: 
+    var: kubernetes_spices_istio_revision
+
+- name: "Set Istio Revision Work Directory"
+  set_fact:
+    kubernetes_spices_istio_revision_work_dir: "{{ work_dir }}/{{ kubernetes_spices_istio_revision }}"
+
+- name: "Delete Istio ConfigMap"
+  kubernetes.core.k8s:
+    state: absent
+    kind: ConfigMap
+    name: "istio-{{ kubernetes_spices_istio_revision }}"
+    namespace: "{{ kubernetes_spices_istio_gateways_namespace }}"
+    context:  "{{ kubernetes_spices_istio_k8s_context }}"
+    wait: yes
+
+- name: "Undeploy Istio Ingress Gateway"
+  kubernetes.core.k8s:
+    state: absent
+    api_version: install.istio.io/v1alpha1
+    kind: IstioOperator
+    name: "ingress-gateway-{{ kubernetes_spices_istio_revision }}"
+    namespace: "{{ kubernetes_spices_istio_gateways_namespace }}"
+    context: "{{ kubernetes_spices_istio_k8s_context }}"
+    wait: yes
+
+- name: "Undeploy Istio Control Plane"
+  kubernetes.core.k8s:
+    state: absent
+    api_version: install.istio.io/v1alpha1
+    kind: IstioOperator
+    name: "istio-{{ kubernetes_spices_istio_revision }}"
+    namespace: "{{ kubernetes_spices_istio_namespace }}"
+    context: "{{ kubernetes_spices_istio_k8s_context }}"
+    wait: yes
+
+- name: "Uninstall Istio Operator"
+  kubernetes.core.k8s:
+    state: absent
+    src: "{{ kubernetes_spices_istio_revision_work_dir }}/operator.yaml"
+    namespace: "{{ kubernetes_spices_istio_operator_namespace }}"
+    context: "{{ kubernetes_spices_istio_k8s_context }}"
+    wait: yes
+
+- name: "Delete Istio Namespaces"
+  kubernetes.core.k8s:
+    state: absent
+    kind: Namespace
+    name: "{{ kube_istio_ns_item }}"
+    wait: yes
+  loop:
+    - "{{ kubernetes_spices_istio_operator_namespace }}"
+    - "{{ kubernetes_spices_istio_namespace }}"
+    - "{{ kubernetes_spices_istio_gateways_namespace }}"
+  loop_control:
+     loop_var: kube_istio_ns_item
+
+

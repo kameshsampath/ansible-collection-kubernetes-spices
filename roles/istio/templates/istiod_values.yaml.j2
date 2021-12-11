@@ -1,0 +1,55 @@
+#jinja2: lstrip_blocks: "True"
+revision: {{ kubernetes_spices_istio_revision }}
+pilot:
+  env:
+   # Allow multiple trust domains (Required for Gloo Mesh east/west routing)
+    - name: PILOT_SKIP_VALIDATE_TRUST_DOMAIN
+      value: "true"
+
+meshConfig:
+  # enable access logging to standard output
+  accessLogFile: /dev/stdout
+
+  defaultConfig:
+    # wait for the istio-proxy to start before application pods
+    holdApplicationUntilProxyStarts: true
+    {% if gloo_clusters is defined %}
+    # enable Gloo Mesh metrics service (required for Gloo Mesh Dashboard)
+    envoyMetricsService:
+      address: enterprise-agent.gloo-mesh:9977
+    # enable GlooMesh accesslog service (required for Gloo Mesh Access Logging)
+    envoyAccessLogService:
+      address: enterprise-agent.gloo-mesh:9977
+    {% endif %}
+    proxyMetadata:
+      # Enable Istio agent to handle DNS requests for known hosts
+      # Unknown hosts will automatically be resolved using upstream dns servers in resolv.conf
+      # (for proxy-dns)
+      ISTIO_META_DNS_CAPTURE: "true"
+      # Enable automatic address allocation (for proxy-dns)
+      ISTIO_META_DNS_AUTO_ALLOCATE: "true"
+      # Used for gloo mesh metrics aggregation
+      {% if kubernetes_spices_gloo_mesh_cluster_name is defined %}
+      # should match trustDomain (required for Gloo Mesh Dashboard)
+      GLOO_MESH_CLUSTER_NAME: {{ kubernetes_spices_gloo_mesh_cluster_name }}
+      {% endif %}
+  # Set the default behavior of the sidecar for handling outbound traffic from the application.
+  outboundTrafficPolicy:
+    mode: ALLOW_ANY
+  {% if kubernetes_spices_gloo_mesh_cluster_name is defined %}
+  trustDomain: {{ kubernetes_spices_gloo_mesh_cluster_name }}
+  {% endif %}
+proxy:
+  holdApplicationUntilProxyStarts: false
+global:
+  istioNamespce: {{ kubernetes_spices_istio_namespace }}
+  hub: {{ kubernetes_spices_istio_image_hub }}
+  tag: {{ kubernetes_spices_istio_version }}
+  logAsJson: true
+  {% if kubernetes_spices_gloo_mesh_cluster_name is defined %}
+  # needed for connecting VirtualMachines to the mesh
+  network: {{ kubernetes_spices_gloo_mesh_cluster_name }}
+  # needed for annotating istio metrics with cluster (should match trust domain and GLOO_MESH_CLUSTER_NAME)
+  multiCluster:
+    clusterName: {{ kubernetes_spices_gloo_mesh_cluster_name }}
+  {% endif %}

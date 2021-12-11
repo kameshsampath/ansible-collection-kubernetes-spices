@@ -1,0 +1,7 @@
+- hosts: all
+  vars:
+    istio_version: 1.12.1
+  
+  tasks:
+    - name: "Install Istio"
+      include: "{{ istio_version is version('1.12', '>=') }}"

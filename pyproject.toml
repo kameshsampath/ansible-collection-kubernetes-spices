@@ -15,6 +15,7 @@ ansible-builder = "^1.0.1"
 docker = "^5.0.0"
 mkdocs = "^1.2.3"
 mkdocs-material = "^8.0.2"
+pexpect = "^4.8.0"
 
 [tool.poetry.dev-dependencies]
 ansible-lint = "^5.0.7"

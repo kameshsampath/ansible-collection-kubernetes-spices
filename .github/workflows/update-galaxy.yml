@@ -48,5 +48,3 @@ jobs:
           git commit galaxy.yml -m "fix: Bump Galaxy version to $SEMVER"
           git push
         working-directory: "${{ github.workspace }}"
-
-

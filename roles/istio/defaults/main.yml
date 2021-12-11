@@ -1,0 +1,8 @@
+---
+kubernetes_spices_istio_namespace: istio-system
+kubernetes_spices_istio_gateways_namespace: istio-gateways
+kubernetes_spices_istio_operator_namespace: istio-operator
+kubernetes_spices_istiod_helm_values_files: []
+kubernetes_spices_istiogw_helm_values_files: []
+kubernetes_spices_istio_image_hub: docker.io/istio
+kubernetes_spices_istio_operator_helm_values_files: []

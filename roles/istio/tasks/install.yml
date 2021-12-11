@@ -1,0 +1,136 @@
+---
+- name: "Istio Kube Context"
+  debug:
+    var: kubernetes_spices_istio_k8s_context
+
+- name: "Fail if the Istio kube context is not defined"
+  fail:
+    msg: "Istio Kube Context is not defined, please set the variable 'kubernetes_spices_istio_k8s_context' to kubernetes context where you wish to have Gitea installed "
+  when: kubernetes_spices_istio_k8s_context is not defined 
+
+- name: "Add Istio Helm Repo"
+  kubernetes.core.helm_repository:
+    name: istio
+    repo_url: "https://istio-release.storage.googleapis.com/charts"
+
+- name: "Query Istio Versions"
+  ansible.builtin.command:
+    argv:
+      - helm
+      - search 
+      - repo
+      - istio/istiod
+      - -ojson
+  register: istio_version_info
+  changed_when: false
+  when: kubernetes_spices_istio_version is not defined
+
+- name: "Fail when version istio info does not exist"
+  fail:
+    msg: "Istio Version not available"
+  when: kubernetes_spices_istio_version is not defined and istio_version_info.stdout is not defined
+
+- name: "Set Istio Version Facts"
+  set_fact:
+    kubernetes_spices_istio_version: "{{ istio_version_info.stdout  | from_json | first | community.general.json_query('version') }}"
+  when: kubernetes_spices_istio_version is not defined
+
+- name: "Set Istio Revision Fact"
+  set_fact:
+    kubernetes_spices_istio_revision: "{{ kubernetes_spices_istio_version | kameshsampath.kubernetes_spices.version_to_revision }}"
+
+- name: "Istio Version"
+  debug: 
+    var: kubernetes_spices_istio_version
+
+- name: "Istio Revision"
+  debug: 
+    var: kubernetes_spices_istio_revision
+
+- name: "Set Istio Revision Work Directory"
+  set_fact:
+    kubernetes_spices_istio_revision_work_dir: "{{ work_dir }}/{{ kubernetes_spices_istio_revision }}"
+
+- name: "Ensure Istio Revision Work Directory"
+  ansible.builtin.file:
+    state: directory
+    path: "{{ kubernetes_spices_istio_revision_work_dir }}"
+    mode: "0700"
+
+- name: "Download istioctl (macOS)"
+  ansible.builtin.get_url:
+    url: "https://github.com/istio/istio/releases/download/{{ kubernetes_spices_istio_version }}/istioctl-{{ kubernetes_spices_istio_version }}-osx.tar.gz"
+    checksum: "sha256:https://github.com/istio/istio/releases/download/{{ kubernetes_spices_istio_version }}/istioctl-{{ kubernetes_spices_istio_version }}-osx.tar.gz.sha256"
+    dest: "/tmp/istioctl.tar.gz"
+    timeout: 30
+  when: ansible_os_family == 'Darwin'
+
+- name: "Download istioctl (linux)"
+  ansible.builtin.get_url:
+    url: "https://github.com/istio/istio/releases/download/{{ kubernetes_spices_istio_version }}/istioctl-{{ kubernetes_spices_istio_version }}-linux-amd64.tar.gz"
+    checksum: "sha256:https://github.com/istio/istio/releases/download/{{ kubernetes_spices_istio_version }}/istioctl-{{ kubernetes_spices_istio_version }}-linux-amd64.tar.gz.sha256"
+    dest: "/tmp/istioctl.tar.gz"
+    mode: "0755"
+  when: ansible_os_family == 'RedHat' or ansible_os_family == 'Debian'
+
+- name: "Install istioctl"
+  ansible.builtin.unarchive:
+    src: "/tmp/istioctl.tar.gz"
+    dest: "{{ bin_dir }}"
+    mode: "0755"
+    extra_opts:
+      - "--strip-components=1"
+      - "--exclude=README.md"
+      - "--exclude=LICENSE"
+
+- name: "Create istiod Helm Values"
+  ansible.builtin.template:
+    src: "istiod_values.yaml.j2"
+    dest: "{{ kubernetes_spices_istio_revision_work_dir }}/istiod_values.yaml"
+  register: istiod_helm_values_file
+  
+- name: "Create istio gateway Helm Values"
+  ansible.builtin.template:
+    src: "istio_gateway_values.yaml.j2"
+    dest: "{{ kubernetes_spices_istio_revision_work_dir }}/istio_gateway_values.yaml"
+  register: istio_gateway_helm_values_file
+
+- name: "Set Istio Helm Value File Facts"
+  set_fact:
+    kubernetes_spices_istiod_helm_values_files: "{{ [istiod_helm_values_file.dest]  + kubernetes_spices_istiod_helm_values_files }}"
+    kubernetes_spices_istiogw_helm_values_files: "{{ [istio_gateway_helm_values_file.dest] + kubernetes_spices_istiogw_helm_values_files }}"
+
+- name: "Deploy Istio Base"
+  kubernetes.core.helm:
+    release_name: "istio-{{ kubernetes_spices_istio_revision }}"
+    chart_ref: istio/base
+    release_namespace: "{{ kubernetes_spices_istio_namespace}}"
+    create_namespace: yes
+    chart_version: "{{ kubernetes_spices_istio_version }}"
+    update_repo_cache: yes
+    context: "{{ kubernetes_spices_istio_k8s_context }}"
+    wait: yes
+
+- name: "Deploy Istio Discovery"
+  kubernetes.core.helm:
+    release_name: "istiod-{{ kubernetes_spices_istio_revision }}"
+    chart_ref: istio/istiod
+    release_namespace: "{{ kubernetes_spices_istio_namespace}}"
+    create_namespace: yes
+    chart_version: "{{ kubernetes_spices_istio_version }}"
+    update_repo_cache: yes
+    values_files: "{{ kubernetes_spices_istiod_helm_values_files }}"
+    context: "{{ kubernetes_spices_istio_k8s_context }}"
+    wait: yes
+
+- name: "Deploy Istio Gateways"
+  kubernetes.core.helm:
+    release_name: "ingress-gateway-{{ kubernetes_spices_istio_revision }}"
+    chart_ref: istio/gateway
+    release_namespace: "{{ kubernetes_spices_istio_gateways_namespace}}"
+    create_namespace: yes
+    chart_version: "{{ kubernetes_spices_istio_version }}"
+    update_repo_cache: yes
+    values_files: "{{ kubernetes_spices_istiogw_helm_values_files }}"
+    context: "{{ kubernetes_spices_istio_k8s_context }}"
+    wait: yes

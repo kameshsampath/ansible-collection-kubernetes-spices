@@ -141,4 +141,3 @@
   # TODO: #3 Check why controllers are configured always and fix it
   changed_when: False
   register: knative_kourier_deploy
-

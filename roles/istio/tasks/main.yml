@@ -1,0 +1,57 @@
+---
+- name: "Ensure work dir set"
+  set_fact:
+    work_dir: "{{ work_dir | default(playbook_dir) }}"
+
+- name: "Ensure bin dir is set"
+  set_fact:
+    bin_dir: "{{ bin_dir | default( work_dir + '/bin' ) }}"
+
+- name: "Ensure {{ bin_dir}}"
+  ansible.builtin.file:
+     state: directory
+     path: "{{ bin_dir }}"
+
+- name: "Install Istio via Helm"
+  include_tasks: install.yml
+  loop: "{{ istio_clusters | dict2items }}"
+  loop_control:
+     label: "{{ item.key }}"
+  vars:
+    kubernetes_spices_istio_k8s_context: "{{ item.key }}"
+    kubernetes_spices_istio_version: "{{ item.value.version }}"
+    kubernetes_spices_gloo_mesh_cluster_name: "{{ gloo_mesh_cluster_name | default(item.key) }}"
+  when: item.value.version is version('1.12.0','ge',strict=True) and ( item.value.install | default(True)) 
+
+- name: "Install Istio via Operator"
+  include_tasks: operator_install.yml
+  loop: "{{ istio_clusters | dict2items }}"
+  loop_control:
+     label: "{{ item.key }}"
+  vars:
+    kubernetes_spices_istio_k8s_context: "{{ item.key }}"
+    kubernetes_spices_istio_version: "{{ item.value.version }}"
+    kubernetes_spices_gloo_mesh_cluster_name: "{{ gloo_mesh_cluster_name | default(item.key) }}"
+  when: item.value.version is version('1.12.0','lt',strict=True) and ( item.value.install | default(True)) 
+
+- name: "Uninstall Istio via Helm"
+  include_tasks: uninstall.yml
+  loop: "{{ istio_clusters | dict2items }}"
+  loop_control:
+     label: "{{ item.key }}"
+  vars:
+    kubernetes_spices_istio_k8s_context: "{{ item.key }}"
+    kubernetes_spices_istio_version: "{{ item.value.version }}"
+    kubernetes_spices_gloo_mesh_cluster_name: "{{ gloo_mesh_cluster_name | default(item.key) }}"
+  when: item.value.version is version('1.12.0','ge',strict=True)  and ( not item.value.install | default(False) )
+
+- name: "Uninstall Istio via Operator"
+  include_tasks: operator_uninstall.yml
+  loop: "{{ istio_clusters | dict2items }}"
+  loop_control:
+     label: "{{ item.key }}"
+  vars:
+    kubernetes_spices_istio_k8s_context: "{{ item.key }}"
+    kubernetes_spices_istio_version: "{{ item.value.version }}"
+    kubernetes_spices_gloo_mesh_cluster_name: "{{ gloo_mesh_cluster_name | default(item.key) }}"
+  when: item.value.version is version('1.12.0','lt',strict=True)  and ( not item.value.install | default(False) )
