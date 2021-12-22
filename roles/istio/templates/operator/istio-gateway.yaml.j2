@@ -2,39 +2,41 @@
 apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
 metadata:
-  name: ingress-gateway-{{ kubernetes_spices_istio_revision }}
+  name: default-gateway
   namespace: {{ kubernetes_spices_istio_gateways_namespace }}
 spec:
   # only the control plane components are installed (https://istio.io/latest/docs/setup/additional-setup/config-profiles/)
   profile: empty
-  hub: {{ kubernetes_spices_istio_image_hub }}
-  tag: {{ kubernetes_spices_istio_version }}
   revision: {{ kubernetes_spices_istio_revision }}
-  
   components:
     ingressGateways:
     # enable the default ingress gateway
-    - name: istio-ingressgateway
+    - name: {{ kubernetes_spices_istio_default_gateway_name }}
       # deploy to its own namespace
-      namespace: istio-gateways
+      namespace: {{ kubernetes_spices_istio_gateways_namespace }}
       enabled: true
       label:
         istio: ingressgateway
-        app: istio-ingressgateway
-        {% if kubernetes_spices_gloo_mesh_cluster_name is defined %}
+        {% if kubernetes_spices_istio_cluster_network is defined %}
         # matches spec.values.global.network in istiod deployment
-        topology.istio.io/network: {{ kubernetes_spices_gloo_mesh_cluster_name }}
+        topology.istio.io/network: {{ kubernetes_spices_istio_cluster_network }}
         {% endif %}
       k8s:
         env:
           # Required by Gloo Mesh for east/west routing
+          # sni-dnat adds the clusters required for AUTO_PASSTHROUGH mode
           - name: ISTIO_META_ROUTER_MODE
             value: "sni-dnat"
+          {% if kubernetes_spices_istio_cluster_network is defined %}
+          # traffic through this gateway should be routed inside the network
+          - name: ISTIO_META_REQUESTED_NETWORK_VIEW
+            value: "{{ kubernetes_spices_istio_cluster_network }}"
+          {% endif %}
         service:
           type: LoadBalancer
           ports:
             # health check port (required to be first for aws elbs)
-            - name: status-port
+            - name: tcp-status-port
               port: 15021
               targetPort: 15021
             # main http ingress port
@@ -50,13 +52,15 @@ spec:
               targetPort: 15443
               # Gloo Mesh looks for this default name 'tls' on an ingress gateway
               name: tls
+            # Port to route external istiod requests e.g. integration of vm
+            - name: tcp-istiod
+              port: 15012
+              targetPort: 15012
+            # Port to Webhook mutations
+            - name: tcp-webhook
+              port: 15017
+              targetPort: 15017
   values:
-    # https://istio.io/v1.5/docs/reference/config/installation-options/#global-options
-    global:
-      {% if kubernetes_spices_gloo_mesh_cluster_name is defined %}
-      # needed for connecting VirtualMachines to the mesh
-      network: {{ kubernetes_spices_gloo_mesh_cluster_name }}
-      # needed for annotating istio metrics with cluster (should match trust domain and GLOO_MESH_CLUSTER_NAME)
-      multiCluster:
-        clusterName: {{ kubernetes_spices_gloo_mesh_cluster_name }}
-     {% endif %}
+    gateways:
+      istio-ingressgateway:
+        injectionTemplate: gateway

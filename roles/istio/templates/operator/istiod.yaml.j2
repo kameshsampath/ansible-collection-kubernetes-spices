@@ -2,22 +2,22 @@
 apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
 metadata:
-  name: istio-{{ kubernetes_spices_istio_revision }}
-  namespace: "{{ kubernetes_spices_istio_namespace }}"
+  name: istiod-{{ kubernetes_spices_istio_revision }}
+  namespace: {{ kubernetes_spices_istio_namespace }}
 spec:
   # only the control plane components are installed (https://istio.io/latest/docs/setup/additional-setup/config-profiles/)
   profile: minimal
   hub: {{ kubernetes_spices_istio_image_hub }}
   tag: {{ kubernetes_spices_istio_version }}
   revision: {{ kubernetes_spices_istio_revision }}
-
   meshConfig:
     # enable access logging to standard output
     accessLogFile: /dev/stdout
-
+    # The trust domain corresponds to the trust root of a system. 
+    # For Gloo Mesh this should be the name of the cluster that cooresponds with the CA certificate CommonName identity
+    trustDomain: "{{ kubernetes_spices_istio_cluster }}"
+    enableAutoMtls: true
     defaultConfig:
-      # wait for the istio-proxy to start before application pods
-      holdApplicationUntilProxyStarts: true
       {% if gloo_clusters is defined %}
       # enable Gloo Mesh metrics service (required for Gloo Mesh Dashboard)
       envoyMetricsService:
@@ -34,34 +34,49 @@ spec:
         # Enable automatic address allocation (for proxy-dns)
         ISTIO_META_DNS_AUTO_ALLOCATE: "true"
         # Used for gloo mesh metrics aggregation
-        {% if kubernetes_spices_gloo_mesh_cluster_name is defined %}
+        {% if kubernetes_spices_istio_cluster is defined %}
         # should match trustDomain (required for Gloo Mesh Dashboard)
-        GLOO_MESH_CLUSTER_NAME: {{ kubernetes_spices_gloo_mesh_cluster_name }}
+        GLOO_MESH_CLUSTER_NAME: {{ kubernetes_spices_istio_cluster }}
         {% endif %}
-
-    # Set the default behavior of the sidecar for handling outbound traffic from the application.
-    outboundTrafficPolicy:
-      mode: ALLOW_ANY
-    # The trust domain corresponds to the trust root of a system. 
-    # For Gloo Mesh this should be the name of the cluster that cooresponds with the CA certificate CommonName identity
-    {% if kubernetes_spices_gloo_mesh_cluster_name is defined %}
-    trustDomain: {{ kubernetes_spices_gloo_mesh_cluster_name }}
-    {% endif %}
-  
   components:
+    base:
+      enabled: true
     pilot:
+      enabled: true
       k8s:
         env:
-         # Allow multiple trust domains (Required for Gloo Mesh east/west routing)
           - name: PILOT_SKIP_VALIDATE_TRUST_DOMAIN
             value: "true"
+    ingressGateways:
+    - name: istio-ingressgateway
+      enabled: false
+    - name: istio-eastwestgateway
+      enabled: false
+    egressGateways:
+    - name: istio-egressgateway
+      enabled: false
   values:
     # https://istio.io/v1.5/docs/reference/config/installation-options/#global-options
     global:
-      {% if kubernetes_spices_gloo_mesh_cluster_name is defined %}
+      {% if kubernetes_spices_istio_mesh_id %}
+      meshID: {{ kubernetes_spices_istio_mesh_id }}
+      {% endif %}
+      {% if kubernetes_spices_istio_cluster_network is defined %}
       # needed for connecting VirtualMachines to the mesh
-      network: {{ kubernetes_spices_gloo_mesh_cluster_name }}
+      network: {{ kubernetes_spices_istio_cluster_network }}
+      {% endif %}
+      {% if kubernetes_spices_istio_cluster is defined %}
       # needed for annotating istio metrics with cluster (should match trust domain and GLOO_MESH_CLUSTER_NAME)
       multiCluster:
-        clusterName: {{ kubernetes_spices_gloo_mesh_cluster_name }}
-     {% endif %}
+        clusterName: {{ kubernetes_spices_istio_cluster }}
+      {% endif %}
+      {% if kubernetes_spices_istio_cluster_network is defined %}
+      meshNetworks:
+        "{{ kubernetes_spices_istio_cluster_network }}":
+          endpoints:
+          - fromRegistry: "{{ kubernetes_spices_istio_cluster }}"
+          gateways:
+          - registryServiceName: {{ kubernetes_spices_istio_default_gateway_name }}.{{ kubernetes_spices_istio_gateways_namespace }}.svc.cluster.local
+            port: 443
+        vm-network: "{{ kubernetes_spices_istio_vm_network }}"
+      {% endif %}

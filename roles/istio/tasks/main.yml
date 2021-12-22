@@ -19,6 +19,7 @@
      label: "{{ item.key }}"
   vars:
     kubernetes_spices_istio_k8s_context: "{{ item.key }}"
+    kubernetes_spices_istio_cluster: "{{  item.key }}"
     kubernetes_spices_istio_version: "{{ item.value.version }}"
     kubernetes_spices_gloo_mesh_cluster_name: "{{ gloo_mesh_cluster_name | default(item.key) }}"
   when: item.value.version is version('1.12.0','ge',strict=True) and ( item.value.install | default(True)) 
@@ -30,6 +31,7 @@
      label: "{{ item.key }}"
   vars:
     kubernetes_spices_istio_k8s_context: "{{ item.key }}"
+    kubernetes_spices_istio_cluster: "{{  item.key }}"
     kubernetes_spices_istio_version: "{{ item.value.version }}"
     kubernetes_spices_gloo_mesh_cluster_name: "{{ gloo_mesh_cluster_name | default(item.key) }}"
   when: item.value.version is version('1.12.0','lt',strict=True) and ( item.value.install | default(True)) 
@@ -41,6 +43,7 @@
      label: "{{ item.key }}"
   vars:
     kubernetes_spices_istio_k8s_context: "{{ item.key }}"
+    kubernetes_spices_istio_cluster: "{{  item.key }}"
     kubernetes_spices_istio_version: "{{ item.value.version }}"
     kubernetes_spices_gloo_mesh_cluster_name: "{{ gloo_mesh_cluster_name | default(item.key) }}"
   when: item.value.version is version('1.12.0','ge',strict=True)  and ( not item.value.install | default(False) )
@@ -52,6 +55,7 @@
      label: "{{ item.key }}"
   vars:
     kubernetes_spices_istio_k8s_context: "{{ item.key }}"
+    kubernetes_spices_istio_cluster: "{{  item.key }}"
     kubernetes_spices_istio_version: "{{ item.value.version }}"
     kubernetes_spices_gloo_mesh_cluster_name: "{{ gloo_mesh_cluster_name | default(item.key) }}"
   when: item.value.version is version('1.12.0','lt',strict=True)  and ( not item.value.install | default(False) )

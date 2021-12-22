@@ -78,6 +78,7 @@
     
 - name: "Create Istio Namespaces"
   kubernetes.core.k8s:
+    context: "{{ kubernetes_spices_istio_k8s_context }}"
     state: present
     definition:
       api_version: v1
@@ -113,12 +114,16 @@
     deployment_namespace: "{{ kubernetes_spices_istio_operator_namespace }}"
     deployment_context: "{{ kubernetes_spices_istio_k8s_context }}"
 
+- name: "Generate Istio Control Plane Deployment"
+  ansible.builtin.template:
+    src: operator/istiod.yaml.j2
+    dest: "{{ kubernetes_spices_istio_revision_work_dir }}/control-plane.yaml"
+
 - name: "Deploy istiod"
   kubernetes.core.k8s:
-    state: present
-    template:
-      path: operator/istiod.yaml.j2
     context: "{{ kubernetes_spices_istio_k8s_context }}"
+    state: present
+    src: "{{ kubernetes_spices_istio_revision_work_dir }}/control-plane.yaml"
 
 - name: "Wait for istiod to be ready"
   include: utils/status_check.yml
@@ -127,46 +132,51 @@
     deployment_namespace: "{{ kubernetes_spices_istio_namespace }}"
     deployment_context: "{{ kubernetes_spices_istio_k8s_context }}"
 
-- name: "Lookup Istio Configmap from {{ kubernetes_spices_istio_namespace }}"
-  kubernetes.core.k8s_info:
-    api_version: v1
-    kind: ConfigMap
-    name: "istio-{{ kubernetes_spices_istio_revision }}"
-    namespace: "{{ kubernetes_spices_istio_namespace }}"
-    context:  "{{ kubernetes_spices_istio_k8s_context }}"
-  register: kubernetes_spices_istio_cm_result
+#- name: "Lookup Istio Configmap from {{ kubernetes_spices_istio_namespace }}"
+#  kubernetes.core.k8s_info:
+#    api_version: v1
+#    kind: ConfigMap
+#    name: "istio-{{ kubernetes_spices_istio_revision }}"
+#    namespace: "{{ kubernetes_spices_istio_namespace }}"
+#    context:  "{{ kubernetes_spices_istio_k8s_context }}"
+#  register: kubernetes_spices_istio_cm_result
 
-- name: "Fail when Istio configmap not found"
-  fail:
-    msg: "Istio configmap istio-{{ kubernetes_spices_istio_cm_result }} not found in namespace kubernetes_spices_istio_namespace"
-  when: kubernetes_spices_istio_cm_result.resources | length == 0
-- name: "Set Istio ConfigMap Facts"
-  set_fact:
-    kubernetes_spices_istio_cm_data: "{{ kubernetes_spices_istio_cm_result.resources[0].data }}"
+#- name: "Fail when Istio configmap not found"
+#  fail:
+#    msg: "Istio configmap istio-{{ kubernetes_spices_istio_cm_result }} not found in namespace kubernetes_spices_istio_namespace"
+#  when: kubernetes_spices_istio_cm_result.resources | length == 0
+#
+#- name: "Set Istio ConfigMap Facts"
+#  set_fact:
+#    kubernetes_spices_istio_cm_data: "{{ kubernetes_spices_istio_cm_result.resources[0].data }}"
 
 # - debug:
 #     msg:  "{{ kubernetes_spices_istio_cm_data }}"
 
-- name: "Create Istio ConfigMap"
-  kubernetes.core.k8s:
-    state: present
-    definition:
-      api_version: v1
-      kind: ConfigMap
-      metadata:
-        name: "istio-{{ kubernetes_spices_istio_revision }}"
-        namespace: "{{ kubernetes_spices_istio_gateways_namespace }}"
-        labels:
-          istio.io/rev: "{{ kubernetes_spices_istio_revision }}"
-      data: "{{ kubernetes_spices_istio_cm_data | from_yaml }}"
-    context:  "{{ kubernetes_spices_istio_k8s_context }}"
+#- name: "Create Istio ConfigMap"
+#  kubernetes.core.k8s:
+#    state: present
+#    definition:
+#      api_version: v1
+#      kind: ConfigMap
+#      metadata:
+#        name: "istio-{{ kubernetes_spices_istio_revision }}"
+#        namespace: "{{ kubernetes_spices_istio_gateways_namespace }}"
+#        labels:
+#          istio.io/rev: "{{ kubernetes_spices_istio_revision }}"
+#      data: "{{ kubernetes_spices_istio_cm_data | from_yaml }}"
+#    context:  "{{ kubernetes_spices_istio_k8s_context }}"
 
+- name: "Generate Istio Gateway Deployment"
+  ansible.builtin.template:
+    src: operator/istio-gateway.yaml.j2
+    dest: "{{ kubernetes_spices_istio_revision_work_dir }}/ingress-gateway.yaml"
+    
 - name: "Deploy Istio Ingress Gateway"
   kubernetes.core.k8s:
-    state: present
-    template:
-      path: operator/istio-gateway.yaml.j2
     context: "{{ kubernetes_spices_istio_k8s_context }}"
+    state: present
+    src: "{{ kubernetes_spices_istio_revision_work_dir }}/ingress-gateway.yaml"
 
 - name: "Wait for istio ingressgateway to be ready"
   include: utils/status_check.yml

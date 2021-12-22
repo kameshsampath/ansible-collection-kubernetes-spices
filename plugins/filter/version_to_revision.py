@@ -9,15 +9,19 @@ __metaclass__ = type
 import re
 
 
-def version_to_revision(version, prefix=None):
+def version_to_revision(version, prefix=None, patch=True):
     regex = r"(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)\-*(?P<micro>[\w+]*)"
-    subst = "\\g<major>-\\g<minor>"
+    if patch:
+        subst = "\\g<major>-\\g<minor>-\\g<patch>"
+    else:
+        subst = "\\g<major>-\\g<minor>"
     if prefix:
         subst = prefix + '-' + subst
     """
     version_to_revision takes a string version like 1.10.1 and converts it to a revision 1-10 excluding the patch version
     :param version: the version
     :param prefix: the prefix to add to revision
+    :param micro: include micro version in revision
     :return: the "-" seperated revision string
     """
     if version:
