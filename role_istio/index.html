@@ -8,14 +8,14 @@
       
       
       
-        <link rel="canonical" href="https://kameshsampath.github.com/ansible-collection-kubernetes_spices/role_knative/">
+        <link rel="canonical" href="https://kameshsampath.github.com/ansible-collection-kubernetes_spices/role_istio/">
       
       <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.3">
     
     
       
-        <title>Knative - Ansible Collection for spicing Kubernetes</title>
+        <title>Argocd - Ansible Collection for spicing Kubernetes</title>
       
     
     
@@ -93,7 +93,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Knative
+              Argocd
             
           </span>
         </div>
@@ -248,20 +248,6 @@
               
   
   
-  
-    <li class="md-nav__item">
-      <a href="../role_istio/" class="md-nav__link">
-        Istio
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
     
   
   
@@ -272,12 +258,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Knative
+          Istio
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        Knative
+        Istio
       </a>
       
         
@@ -314,10 +300,38 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#using-helm-secrets-plugin" class="md-nav__link">
+    Using helm secrets plugin
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-age-key" class="md-nav__link">
+    Create age key
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
       
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../role_knative/" class="md-nav__link">
+        Knative
+      </a>
     </li>
   
 
@@ -388,6 +402,20 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#using-helm-secrets-plugin" class="md-nav__link">
+    Using helm secrets plugin
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-age-key" class="md-nav__link">
+    Create age key
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -401,9 +429,9 @@
               
                 
 
-  <h1>Knative</h1>
+  <h1>Istio</h1>
 
-<p>This role helps in installing and configuring <a href="https://knative.dev">Knative</a> Serving and Eventing on to the Kubernetes cluster.</p>
+<p>This role helps in installing and configuring <a href="https://argo-cd.readthedocs.io/en/stable/">Argocd</a> the Kubernetes cluster.</p>
 <h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h2>
 <p>Access to Kubernetes cluster,</p>
 <p>For demo purpose you can have minikube cluster created locally as shown in the following example playbook,</p>
@@ -477,41 +505,73 @@
 </thead>
 <tbody>
 <tr>
-<td>kubernetes_spices_gitea_k8s_context</td>
-<td>The Kubernetes context where Knative will be installed. The playbook will fail if this is not set.</td>
+<td>kubernetes_spices_argocd_k8s_context</td>
+<td>The Kubernetes context where Argcod will be installed. The playbook will fail if this is not set.</td>
 <td></td>
 </tr>
 <tr>
-<td>kubernetes_spices_knative_serving_version</td>
-<td>The Knative Serving version to use</td>
-<td>v1.0.0</td>
+<td>kubernetes_spices_argocd_namespace</td>
+<td>The namespace to install Argocd</td>
+<td>argocd</td>
 </tr>
 <tr>
-<td>kubernetes_spices_knative_eventing_version</td>
-<td>The Knative Eventing version to use</td>
-<td>v1.0.0</td>
+<td>kubernetes_spices_argocd_version</td>
+<td>The argocd version to be used</td>
+<td>2.1.6</td>
 </tr>
 <tr>
-<td>kubernetes_spices_registries_skip_tag_resolving</td>
-<td>The list of registry urls which need to be ignored for tag resolving</td>
-<td>example.com,example.org,test.com,test.org,ko.local,dev.local,localhost:5000,kind-registry.local:5000</td>
+<td>kubernetes_spices_argocd_helm_secerts_plugin</td>
+<td>Use helm secrets plugin with argocd applications</td>
+<td>false</td>
 </tr>
 </tbody>
 </table>
 <h2 id="example-playbook">Example Playbook<a class="headerlink" href="#example-playbook" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="s">&quot;Setup</span><span class="nv"> </span><span class="s">Knative&quot;</span>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="s">&quot;Setup</span><span class="nv"> </span><span class="s">Argocd&quot;</span>
   <span class="nt">hosts</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">localhost</span>
   <span class="nt">vars</span><span class="p">:</span>
     <span class="nt">kubernetes_spices_argocd_k8s_context</span><span class="p">:</span> <span class="s">&#39;mgmt&#39;</span>
   <span class="nt">roles</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nt"> role</span><span class="p">:</span> <span class="nv">kameshsampath.kubernetes_spices.knative</span> <span class="p p-Indicator">}</span>
+    <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nt"> role</span><span class="p">:</span> <span class="nv">kameshsampath.kubernetes_spices.argocd</span> <span class="p p-Indicator">}</span>
 </code></pre></div>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <ul>
-<li>Based on the above example the <code>kubernetes_spices_knative_k8s_context</code> should be set to <code>mgmt</code>, the context which is created by minikube.</li>
+<li>Based on the above example the <code>kubernetes_spices_argocd_k8s_context</code> should be set to <code>mgmt</code>, the context which is created by minikube</li>
+<li>The default credentials to access argocd will be <code>admin/password</code></li>
 </ul>
 </div>
+<h2 id="using-helm-secrets-plugin">Using helm secrets plugin<a class="headerlink" href="#using-helm-secrets-plugin" title="Permanent link">&para;</a></h2>
+<p>To use helm secrets plugin with Argocd applications, enable the plugin configuration by adding enable the flag <code>kubernetes_spices_argocd_helm_secerts_plugin</code> to <code>true</code>.</p>
+<p>Lets take an example of <a href="https://github.com/mozilla/sops">sops</a> and <a href="https://github.com/FiloSottile/age">age</a>,</p>
+<h2 id="create-age-key">Create age key<a class="headerlink" href="#create-age-key" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>age-keygen -o key.txt
+</code></pre></div>
+<p>Move the <code>key.txt</code> to secure place, preferably <code>$HOME/.ssh</code>. Assuming you moved it to <code>$HOME/.ssh</code>, lets set that as local environment variables for convinience:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SOPS_AGE_KEY_FILE</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/.ssh/key.txt&quot;</span>
+</code></pre></div>
+<p>Also note and export the <strong>publickey</strong> in the <code>$SOPS_AGE_KEY_FILE</code> as <code>$SOPS_AGE_RECIPIENTS</code></p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SOPS_AGE_RECIPIENTS</span><span class="o">=</span><span class="k">$(</span>cat <span class="nv">$SOPS_AGE_KEY_FILE</span>  <span class="p">|</span> awk <span class="s1">&#39;NR==2{ print $4}&#39;</span><span class="k">)</span>
+</code></pre></div>
+<p>Ensure the sops configration <code>.sops.yml</code> is updated with your <em>age</em> publickey,</p>
+<div class="highlight"><pre><span></span><code>yq <span class="nb">eval</span> <span class="s1">&#39;.creation_rules[0].age |= strenv(SOPS_AGE_RECIPIENTS)&#39;</span> .sops.yml 
+</code></pre></div>
+<p>We need to make the age key to be available to the Argocd repo server so that it can decrypt the secrets,</p>
+<div class="highlight"><pre><span></span><code>kubectl create ns argocd
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>kubectl create secret generic helm-secrets-private-keys <span class="se">\</span>
+  --namespace<span class="o">=</span>argocd <span class="se">\</span>
+  --from-file<span class="o">=</span>key.txt<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SOPS_AGE_KEY_FILE</span><span class="s2">&quot;</span>
+</code></pre></div>
+<p>Now you an use the same play to deploy Argocd with helm secrets enabled,</p>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="s">&quot;Setup</span><span class="nv"> </span><span class="s">Argocd&quot;</span>
+  <span class="nt">hosts</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">localhost</span>
+  <span class="nt">vars</span><span class="p">:</span>
+    <span class="nt">kubernetes_spices_argocd_k8s_context</span><span class="p">:</span> <span class="s">&#39;mgmt&#39;</span>
+  <span class="nt">roles</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nt"> role</span><span class="p">:</span> <span class="nv">kameshsampath.kubernetes_spices.argocd</span> <span class="p p-Indicator">}</span>
+</code></pre></div>
+<p>You can check the <a href="https://github.com/kameshsampath/helm-secret-demo">example project</a> to deploy Keycloak using helm secrets plugin enabled with Argocd.</p>
 
               
             </article>
@@ -525,7 +585,7 @@
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../role_istio/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Istio" rel="prev">
+        <a href="../role_gitea/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Gitea" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -534,20 +594,20 @@
               <span class="md-footer__direction">
                 Previous
               </span>
-              Istio
+              Gitea
             </div>
           </div>
         </a>
       
       
         
-        <a href="../role_tektoncd/" class="md-footer__link md-footer__link--next" aria-label="Next: Tektoncd" rel="next">
+        <a href="../role_knative/" class="md-footer__link md-footer__link--next" aria-label="Next: Knative" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Tektoncd
+              Knative
             </div>
           </div>
           <div class="md-footer__button md-icon">
