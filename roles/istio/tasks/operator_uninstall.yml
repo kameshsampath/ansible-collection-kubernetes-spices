@@ -46,23 +46,19 @@
     src: operator/istio-gateway.yaml.j2
     dest: "{{ kubernetes_spices_istio_revision_work_dir }}/ingress-gateway.yaml"
   register: kubernetes_spices_gateways_manifest_file
-  when:  kubernetes_spices_gateways_manifests is not defined or ( kubernetes_spices_gateways_manifests | length == 0 )
+  when:  kubernetes_spices_gateways_manifest is not defined
 
 - name: "Set Istio Gateways Manifest"
   set_fact:
-    kubernetes_spices_gateways_manifests: "{{ [] + [ kubernetes_spices_istio_revision_work_dir + '/ingress-gateway.yaml' ] }}"
-  when:  kubernetes_spices_gateways_manifests is not defined or ( kubernetes_spices_gateways_manifests | length == 0 )
+    kubernetes_spices_gateways_manifest: "{{ kubernetes_spices_istio_revision_work_dir + '/ingress-gateway.yaml' }}"
+  when:  kubernetes_spices_gateways_manifest is not defined
 
 - name: "Undeploy Istio Ingress Gateway"
   kubernetes.core.k8s:
     state: absent
-    src: "{{ kubernetes_spices_gateways_manifest_item }}"
+    src: "{{ kubernetes_spices_gateways_manifest }}"
     context: "{{ kubernetes_spices_istio_k8s_context }}"
     wait: yes
-  loop: "{{ kubernetes_spices_gateways_manifests }}"
-  loop_control:
-    loop_var: kubernetes_spices_gateways_manifest_item
-    
 
 - name: "Undeploy Istio Control Plane"
   kubernetes.core.k8s:

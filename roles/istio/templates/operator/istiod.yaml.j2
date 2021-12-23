@@ -2,7 +2,7 @@
 apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
 metadata:
-  name: istiod-{{ kubernetes_spices_istio_revision }}
+  name: istiod
   namespace: {{ kubernetes_spices_istio_namespace }}
 spec:
   # only the control plane components are installed (https://istio.io/latest/docs/setup/additional-setup/config-profiles/)

@@ -1,5 +1,5 @@
 ---
-- name: 'Wait for Deployment'
+- name: 'Wait for Deployment {{ deployment_name }} to be ready'
   kubernetes.core.k8s_info:
     kind: Deployment
     name: '{{ deployment_name }}'
