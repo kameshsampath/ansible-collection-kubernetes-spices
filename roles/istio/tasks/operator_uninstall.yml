@@ -29,32 +29,45 @@
   set_fact:
     kubernetes_spices_istio_revision_work_dir: "{{ work_dir }}/{{ kubernetes_spices_istio_revision }}"
 
-- name: "Delete Istio ConfigMap"
-  kubernetes.core.k8s:
-    state: absent
-    kind: ConfigMap
-    name: "istio-{{ kubernetes_spices_istio_revision }}"
-    namespace: "{{ kubernetes_spices_istio_gateways_namespace }}"
-    context:  "{{ kubernetes_spices_istio_k8s_context }}"
-    wait: yes
+- name: "Generate Istio Control Plane Deployment"
+  ansible.builtin.template:
+    src: operator/istiod.yaml.j2
+    dest: "{{ kubernetes_spices_istio_revision_work_dir }}/control-plane.yaml"
+  register: kubernetes_spices_controlpane_manifest_file
+  when: kubernetes_spices_controlpane_manifest is not defined 
+    
+- name: "Set Control Plane Manifest"
+  set_fact:
+    kubernetes_spices_controlpane_manifest: "{{ kubernetes_spices_istio_revision_work_dir }}/control-plane.yaml"
+  when: kubernetes_spices_controlpane_manifest is not defined 
+
+- name: "Generate Istio Gateway Deployment"
+  ansible.builtin.template:
+    src: operator/istio-gateway.yaml.j2
+    dest: "{{ kubernetes_spices_istio_revision_work_dir }}/ingress-gateway.yaml"
+  register: kubernetes_spices_gateways_manifest_file
+  when:  kubernetes_spices_gateways_manifests is not defined or ( kubernetes_spices_gateways_manifests | length == 0 )
+
+- name: "Set Istio Gateways Manifest"
+  set_fact:
+    kubernetes_spices_gateways_manifests: "{{ [] + [ kubernetes_spices_istio_revision_work_dir + '/ingress-gateway.yaml' ] }}"
+  when:  kubernetes_spices_gateways_manifests is not defined or ( kubernetes_spices_gateways_manifests | length == 0 )
 
 - name: "Undeploy Istio Ingress Gateway"
   kubernetes.core.k8s:
     state: absent
-    api_version: install.istio.io/v1alpha1
-    kind: IstioOperator
-    name: "ingress-gateway-{{ kubernetes_spices_istio_revision }}"
-    namespace: "{{ kubernetes_spices_istio_gateways_namespace }}"
+    src: "{{ kubernetes_spices_gateways_manifest_item }}"
     context: "{{ kubernetes_spices_istio_k8s_context }}"
     wait: yes
+  loop: "{{ kubernetes_spices_gateways_manifests }}"
+  loop_control:
+    loop_var: kubernetes_spices_gateways_manifest_item
+    
 
 - name: "Undeploy Istio Control Plane"
   kubernetes.core.k8s:
     state: absent
-    api_version: install.istio.io/v1alpha1
-    kind: IstioOperator
-    name: "istio-{{ kubernetes_spices_istio_revision }}"
-    namespace: "{{ kubernetes_spices_istio_namespace }}"
+    src: "{{ kubernetes_spices_controlpane_manifest }}"
     context: "{{ kubernetes_spices_istio_k8s_context }}"
     wait: yes
 

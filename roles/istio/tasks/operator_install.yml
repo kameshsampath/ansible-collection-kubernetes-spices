@@ -73,6 +73,30 @@
     values_files: "{{ kubernetes_spices_istio_operator_helm_values_files }}"
   register: istio_operator_install_template
 
+- name: "Generate Istio Control Plane Deployment"
+  ansible.builtin.template:
+    src: operator/istiod.yaml.j2
+    dest: "{{ kubernetes_spices_istio_revision_work_dir }}/control-plane.yaml"
+  register: kubernetes_spices_controlpane_manifest_file
+  when: kubernetes_spices_controlpane_manifest is not defined 
+    
+- name: "Set Control Plane Manifest"
+  set_fact:
+    kubernetes_spices_controlpane_manifest: "{{ kubernetes_spices_istio_revision_work_dir }}/control-plane.yaml"
+  when: kubernetes_spices_controlpane_manifest is not defined 
+
+- name: "Generate Istio Gateway Deployment"
+  ansible.builtin.template:
+    src: operator/istio-gateway.yaml.j2
+    dest: "{{ kubernetes_spices_istio_revision_work_dir }}/ingress-gateway.yaml"
+  register: kubernetes_spices_gateways_manifest_file
+  when:  kubernetes_spices_gateways_manifests is not defined or ( kubernetes_spices_gateways_manifests | length == 0 )
+
+- name: "Set Istio Gateways Manifest"
+  set_fact:
+    kubernetes_spices_gateways_manifests: "{{ [] + [ kubernetes_spices_istio_revision_work_dir + '/ingress-gateway.yaml' ] }}"
+  when:  kubernetes_spices_gateways_manifests is not defined or ( kubernetes_spices_gateways_manifests | length == 0 )
+  
 #- debug:
 #    var: istio_operator_install_template
     
@@ -114,73 +138,35 @@
     deployment_namespace: "{{ kubernetes_spices_istio_operator_namespace }}"
     deployment_context: "{{ kubernetes_spices_istio_k8s_context }}"
 
-- name: "Generate Istio Control Plane Deployment"
-  ansible.builtin.template:
-    src: operator/istiod.yaml.j2
-    dest: "{{ kubernetes_spices_istio_revision_work_dir }}/control-plane.yaml"
-
 - name: "Deploy istiod"
   kubernetes.core.k8s:
     context: "{{ kubernetes_spices_istio_k8s_context }}"
     state: present
-    src: "{{ kubernetes_spices_istio_revision_work_dir }}/control-plane.yaml"
+    src: "{{ kubernetes_spices_controlpane_manifest }}"
 
-- name: "Wait for istiod to be ready"
-  include: utils/status_check.yml
-  vars:
-    deployment_name: "istiod-{{ kubernetes_spices_istio_revision }}"
-    deployment_namespace: "{{ kubernetes_spices_istio_namespace }}"
-    deployment_context: "{{ kubernetes_spices_istio_k8s_context }}"
-
-#- name: "Lookup Istio Configmap from {{ kubernetes_spices_istio_namespace }}"
-#  kubernetes.core.k8s_info:
-#    api_version: v1
-#    kind: ConfigMap
-#    name: "istio-{{ kubernetes_spices_istio_revision }}"
-#    namespace: "{{ kubernetes_spices_istio_namespace }}"
-#    context:  "{{ kubernetes_spices_istio_k8s_context }}"
-#  register: kubernetes_spices_istio_cm_result
-
-#- name: "Fail when Istio configmap not found"
-#  fail:
-#    msg: "Istio configmap istio-{{ kubernetes_spices_istio_cm_result }} not found in namespace kubernetes_spices_istio_namespace"
-#  when: kubernetes_spices_istio_cm_result.resources | length == 0
-#
-#- name: "Set Istio ConfigMap Facts"
-#  set_fact:
-#    kubernetes_spices_istio_cm_data: "{{ kubernetes_spices_istio_cm_result.resources[0].data }}"
-
-# - debug:
-#     msg:  "{{ kubernetes_spices_istio_cm_data }}"
-
-#- name: "Create Istio ConfigMap"
-#  kubernetes.core.k8s:
-#    state: present
-#    definition:
-#      api_version: v1
-#      kind: ConfigMap
-#      metadata:
-#        name: "istio-{{ kubernetes_spices_istio_revision }}"
-#        namespace: "{{ kubernetes_spices_istio_gateways_namespace }}"
-#        labels:
-#          istio.io/rev: "{{ kubernetes_spices_istio_revision }}"
-#      data: "{{ kubernetes_spices_istio_cm_data | from_yaml }}"
-#    context:  "{{ kubernetes_spices_istio_k8s_context }}"
-
-- name: "Generate Istio Gateway Deployment"
-  ansible.builtin.template:
-    src: operator/istio-gateway.yaml.j2
-    dest: "{{ kubernetes_spices_istio_revision_work_dir }}/ingress-gateway.yaml"
-    
+- name: "Wait Control Plane to be ready"
+  kubernetes.core.k8s_info:
+    context: "{{ kubernetes_spices_istio_k8s_context }}"
+    kind: Pod
+    namespace: "{{ kubernetes_spices_istio_namespace }}"
+    label_selectors:
+      - "operator.istio.io/component=Pilot"
+    wait: yes
+  
 - name: "Deploy Istio Ingress Gateway"
   kubernetes.core.k8s:
     context: "{{ kubernetes_spices_istio_k8s_context }}"
     state: present
-    src: "{{ kubernetes_spices_istio_revision_work_dir }}/ingress-gateway.yaml"
+    src: "{{ kubernetes_spices_gateways_manifest_item }}"
+  loop: "{{ kubernetes_spices_gateways_manifests }}"
+  loop_control:
+      loop_var: kubernetes_spices_gateways_manifest_item
 
-- name: "Wait for istio ingressgateway to be ready"
-  include: utils/status_check.yml
-  vars:
-    deployment_name: istio-ingressgateway
-    deployment_namespace: "{{ kubernetes_spices_istio_gateways_namespace }}"
-    deployment_context: "{{ kubernetes_spices_istio_k8s_context }}"
+- name: "Wait for deployed Istio Gateways to be ready"
+  kubernetes.core.k8s_info:
+    context: "{{ kubernetes_spices_istio_k8s_context }}"
+    kind: Pod
+    namespace: "{{ kubernetes_spices_istio_gateways_namespace }}"
+    label_selectors:
+      - "operator.istio.io/component=IngressGateways"
+    wait: yes

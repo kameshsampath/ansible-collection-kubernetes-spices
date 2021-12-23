@@ -18,7 +18,7 @@
   loop_control:
      label: "{{ item.key }}"
   vars:
-    kubernetes_spices_istio_k8s_context: "{{ item.key }}"
+    kubernetes_spices_istio_k8s_context: "{{ item.value.k8s_context | default(item.key) }}"
     kubernetes_spices_istio_cluster: "{{  item.key }}"
     kubernetes_spices_istio_version: "{{ item.value.version }}"
     kubernetes_spices_gloo_mesh_cluster_name: "{{ gloo_mesh_cluster_name | default(item.key) }}"
@@ -30,7 +30,7 @@
   loop_control:
      label: "{{ item.key }}"
   vars:
-    kubernetes_spices_istio_k8s_context: "{{ item.key }}"
+    kubernetes_spices_istio_k8s_context: "{{ item.value.k8s_context | default(item.key) }}"
     kubernetes_spices_istio_cluster: "{{  item.key }}"
     kubernetes_spices_istio_version: "{{ item.value.version }}"
     kubernetes_spices_gloo_mesh_cluster_name: "{{ gloo_mesh_cluster_name | default(item.key) }}"
@@ -42,11 +42,11 @@
   loop_control:
      label: "{{ item.key }}"
   vars:
-    kubernetes_spices_istio_k8s_context: "{{ item.key }}"
+    kubernetes_spices_istio_k8s_context: "{{ item.value.k8s_context | default(item.key) }}"
     kubernetes_spices_istio_cluster: "{{  item.key }}"
     kubernetes_spices_istio_version: "{{ item.value.version }}"
     kubernetes_spices_gloo_mesh_cluster_name: "{{ gloo_mesh_cluster_name | default(item.key) }}"
-  when: item.value.version is version('1.12.0','ge',strict=True)  and ( not item.value.install | default(False) )
+  when: item.value.version is version('1.12.0','ge',strict=True)  and not ( item.value.install | default(True) )
 
 - name: "Uninstall Istio via Operator"
   include_tasks: operator_uninstall.yml
@@ -54,8 +54,8 @@
   loop_control:
      label: "{{ item.key }}"
   vars:
-    kubernetes_spices_istio_k8s_context: "{{ item.key }}"
+    kubernetes_spices_istio_k8s_context: "{{ item.value.k8s_context | default(item.key) }}"
     kubernetes_spices_istio_cluster: "{{  item.key }}"
     kubernetes_spices_istio_version: "{{ item.value.version }}"
     kubernetes_spices_gloo_mesh_cluster_name: "{{ gloo_mesh_cluster_name | default(item.key) }}"
-  when: item.value.version is version('1.12.0','lt',strict=True)  and ( not item.value.install | default(False) )
+  when: item.value.version is version('1.12.0','lt',strict=True)  and not ( item.value.install | default(True) )

@@ -78,5 +78,6 @@ spec:
           gateways:
           - registryServiceName: {{ kubernetes_spices_istio_default_gateway_name }}.{{ kubernetes_spices_istio_gateways_namespace }}.svc.cluster.local
             port: 443
-        vm-network: "{{ kubernetes_spices_istio_vm_network }}"
+        # "{{ kubernetes_spices_istio_vm_network }}" ???
+        vm-network: 
       {% endif %}
