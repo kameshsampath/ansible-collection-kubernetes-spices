@@ -1,5 +1,14 @@
 # Changelog
 
+### [0.2.5](https://www.github.com/kameshsampath/ansible-collection-kubernetes-spices/compare/v0.2.4...v0.2.5) (2022-01-10)
+
+
+### Bug Fixes
+
+* include_tasks over include ([e055aed](https://www.github.com/kameshsampath/ansible-collection-kubernetes-spices/commit/e055aed39fc400983b4141a61718ade70aa8a329))
+* istio deployment status check ([2e42b6d](https://www.github.com/kameshsampath/ansible-collection-kubernetes-spices/commit/2e42b6d7ea5d248b8d47f28763954143294e22e0))
+* istio revision based install ([cef4fd8](https://www.github.com/kameshsampath/ansible-collection-kubernetes-spices/commit/cef4fd8678786239aeb117c00ba39904266302be))
+
 ### [0.2.4](https://www.github.com/kameshsampath/ansible-collection-kubernetes-spices/compare/v0.2.3...v0.2.4) (2021-12-07)
 
 
