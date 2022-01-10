@@ -11,7 +11,7 @@
         <link rel="canonical" href="https://kameshsampath.github.com/ansible-collection-kubernetes_spices/role_knative/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.3">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.5">
     
     
       
@@ -19,7 +19,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.edf004c2.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ee0f47ba.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.e6a45f82.min.css">
@@ -408,63 +408,63 @@
 <p>Access to Kubernetes cluster,</p>
 <p>For demo purpose you can have minikube cluster created locally as shown in the following example playbook,</p>
 <p>e.g.</p>
-<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="s">&quot;Create</span><span class="nv"> </span><span class="s">minikube</span><span class="nv"> </span><span class="s">Clusters&quot;</span>
-  <span class="nt">hosts</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">all</span>
-  <span class="nt">vars</span><span class="p">:</span>
-    <span class="c1"># the demo work directory</span>
-    <span class="nt">work_dir</span><span class="p">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">playbook_dir</span><span class="nv"> </span><span class="s">}}/work&quot;</span>
-    <span class="c1"># the kubeconfig directory</span>
-    <span class="nt">kubeconfig_dir</span><span class="p">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">work_dir</span><span class="nv"> </span><span class="s">}}/.kube&quot;</span>
-    <span class="c1"># the kubernetes version to use with minikube</span>
-    <span class="nt">minikube_kubernetes_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1.21.6</span>
-    <span class="c1"># the minikube home directory</span>
-    <span class="nt">minikube_home_dir</span><span class="p">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">work_dir</span><span class="nv"> </span><span class="s">}}/.minikube&quot;</span>
-    <span class="c1"># minikube profiles</span>
-    <span class="nt">minikube_profiles</span><span class="p">:</span>
-      <span class="nt">mgmt</span><span class="p">:</span> <span class="c1"># profile name and Kubernetes context name</span>
-        <span class="nt">create</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">yes</span>
-        <span class="nt">destroy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">no</span>
-        <span class="nt">addons</span><span class="p">:</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">metallb</span>
-        <span class="nt">lbStartIP</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">192.168.64.80</span>
-        <span class="nt">lbEndIP</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">192.168.64.90</span>
-  <span class="nt">roles</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="nt">role</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">kameshsampath.minikube</span>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Create</span><span class="nv"> </span><span class="s">minikube</span><span class="nv"> </span><span class="s">Clusters&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">all</span><span class="w"></span>
+<span class="w">  </span><span class="nt">vars</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># the demo work directory</span><span class="w"></span>
+<span class="w">    </span><span class="nt">work_dir</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">playbook_dir</span><span class="nv"> </span><span class="s">}}/work&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># the kubeconfig directory</span><span class="w"></span>
+<span class="w">    </span><span class="nt">kubeconfig_dir</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">work_dir</span><span class="nv"> </span><span class="s">}}/.kube&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># the kubernetes version to use with minikube</span><span class="w"></span>
+<span class="w">    </span><span class="nt">minikube_kubernetes_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1.21.6</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># the minikube home directory</span><span class="w"></span>
+<span class="w">    </span><span class="nt">minikube_home_dir</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">work_dir</span><span class="nv"> </span><span class="s">}}/.minikube&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># minikube profiles</span><span class="w"></span>
+<span class="w">    </span><span class="nt">minikube_profiles</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">mgmt</span><span class="p">:</span><span class="w"> </span><span class="c1"># profile name and Kubernetes context name</span><span class="w"></span>
+<span class="w">        </span><span class="nt">create</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span><span class="w"></span>
+<span class="w">        </span><span class="nt">destroy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">no</span><span class="w"></span>
+<span class="w">        </span><span class="nt">addons</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">metallb</span><span class="w"></span>
+<span class="w">        </span><span class="nt">lbStartIP</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.64.80</span><span class="w"></span>
+<span class="w">        </span><span class="nt">lbEndIP</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.64.90</span><span class="w"></span>
+<span class="w">  </span><span class="nt">roles</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kameshsampath.minikube</span><span class="w"></span>
 
-  <span class="c1"># Some extra configurations</span>
-  <span class="nt">tasks</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="s">&quot;Configure</span><span class="nv"> </span><span class="s">metallb&quot;</span>
-      <span class="nt">ansible.builtin.expect</span><span class="p">:</span>
-        <span class="nt">command</span><span class="p">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">minikube_binary</span><span class="nv"> </span><span class="s">}}</span><span class="nv"> </span><span class="s">-p</span><span class="nv"> </span><span class="s">{{</span><span class="nv"> </span><span class="s">item.key</span><span class="nv"> </span><span class="s">}}</span><span class="nv"> </span><span class="s">addons</span><span class="nv"> </span><span class="s">configure</span><span class="nv"> </span><span class="s">metallb&quot;</span>
-        <span class="nt">responses</span><span class="p">:</span>
-          <span class="s">&quot;--</span><span class="nv"> </span><span class="s">Enter</span><span class="nv"> </span><span class="s">Load</span><span class="nv"> </span><span class="s">Balancer</span><span class="nv"> </span><span class="s">Start</span><span class="nv"> </span><span class="s">IP:&quot;</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">item.value.lbStartIP}}&quot;</span>
-          <span class="s">&quot;--</span><span class="nv"> </span><span class="s">Enter</span><span class="nv"> </span><span class="s">Load</span><span class="nv"> </span><span class="s">Balancer</span><span class="nv"> </span><span class="s">End</span><span class="nv"> </span><span class="s">IP:&quot;</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">item.value.lbEndIP}}&quot;</span>
-      <span class="nt">loop</span><span class="p">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">minikube_profiles</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">dict2items</span><span class="nv"> </span><span class="s">}}&quot;</span>
-      <span class="nt">loop_control</span><span class="p">:</span>
-         <span class="nt">label</span><span class="p">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">item.key</span><span class="nv"> </span><span class="s">}}&quot;</span>
-      <span class="nt">register</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">lb_setup_result</span>
-      <span class="nt">when</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">item.value.create and not item.value.destroy</span>
+<span class="w">  </span><span class="c1"># Some extra configurations</span><span class="w"></span>
+<span class="w">  </span><span class="nt">tasks</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Configure</span><span class="nv"> </span><span class="s">metallb&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">ansible.builtin.expect</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">minikube_binary</span><span class="nv"> </span><span class="s">}}</span><span class="nv"> </span><span class="s">-p</span><span class="nv"> </span><span class="s">{{</span><span class="nv"> </span><span class="s">item.key</span><span class="nv"> </span><span class="s">}}</span><span class="nv"> </span><span class="s">addons</span><span class="nv"> </span><span class="s">configure</span><span class="nv"> </span><span class="s">metallb&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">responses</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="s">&quot;--</span><span class="nv"> </span><span class="s">Enter</span><span class="nv"> </span><span class="s">Load</span><span class="nv"> </span><span class="s">Balancer</span><span class="nv"> </span><span class="s">Start</span><span class="nv"> </span><span class="s">IP:&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">item.value.lbStartIP}}&quot;</span><span class="w"></span>
+<span class="w">          </span><span class="s">&quot;--</span><span class="nv"> </span><span class="s">Enter</span><span class="nv"> </span><span class="s">Load</span><span class="nv"> </span><span class="s">Balancer</span><span class="nv"> </span><span class="s">End</span><span class="nv"> </span><span class="s">IP:&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">item.value.lbEndIP}}&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">loop</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">minikube_profiles</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">dict2items</span><span class="nv"> </span><span class="s">}}&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">loop_control</span><span class="p">:</span><span class="w"></span>
+<span class="w">         </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">item.key</span><span class="nv"> </span><span class="s">}}&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lb_setup_result</span><span class="w"></span>
+<span class="w">      </span><span class="nt">when</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">item.value.create and not item.value.destroy</span><span class="w"></span>
 
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="s">&quot;Metallb</span><span class="nv"> </span><span class="s">result&quot;</span>
-      <span class="nt">debug</span><span class="p">:</span>
-        <span class="nt">var</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">lb_setup_result</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Metallb</span><span class="nv"> </span><span class="s">result&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">debug</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lb_setup_result</span><span class="w"></span>
 
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="s">&quot;Ensure</span><span class="nv"> </span><span class="s">we</span><span class="nv"> </span><span class="s">are</span><span class="nv"> </span><span class="s">in</span><span class="nv"> </span><span class="s">mgmt</span><span class="nv"> </span><span class="s">context&quot;</span>
-      <span class="nt">ansible.builtin.command</span><span class="p">:</span>
-        <span class="nt">argv</span><span class="p">:</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">kubectl</span> 
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">config</span> 
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">use-context</span>
-          <span class="p p-Indicator">-</span> <span class="s">&quot;mgmt&quot;</span>
-      <span class="nt">environment</span><span class="p">:</span>
-        <span class="nt">KUBECONFIG</span><span class="p">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">work_dir</span><span class="nv"> </span><span class="s">}}/.kube/config&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Ensure</span><span class="nv"> </span><span class="s">we</span><span class="nv"> </span><span class="s">are</span><span class="nv"> </span><span class="s">in</span><span class="nv"> </span><span class="s">mgmt</span><span class="nv"> </span><span class="s">context&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">ansible.builtin.command</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">argv</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kubectl</span><span class="w"> </span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config</span><span class="w"> </span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">use-context</span><span class="w"></span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;mgmt&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">KUBECONFIG</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">work_dir</span><span class="nv"> </span><span class="s">}}/.kube/config&quot;</span><span class="w"></span>
 
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="s">&quot;Ensure</span><span class="nv"> </span><span class="s">right</span><span class="nv"> </span><span class="s">permissions</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">kubeconfig</span><span class="nv"> </span><span class="s">directory&quot;</span>
-      <span class="nt">ansible.builtin.file</span><span class="p">:</span>
-        <span class="nt">state</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">directory</span>
-        <span class="nt">recurse</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">yes</span>
-        <span class="nt">path</span><span class="p">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">work_dir</span><span class="nv"> </span><span class="s">}}/.kube&quot;</span>
-        <span class="nt">mode</span><span class="p">:</span> <span class="s">&quot;0700&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Ensure</span><span class="nv"> </span><span class="s">right</span><span class="nv"> </span><span class="s">permissions</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">kubeconfig</span><span class="nv"> </span><span class="s">directory&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">ansible.builtin.file</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">directory</span><span class="w"></span>
+<span class="w">        </span><span class="nt">recurse</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span><span class="w"></span>
+<span class="w">        </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">work_dir</span><span class="nv"> </span><span class="s">}}/.kube&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0700&quot;</span><span class="w"></span>
 </code></pre></div>
 <h2 id="variables">Variables<a class="headerlink" href="#variables" title="Permanent link">&para;</a></h2>
 <table>
@@ -499,12 +499,12 @@
 </tbody>
 </table>
 <h2 id="example-playbook">Example Playbook<a class="headerlink" href="#example-playbook" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="s">&quot;Setup</span><span class="nv"> </span><span class="s">Knative&quot;</span>
-  <span class="nt">hosts</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">localhost</span>
-  <span class="nt">vars</span><span class="p">:</span>
-    <span class="nt">kubernetes_spices_argocd_k8s_context</span><span class="p">:</span> <span class="s">&#39;mgmt&#39;</span>
-  <span class="nt">roles</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nt"> role</span><span class="p">:</span> <span class="nv">kameshsampath.kubernetes_spices.knative</span> <span class="p p-Indicator">}</span>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Setup</span><span class="nv"> </span><span class="s">Knative&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span><span class="w"></span>
+<span class="w">  </span><span class="nt">vars</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">kubernetes_spices_argocd_k8s_context</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;mgmt&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">roles</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> role</span><span class="p">:</span><span class="w"> </span><span class="nv">kameshsampath.kubernetes_spices.knative</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"></span>
 </code></pre></div>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
@@ -577,10 +577,10 @@
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["content.code.annotate", "content.tabs.link"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.0bbba5b5.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["content.code.annotate", "content.tabs.link"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.b6ff8c07.min.js"}</script>
     
     
-      <script src="../assets/javascripts/bundle.e1a181d9.min.js"></script>
+      <script src="../assets/javascripts/bundle.5e13d264.min.js"></script>
       
     
   </body>
