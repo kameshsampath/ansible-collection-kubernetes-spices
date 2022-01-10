@@ -8,7 +8,8 @@
     bin_dir: "{{ bin_dir | default( work_dir + '/bin' ) }}"
 
 - name: "Ensure {{ bin_dir}}"
-  ansible.builtin.file:
+  run_once: yes
+  file:
      state: directory
      path: "{{ bin_dir }}"
 

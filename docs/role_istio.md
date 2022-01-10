@@ -1,6 +1,6 @@
 ---
 title: Argocd
-summary: Ansible Role to install Argocd
+summary: Ansible Role to install Istio
 authors:
   - Kamesh Sampath<kamesh.sampath@hotmail.com>
 date: 2021-12-01

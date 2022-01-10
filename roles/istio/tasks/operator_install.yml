@@ -132,7 +132,7 @@
     context: "{{ kubernetes_spices_istio_k8s_context }}"
 
 - name: "Wait for Istio Operator to be ready"
-  include: utils/status_check.yml
+  include_tasks: utils/status_check.yml
   vars:
     deployment_name: "istio-operator-{{ kubernetes_spices_istio_revision }}"
     deployment_namespace: "{{ kubernetes_spices_istio_operator_namespace }}"
@@ -158,7 +158,7 @@
   delay: 10
 
 - name: "Wait for Istio Control Plane to be ready"
-  include: utils/status_check.yml
+  include_tasks: utils/status_check.yml
   vars:
     deployment_name: "{{ kubernetes_spices_istio_cp_item.metadata.name }}"
     deployment_namespace: "{{ kubernetes_spices_istio_namespace }}"
@@ -188,7 +188,7 @@
   delay: 10
      
 - name: "Wait for Istio Gateweays to be ready"
-  include: utils/status_check.yml
+  include_tasks: utils/status_check.yml
   vars:
     deployment_name: "{{ kubernetes_spices_istio_gw_item.metadata.name }}"
     deployment_namespace: "{{ kubernetes_spices_istio_gateways_namespace }}"
