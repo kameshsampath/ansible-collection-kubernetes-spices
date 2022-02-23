@@ -1,20 +1,6 @@
 #jinja2: lstrip_blocks: "True"
-ingress:
-  hosts:
-    - host: {{ gloo_nip_io }}
-      paths:
-         - path: /
-           pathType:  Prefix
-  tls:
-    - secretName: gitea-upstream-tls
-      hosts:
-       - "{{ gloo_http_lb_ip }}"
-       - "{{ gloo_nip_io }}"
 gitea:
   admin:
     username: {{ gitea_admin_user.username }}
     password: '{{ gitea_admin_user.password }}'
     email: {{ gitea_admin_user.email }}
-  config:
-    server:
-      ROOT_URL: "https://{{ gloo_nip_io }}"

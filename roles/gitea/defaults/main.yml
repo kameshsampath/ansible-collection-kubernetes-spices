@@ -1,3 +1,4 @@
 ---
 kubernetes_spices_gitea_cli_version: 1.15.6
 kubernetes_spices_gitea_namespace: gitea
+kubernetes_spices_gitea_host_name: gitea

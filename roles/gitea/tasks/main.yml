@@ -38,20 +38,17 @@
     msg: "Gitea Kube Context is not defined, please set the variable 'kubernetes_spices_gitea_k8s_context' to kubernetes context where you wish to have Gitea installed "
   when: kubernetes_spices_gitea_k8s_context is not defined 
 
-- name: "Ensure we are in {{ kubernetes_spices_gitea_k8s_context }} context"
-  ansible.builtin.command:
-    argv:
-      - kubectl 
-      - config 
-      - use-context
-      - "{{ kubernetes_spices_gitea_k8s_context }}"
-  environment:
-    KUBECONFIG: "{{ work_dir }}/.kube/config"
-
 - name: "Add Gloo Edge Community Repo"
   kubernetes.core.helm_repository:
     name: gloo
     repo_url: "https://storage.googleapis.com/solo-public-helm"
+
+- name: "Refresh helm repositories"
+  ansible.builtin.command:
+    argv:
+      - helm
+      - repo
+      - update
 
 - name: "Query Gloo Versions"
   ansible.builtin.command:
@@ -97,75 +94,11 @@
     context: "{{ kubernetes_spices_gitea_k8s_context }}"
     wait: yes
 
-- name: "Get Gloo Proxy HTTP Address"
-  kubernetes.core.k8s_info:
-    kind: Service
-    name:  gateway-proxy
-    namespace: "{{ kubernetes_spices_gitea_namespace  }}"
-    context: "{{ kubernetes_spices_gitea_k8s_context }}"
-  register: gateway_proxy_http_svc_result
-
-- name: "Set Gitea Gloo Facts"
-  set_fact:
-    gloo_http_lb_ip: "{{ gateway_proxy_http_svc_result.resources[0] | community.general.json_query(svcQuery) | first  }}"
-    gloo_nip_io: "gitea-{{ gateway_proxy_http_svc_result.resources[0] | community.general.json_query(svcQuery) | first  }}.nip.io"
-  vars:
-    svcQuery: 'status.loadBalancer.ingress[*].ip'
-  
-- name: 'Create SSL Dir'
-  file:
-    path: "{{ work_dir}}/ssl/private"
-    state: directory
-    recurse: yes
-
-- name: "Generate Gitea CSR Privatekey"
-  community.crypto.openssl_privatekey:
-    path: "{{ work_dir}}/ssl/private/gitea-privkey.pem"
-      
-- name: "Generate an Gitea OpenSSL CSR"
-  community.crypto.openssl_csr:
-    path: "{{ work_dir}}/ssl/gitea.csr"
-    privatekey_path: "{{ work_dir}}/ssl/private/gitea-privkey.pem"
-    common_name: "{{ gloo_nip_io }}"
-    subject_alt_name:
-        - "IP:{{ gloo_http_lb_ip }}"
-        - "DNS:{{ gloo_nip_io }}"
-    
-- name: "Generate Gitea Self Signed OpenSSL certificate"
-  community.crypto.x509_certificate:
-    path: "{{ gitea_tls_cert_path }}"
-    privatekey_path: "{{ work_dir}}/ssl/private/gitea-privkey.pem"
-    csr_path: "{{ work_dir}}/ssl/gitea.csr"
-    provider: selfsigned
-
-- name: "Slurp Gitea Certificate"
-  ansible.builtin.slurp:
-    src: "{{ gitea_tls_cert_path }}"
-  register: gitea_tls_cert_b64
-
-- name: "Slurp Gitea private key"
-  ansible.builtin.slurp:
-    src: "{{ work_dir}}/ssl/private/gitea-privkey.pem"
-  register: gitea_tls_key_b64
-
 - name: "Create Gitea Deployment namespace {{ kubernetes_spices_gitea_namespace }}"
   kubernetes.core.k8s:
     kind: Namespace
     name: "{{ kubernetes_spices_gitea_namespace }}"
     state: present
-      
-- name: "Create Gitea TLS Secret"
-  kubernetes.core.k8s:
-    definition:
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: gitea-upstream-tls
-        namespace: "{{ kubernetes_spices_gitea_namespace  }}"
-      type: kubernetes.io/tls
-      data:
-        tls.key: "{{ gitea_tls_key_b64['content'] }}"
-        tls.crt: "{{ gitea_tls_cert_b64['content'] }}"
 
 - name: "Create gitea admin user"
   set_fact:
@@ -202,10 +135,12 @@
     msg: "Gitea Version not available"
   when: gitea_version is not defined and gitea_version_info.stdout is not defined
 
-- name: "Set Gitea Version"
+- name: Set Gitea Facts
   set_fact:
     gitea_version: "{{ gitea_version_info.stdout  | from_json | first | community.general.json_query('version') }}"
   when: gitea_version is not defined
+  vars:
+    q: "status.loadBalancer.ingress[*].ip"
 
 - name: "Gitea Version"
   debug: 
@@ -228,90 +163,3 @@
     update_repo_cache: yes
     context: "{{ kubernetes_spices_gitea_k8s_context }}"
     wait: yes
-
-# Gitea external acess
-- name: "Create/Update Gitea Upstream and Route"
-  kubernetes.core.k8s:
-    template: 
-      - path: "gitea-upstream.yaml.j2"
-      - path: "gitea-virtual-service.yaml.j2"
-    context: "{{ kubernetes_spices_gitea_k8s_context }}"
-    namespace: "{{ kubernetes_spices_gitea_namespace  }}"
-    state: present
-
-# Default Repo Configuration
-- name: "Query Git url"
-  kubernetes.core.k8s_info:
-    kind: Service
-    name: gateway-proxy
-    namespace: "{{ kubernetes_spices_gitea_namespace  }}"
-    context: "{{ kubernetes_spices_gitea_k8s_context }}"
-  register: git_service_result
-
-# - debug:
-#     var: github_template_repo
-
-- name: "Set Gitea Service Facts"
-  set_fact:
-    git_url: "https://gitea-{{ git_service_result.resources[0] | json_query(q) | first }}.nip.io"
-  vars:
-    q: "status.loadBalancer.ingress[*].ip"
-
-- name: "Set Gitea Repo Facts"
-  set_fact:
-    git_repo_fqn: "https://gitea-{{ git_service_result.resources[0] | json_query(q) | first }}.nip.io/{{ gitea_admin_user.username }}/{{ github_template_repo | basename }}"
-    gitea_repo_name: "{{ github_template_repo | basename }}"
-  vars:
-    q: "status.loadBalancer.ingress[*].ip"
-  when: github_template_repo is defined
-
-- name: "Clone the template repo from github"
-  ansible.builtin.uri:
-    url: "{{ git_url }}/api/v1/repos/migrate"
-    user: "{{ gitea_admin_user.username }}"
-    password: "{{ gitea_admin_user.password }}"
-    method: POST
-    body:
-      clone_addr: '{{ github_template_repo }}'
-      uid: 1
-      repo_name: "{{ gitea_repo_name }}"
-    return_content: yes
-    status_code: 
-      - 200
-      - 201
-    body_format: json
-    validate_certs: no
-    force_basic_auth: yes
-  register: clone_repo_result
-  when: github_template_repo is defined
-
-- name: "Add demo origin to current git repo"
-  ansible.builtin.command:
-    argv:
-      - git
-      - remote
-      - add
-      - demo
-      - "{{ git_repo_fqn }}"
-  when: github_template_repo is defined and not clone_repo_result.failed
-
-- name: "Dump Gitea Repo Details"
-  ansible.builtin.copy:
-     dest: "{{ work_dir }}/gitea_details.yaml"
-     content: |
-        gitea_url: {{ git_url }}
-        gitea_credentails: {{ gitea_admin_user }}
-
-- name: "Checking if .envrc file exists"
-  ansible.builtin.stat:
-    path: "{{ work_dir }}/.envrc"
-  register: st_envrc_file
-  
-- name: "Checking if .envrc file exists"
-  ansible.builtin.blockinfile:
-    path: "{{ work_dir }}/.envrc"
-    marker: "# {mark} ANSIBLE MANAGED BLOCK GITEA"
-    block: |
-      export GITEA_USERNAME="{{ gitea_admin_user.username }}"
-      export GITEA_PASSWORD="{{ gitea_admin_user.password }}"
-  when: st_envrc_file.stat.exists
