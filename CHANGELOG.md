@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.2.6](https://www.github.com/kameshsampath/ansible-collection-kubernetes-spices/compare/v0.2.5...v0.2.6) (2022-02-24)
+
+
+### Bug Fixes
+
+* remove SSL config ([8a798ee](https://www.github.com/kameshsampath/ansible-collection-kubernetes-spices/commit/8a798ee9cc61410baabc477256b40a97b2845801))
+
 ### [0.2.5](https://www.github.com/kameshsampath/ansible-collection-kubernetes-spices/compare/v0.2.4...v0.2.5) (2022-01-10)
 
 

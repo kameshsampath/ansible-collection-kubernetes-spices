@@ -1,6 +1,6 @@
 namespace: kameshsampath
 name: kubernetes_spices
-version: 0.2.5
+version: 0.2.6
 readme: README.md
 authors:
   - Kamesh Sampath <kamesh.sampath@hotmail.com>
